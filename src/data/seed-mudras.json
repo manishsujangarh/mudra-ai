@@ -1,0 +1,290 @@
+[
+  {
+    "id": "mudra-gyan",
+    "name": "Gyan Mudra",
+    "slug": "gyan-mudra",
+    "description": "The mudra of knowledge. Formed by touching the tip of the index finger to the tip of the thumb while the other three fingers stay extended. One of the most widely practiced mudras in meditation for calming the mind and improving concentration.",
+    "benefits": [
+      "Reduces anxiety and nervous tension",
+      "Calms the mind and relieves stress",
+      "Improves concentration and memory",
+      "Eases mild depression and restlessness",
+      "Supports better, more restful sleep"
+    ],
+    "instructions": [
+      "Sit comfortably with a straight spine.",
+      "Rest the backs of your hands on your knees, palms up.",
+      "Touch the tip of the index finger to the tip of the thumb.",
+      "Keep the remaining three fingers gently extended.",
+      "Close your eyes and breathe slowly and evenly."
+    ],
+    "duration": 15,
+    "category": "meditation",
+    "image_url": "https://7pranayama.com/wp-content/uploads/gyan-mudra.jpg",
+    "source_url": "https://7pranayama.com/gyan-mudra/"
+  },
+  {
+    "id": "mudra-prana",
+    "name": "Prana Mudra",
+    "slug": "prana-mudra",
+    "description": "The mudra of life force. Activates dormant energy in the body by joining the thumb with the ring and little fingers. Known for boosting vitality and reducing fatigue.",
+    "benefits": [
+      "Boosts energy and reduces fatigue",
+      "Combats low energy and lethargy",
+      "Strengthens the immune system",
+      "Improves eyesight and reduces tiredness",
+      "Increases overall vitality and stamina"
+    ],
+    "instructions": [
+      "Sit in a comfortable meditative posture.",
+      "Bend the ring finger and little finger to touch the tip of the thumb.",
+      "Keep the index and middle fingers straight.",
+      "Rest your hands on your knees, palms facing up.",
+      "Breathe deeply and hold the position."
+    ],
+    "duration": 15,
+    "category": "energy",
+    "image_url": "https://7pranayama.com/wp-content/uploads/prana-mudra.jpg",
+    "source_url": "https://7pranayama.com/prana-mudra/"
+  },
+  {
+    "id": "mudra-apana",
+    "name": "Apana Mudra",
+    "slug": "apana-mudra",
+    "description": "The mudra of digestion and detoxification. Joins the thumb, middle and ring fingers to support the body's elimination and cleansing processes.",
+    "benefits": [
+      "Aids digestion and detoxification",
+      "Relieves constipation and bloating",
+      "Reduces stress stored in the body",
+      "Regulates the body's elimination cycle",
+      "Promotes a feeling of lightness"
+    ],
+    "instructions": [
+      "Sit comfortably with a tall spine.",
+      "Touch the tips of the middle and ring fingers to the tip of the thumb.",
+      "Keep the index and little fingers extended.",
+      "Place hands on the knees, palms up.",
+      "Maintain slow, deep breathing."
+    ],
+    "duration": 10,
+    "category": "digestion",
+    "image_url": "https://7pranayama.com/wp-content/uploads/apana-mudra.jpg",
+    "source_url": "https://7pranayama.com/apana-mudra/"
+  },
+  {
+    "id": "mudra-vayu",
+    "name": "Vayu Mudra",
+    "slug": "vayu-mudra",
+    "description": "The mudra of air. Balances the air element in the body by folding the index finger under the thumb. Used to settle restlessness and an overactive mind.",
+    "benefits": [
+      "Calms an anxious, restless mind",
+      "Reduces stress and overthinking",
+      "Relieves joint stiffness and gas",
+      "Settles nervous trembling",
+      "Brings a sense of grounded calm"
+    ],
+    "instructions": [
+      "Sit comfortably or stand relaxed.",
+      "Fold the index finger so it rests at the base of the thumb.",
+      "Press the thumb gently over the folded index finger.",
+      "Keep the other three fingers straight.",
+      "Hold and breathe calmly."
+    ],
+    "duration": 10,
+    "category": "balance",
+    "image_url": "https://7pranayama.com/wp-content/uploads/vayu-mudra.jpg",
+    "source_url": "https://7pranayama.com/vayu-mudra/"
+  },
+  {
+    "id": "mudra-shunya",
+    "name": "Shunya Mudra",
+    "slug": "shunya-mudra",
+    "description": "The mudra of emptiness. Created by folding the middle finger to the base of the thumb. Traditionally used for ear and balance issues and to quiet mental chatter.",
+    "benefits": [
+      "Quiets mental chatter and overthinking",
+      "Relieves stress-related tension",
+      "Supports inner ear and balance",
+      "Encourages a meditative, empty mind",
+      "Helps with feelings of being overwhelmed"
+    ],
+    "instructions": [
+      "Sit in a relaxed meditative posture.",
+      "Fold the middle finger toward the base of the thumb.",
+      "Press the thumb over the folded middle finger.",
+      "Keep the remaining fingers extended.",
+      "Breathe slowly and remain still."
+    ],
+    "duration": 10,
+    "category": "balance",
+    "image_url": "https://7pranayama.com/wp-content/uploads/shunya-mudra.jpg",
+    "source_url": "https://7pranayama.com/shunya-mudra/"
+  },
+  {
+    "id": "mudra-surya",
+    "name": "Surya Mudra",
+    "slug": "surya-mudra",
+    "description": "The mudra of the sun. Folds the ring finger under the thumb to kindle inner fire, warmth and energy. Useful for sluggishness and low metabolism.",
+    "benefits": [
+      "Increases energy and beats lethargy",
+      "Stimulates metabolism and warmth",
+      "Reduces heaviness and sluggishness",
+      "Sharpens alertness and drive",
+      "Counters low energy in the morning"
+    ],
+    "instructions": [
+      "Sit comfortably with a straight back.",
+      "Fold the ring finger toward the base of the thumb.",
+      "Press the thumb over the folded ring finger.",
+      "Keep the other fingers extended.",
+      "Hold while breathing steadily."
+    ],
+    "duration": 12,
+    "category": "energy",
+    "image_url": "https://7pranayama.com/wp-content/uploads/surya-mudra.jpg",
+    "source_url": "https://7pranayama.com/surya-mudra/"
+  },
+  {
+    "id": "mudra-dhyana",
+    "name": "Dhyana Mudra",
+    "slug": "dhyana-mudra",
+    "description": "The mudra of meditation. Both hands rest in the lap, right over left, with thumb tips touching. The classic gesture for deep meditation and stillness.",
+    "benefits": [
+      "Deepens meditation and inner stillness",
+      "Reduces anxiety and emotional turbulence",
+      "Promotes calm and better sleep",
+      "Balances the nervous system",
+      "Cultivates focus and equanimity"
+    ],
+    "instructions": [
+      "Sit in a comfortable cross-legged position.",
+      "Place the right hand over the left, palms up, in your lap.",
+      "Let the tips of the thumbs touch lightly.",
+      "Relax the shoulders and soften the gaze or close the eyes.",
+      "Breathe naturally and rest in stillness."
+    ],
+    "duration": 20,
+    "category": "meditation",
+    "image_url": "https://7pranayama.com/wp-content/uploads/dhyana-mudra.jpg",
+    "source_url": "https://7pranayama.com/dhyana-mudra/"
+  },
+  {
+    "id": "mudra-buddhi",
+    "name": "Buddhi Mudra",
+    "slug": "buddhi-mudra",
+    "description": "The mudra of mental clarity. Joins the thumb and little finger to enhance communication, intuition and clear thinking.",
+    "benefits": [
+      "Improves mental clarity and focus",
+      "Enhances intuition and communication",
+      "Reduces brain fog from stress",
+      "Supports learning and concentration",
+      "Balances fluid and emotional states"
+    ],
+    "instructions": [
+      "Sit comfortably with a relaxed posture.",
+      "Touch the tip of the little finger to the tip of the thumb.",
+      "Keep the remaining three fingers extended.",
+      "Rest hands on the knees, palms up.",
+      "Breathe gently and stay present."
+    ],
+    "duration": 12,
+    "category": "focus",
+    "image_url": "https://7pranayama.com/wp-content/uploads/buddhi-mudra.jpg",
+    "source_url": "https://7pranayama.com/buddhi-mudra/"
+  },
+  {
+    "id": "mudra-prithvi",
+    "name": "Prithvi Mudra",
+    "slug": "prithvi-mudra",
+    "description": "The mudra of earth. Joins the ring finger and thumb to build strength, stability and grounding. Helpful for fatigue and feeling depleted.",
+    "benefits": [
+      "Builds energy and reduces weakness",
+      "Grounds an anxious, scattered mind",
+      "Improves stamina and endurance",
+      "Boosts confidence and stability",
+      "Counters chronic fatigue and low energy"
+    ],
+    "instructions": [
+      "Sit comfortably with a straight spine.",
+      "Touch the tip of the ring finger to the tip of the thumb.",
+      "Keep the other three fingers extended.",
+      "Place hands on the knees, palms up.",
+      "Breathe slowly and feel grounded."
+    ],
+    "duration": 15,
+    "category": "energy",
+    "image_url": "https://7pranayama.com/wp-content/uploads/prithvi-mudra.jpg",
+    "source_url": "https://7pranayama.com/prithvi-mudra/"
+  },
+  {
+    "id": "mudra-varun",
+    "name": "Varun Mudra",
+    "slug": "varun-mudra",
+    "description": "The mudra of water. Joins the little finger and thumb to balance the water element, hydrate the body and soothe the mind.",
+    "benefits": [
+      "Soothes stress and emotional dryness",
+      "Hydrates skin and tissues",
+      "Calms irritability and restlessness",
+      "Balances mood and emotions",
+      "Promotes a relaxed, fluid feeling"
+    ],
+    "instructions": [
+      "Sit in a relaxed, comfortable posture.",
+      "Touch the tip of the little finger to the tip of the thumb.",
+      "Keep the remaining fingers gently straight.",
+      "Rest hands on the knees, palms up.",
+      "Breathe softly and evenly."
+    ],
+    "duration": 10,
+    "category": "balance",
+    "image_url": "https://7pranayama.com/wp-content/uploads/varun-mudra.jpg",
+    "source_url": "https://7pranayama.com/varun-mudra/"
+  },
+  {
+    "id": "mudra-apan-vayu",
+    "name": "Apan Vayu Mudra",
+    "slug": "apan-vayu-mudra",
+    "description": "Known as the heart mudra. Combines the gestures for the heart and air elements to calm the cardiovascular system and relieve stress and palpitations.",
+    "benefits": [
+      "Calms heart palpitations from anxiety",
+      "Reduces acute stress and panic",
+      "Soothes the nervous system",
+      "Supports heart and circulation",
+      "Encourages slow, steady breathing"
+    ],
+    "instructions": [
+      "Sit comfortably and relax your shoulders.",
+      "Fold the index finger to the base of the thumb.",
+      "Touch the tips of the middle and ring fingers to the thumb.",
+      "Keep the little finger extended.",
+      "Hold on both hands and breathe slowly."
+    ],
+    "duration": 12,
+    "category": "heart",
+    "image_url": "https://7pranayama.com/wp-content/uploads/apan-vayu-mudra.jpg",
+    "source_url": "https://7pranayama.com/apan-vayu-mudra/"
+  },
+  {
+    "id": "mudra-adi",
+    "name": "Adi Mudra",
+    "slug": "adi-mudra",
+    "description": "The primal mudra. The thumb is tucked into the palm and the fingers wrap over it to form a soft fist. Relaxes the nervous system and deepens the breath, often used before sleep.",
+    "benefits": [
+      "Relaxes the nervous system deeply",
+      "Prepares the body for restful sleep",
+      "Reduces stress and mental tension",
+      "Improves lung capacity and breathing",
+      "Soothes anxiety before bed"
+    ],
+    "instructions": [
+      "Sit or lie down comfortably.",
+      "Tuck the thumb into the center of the palm.",
+      "Wrap the four fingers gently over the thumb.",
+      "Rest the soft fists on the thighs or beside you.",
+      "Breathe deeply and let the body soften."
+    ],
+    "duration": 10,
+    "category": "sleep",
+    "image_url": "https://7pranayama.com/wp-content/uploads/adi-mudra.jpg",
+    "source_url": "https://7pranayama.com/adi-mudra/"
+  }
+]
