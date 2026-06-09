@@ -1,3 +1,4 @@
+import { useAudioPlayer } from "expo-audio";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -22,7 +23,19 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
   const [remaining, setRemaining] = useState(total);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const bellTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const firedRef = useRef(false);
+  const meditationPlayer = useAudioPlayer(
+    require("../../assets/audio/meditation.wav")
+  );
+  const bellPlayer = useAudioPlayer(require("../../assets/audio/timer-bell.wav"));
+
+  useEffect(() => {
+    meditationPlayer.loop = true;
+    meditationPlayer.volume = 0.35;
+    bellPlayer.loop = false;
+    bellPlayer.volume = 0.8;
+  }, [bellPlayer, meditationPlayer]);
 
   useEffect(() => {
     if (!running) return;
@@ -43,10 +56,46 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
 
   useEffect(() => {
     if (remaining === 0 && !firedRef.current) {
+      let cancelled = false;
       firedRef.current = true;
+      meditationPlayer.pause();
+      void meditationPlayer.seekTo(0);
+      void bellPlayer
+        .seekTo(0)
+        .then(() => {
+          if (cancelled) return;
+          bellPlayer.play();
+          bellTimeoutRef.current = setTimeout(() => {
+            bellPlayer.pause();
+            void bellPlayer.seekTo(0);
+          }, 2000);
+        })
+        .catch(() => {
+          // The player can be released if the screen unmounts during the seek.
+        });
       onComplete?.();
+      return () => {
+        cancelled = true;
+      };
     }
-  }, [remaining, onComplete]);
+  }, [bellPlayer, meditationPlayer, remaining, onComplete]);
+
+  useEffect(() => {
+    if (remaining === 0) return;
+    if (running) {
+      meditationPlayer.play();
+      return;
+    }
+
+    meditationPlayer.pause();
+  }, [meditationPlayer, remaining, running]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (bellTimeoutRef.current) clearTimeout(bellTimeoutRef.current);
+    };
+  }, []);
 
   const progress = 1 - remaining / total;
 
@@ -77,11 +126,16 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
         <Pressable
           onPress={() => {
             if (intervalRef.current) clearInterval(intervalRef.current);
+            if (bellTimeoutRef.current) clearTimeout(bellTimeoutRef.current);
             firedRef.current = false;
             setRunning(false);
             setRemaining(total);
+            meditationPlayer.pause();
+            bellPlayer.pause();
+            void meditationPlayer.seekTo(0);
+            void bellPlayer.seekTo(0);
           }}
-          className="rounded-2xl border border-brand bg-white px-6 py-4 active:opacity-80"
+          className="rounded-2xl border border-brand bg-surface px-6 py-4 active:opacity-80"
         >
           <Text className="text-base font-semibold text-brand">Reset</Text>
         </Pressable>

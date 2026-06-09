@@ -7,7 +7,7 @@
  * `user_preferences` is a single-row table (enforced via a fixed primary key).
  */
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const CREATE_STATEMENTS = [
   `CREATE TABLE IF NOT EXISTS mudras (
@@ -54,7 +54,8 @@ export const CREATE_STATEMENTS = [
     id INTEGER PRIMARY KEY CHECK (id = 1),
     preferred_time TEXT,
     wellness_goal TEXT,
-    onboarding_completed INTEGER NOT NULL DEFAULT 0
+    onboarding_completed INTEGER NOT NULL DEFAULT 0,
+    ads_removed INTEGER NOT NULL DEFAULT 0
   );`,
 
   // Ensure the single preferences row always exists.

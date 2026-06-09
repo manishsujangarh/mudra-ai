@@ -24,7 +24,7 @@ export default function RoutineBuilder() {
   const create = useCreateRoutine();
 
   const [time, setTime] = useState(prefs?.preferredTime ?? "07:30");
-  const [duration, setDuration] = useState(rec?.suggestedDuration ?? 10);
+  const [duration, setDuration] = useState(2);
 
   if (!rec) {
     return (
@@ -64,11 +64,11 @@ export default function RoutineBuilder() {
 
         <View className="mt-8">
           <SectionTitle>Session length</SectionTitle>
-          <View className="flex-row items-center rounded-2xl bg-white p-4">
+          <View className="flex-row items-center rounded-2xl bg-surface p-4">
             <Button
               label="−"
               variant="secondary"
-              onPress={() => setDuration((d) => clamp(d - 5, 1, 60))}
+              onPress={() => setDuration((d) => clamp(d - 1, 1, 60))}
             />
             <Text className="flex-1 text-center text-2xl font-bold text-ink">
               {duration} min
@@ -76,7 +76,7 @@ export default function RoutineBuilder() {
             <Button
               label="+"
               variant="secondary"
-              onPress={() => setDuration((d) => clamp(d + 5, 1, 60))}
+              onPress={() => setDuration((d) => clamp(d + 1, 1, 60))}
             />
           </View>
         </View>

@@ -71,7 +71,7 @@ export default function Chat() {
 
         {/* Recommendation action card */}
         {pendingRec && (
-          <View className="mx-4 mb-2 rounded-2xl border border-brand/30 bg-white p-4">
+          <View className="mx-4 mb-2 rounded-2xl border border-brand/30 bg-surface p-4">
             <Text className="text-xs uppercase tracking-wide text-muted">
               Recommended
             </Text>
@@ -114,7 +114,7 @@ export default function Chat() {
         )}
 
         {/* Composer */}
-        <View className="flex-row items-center border-t border-brand-light/15 bg-white px-3 py-2">
+        <View className="flex-row items-center border-t border-brand-light/15 bg-surface px-3 py-2">
           <TextInput
             value={text}
             onChangeText={setText}

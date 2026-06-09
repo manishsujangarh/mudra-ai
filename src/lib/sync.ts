@@ -30,13 +30,23 @@ export interface SyncResult {
  */
 export async function ensureSeeded(): Promise<SyncResult> {
   const existing = await countMudras();
+  const mudras = getSeedMudras();
+  const hash = hashMudras(mudras);
+
   if (existing > 0) {
+    const prevHash = await getMeta(META_KEYS.sourceHash);
+    if (prevHash !== hash) {
+      const { inserted, updated } = await upsertMudras(mudras);
+      await setMeta(META_KEYS.sourceHash, hash);
+      await setMeta(META_KEYS.lastSyncAt, String(Date.now()));
+      return { seeded: false, inserted, updated, source: "seed" };
+    }
+
     return { seeded: false, inserted: 0, updated: 0, source: "skipped" };
   }
 
-  const mudras = getSeedMudras();
   const { inserted, updated } = await upsertMudras(mudras);
-  await setMeta(META_KEYS.sourceHash, hashMudras(mudras));
+  await setMeta(META_KEYS.sourceHash, hash);
   await setMeta(META_KEYS.lastSyncAt, String(Date.now()));
   return { seeded: true, inserted, updated, source: "seed" };
 }

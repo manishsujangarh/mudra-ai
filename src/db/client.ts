@@ -44,8 +44,11 @@ async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
     }
   });
 
-  // Future versioned migrations slot in here, e.g.:
-  // if (current < 2) { await db.execAsync("ALTER TABLE ..."); }
+  if (current < 2) {
+    await db.execAsync(
+      "ALTER TABLE user_preferences ADD COLUMN ads_removed INTEGER NOT NULL DEFAULT 0;"
+    );
+  }
 
   if (current !== SCHEMA_VERSION) {
     await db.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION};`);

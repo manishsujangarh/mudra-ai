@@ -12,7 +12,7 @@ export function ChatBubble({ message }: { message: ChatMessage }) {
         className={`rounded-2xl px-4 py-3 ${
           isUser
             ? "rounded-br-sm bg-brand"
-            : "rounded-bl-sm bg-white border border-brand-light/20"
+            : "rounded-bl-sm bg-surface border border-brand-light/20"
         }`}
       >
         <Text
@@ -28,7 +28,7 @@ export function ChatBubble({ message }: { message: ChatMessage }) {
 export function TypingBubble() {
   return (
     <View className="mb-3 max-w-[82%] self-start">
-      <View className="rounded-2xl rounded-bl-sm border border-brand-light/20 bg-white px-4 py-3">
+      <View className="rounded-2xl rounded-bl-sm border border-brand-light/20 bg-surface px-4 py-3">
         <Text className="text-[15px] text-muted">Thinking…</Text>
       </View>
     </View>

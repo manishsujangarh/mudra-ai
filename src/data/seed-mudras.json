@@ -20,7 +20,7 @@
     ],
     "duration": 15,
     "category": "meditation",
-    "image_url": "https://7pranayama.com/wp-content/uploads/gyan-mudra.jpg",
+    "image_url": "https://7pranayama.com/wp-content/uploads/mudra/gyan-mudra.webp",
     "source_url": "https://7pranayama.com/gyan-mudra/"
   },
   {
@@ -44,7 +44,7 @@
     ],
     "duration": 15,
     "category": "energy",
-    "image_url": "https://7pranayama.com/wp-content/uploads/prana-mudra.jpg",
+    "image_url": "https://7pranayama.com/wp-content/uploads/mudra/prana-mudra.webp",
     "source_url": "https://7pranayama.com/prana-mudra/"
   },
   {
@@ -140,7 +140,7 @@
     ],
     "duration": 12,
     "category": "energy",
-    "image_url": "https://7pranayama.com/wp-content/uploads/surya-mudra.jpg",
+    "image_url": "https://7pranayama.com/wp-content/uploads/2019/09/surya-mudra.jpg",
     "source_url": "https://7pranayama.com/surya-mudra/"
   },
   {
@@ -164,7 +164,7 @@
     ],
     "duration": 20,
     "category": "meditation",
-    "image_url": "https://7pranayama.com/wp-content/uploads/dhyana-mudra.jpg",
+    "image_url": "../assets/mudras/dhyana-mudra.webp",
     "source_url": "https://7pranayama.com/dhyana-mudra/"
   },
   {

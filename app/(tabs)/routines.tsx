@@ -25,7 +25,7 @@ export default function Routines() {
         keyExtractor={(r) => r.id}
         contentContainerStyle={{ padding: 20 }}
         renderItem={({ item }) => (
-          <View className="mb-3 rounded-3xl bg-white p-5">
+          <View className="mb-3 rounded-3xl bg-surface p-5">
             <View className="flex-row items-center justify-between">
               <Text className="flex-1 text-lg font-semibold text-ink">
                 {item.mudra.name}
@@ -50,7 +50,7 @@ export default function Routines() {
                     notificationId: item.notificationId,
                   })
                 }
-                className="items-center justify-center rounded-2xl border border-brand-light/40 bg-white px-5 active:opacity-70"
+                className="items-center justify-center rounded-2xl border border-brand-light/40 bg-surface px-5 active:opacity-70"
               >
                 <Text className="font-semibold text-muted">Remove</Text>
               </Pressable>

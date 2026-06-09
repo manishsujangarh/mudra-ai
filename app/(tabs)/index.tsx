@@ -65,7 +65,7 @@ export default function Home() {
         <View className="mt-6">
           <SectionTitle>Active Routine</SectionTitle>
           {activeRoutine ? (
-            <View className="rounded-3xl bg-white p-5">
+            <View className="rounded-3xl bg-surface p-5">
               <View className="flex-row items-center justify-between">
                 <Text className="text-lg font-semibold text-ink">
                   {activeRoutine.mudra.name}
@@ -84,7 +84,7 @@ export default function Home() {
               </View>
             </View>
           ) : (
-            <View className="rounded-3xl bg-white p-5">
+            <View className="rounded-3xl bg-surface p-5">
               <Text className="text-sm text-muted">
                 No routine yet. Ask the AI Guide for a recommendation, then
                 build a daily routine.
@@ -102,17 +102,19 @@ export default function Home() {
 
         {/* Stats */}
         <View className="mt-6 flex-row gap-3">
-          <View className="flex-1 rounded-3xl bg-white p-5">
+          <View className="flex-1 rounded-3xl bg-surface p-5">
             <Text className="text-3xl font-bold text-brand">{topStreak}</Text>
             <Text className="text-xs text-muted">Best streak</Text>
           </View>
-          <View className="flex-1 rounded-3xl bg-white p-5">
+          <View className="flex-1 rounded-3xl bg-surface p-5">
             <Text className="text-3xl font-bold text-brand">
               {totalSessions}
             </Text>
             <Text className="text-xs text-muted">Sessions done</Text>
           </View>
         </View>
+
+
       </ScrollView>
     </Screen>
   );

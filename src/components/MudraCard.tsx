@@ -15,7 +15,7 @@ export function MudraCard({ mudra, onPress, compact }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="mb-3 flex-row overflow-hidden rounded-2xl bg-white shadow-sm active:opacity-80"
+      className="mb-3 flex-row overflow-hidden rounded-2xl bg-surface shadow-sm active:opacity-80"
     >
       <Image
         source={mudra.imageUrl ?? undefined}

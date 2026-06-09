@@ -99,7 +99,10 @@ export function getSeedMudras(): Mudra[] {
 /** Stable hash of a dataset, used to skip no-op syncs. */
 export function hashMudras(mudras: Mudra[]): string {
   const basis = mudras
-    .map((m) => `${m.slug}:${m.name}:${m.duration}:${m.benefits.join("|")}`)
+    .map(
+      (m) =>
+        `${m.slug}:${m.name}:${m.duration}:${m.imageUrl ?? ""}:${m.benefits.join("|")}`
+    )
     .sort()
     .join("§");
   // djb2

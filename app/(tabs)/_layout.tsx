@@ -1,4 +1,5 @@
 import { Tabs } from "expo-router";
+import { useColorScheme } from "nativewind";
 import { ColorValue } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 
@@ -66,15 +67,18 @@ function TabIcon({
 }
 
 export default function TabsLayout() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#0E7C66",
-        tabBarInactiveTintColor: "#6B7B77",
+        tabBarActiveTintColor: "#C8102E",
+        tabBarInactiveTintColor: isDark ? "#B1BCB8" : "#6B7B77",
         tabBarStyle: {
-          backgroundColor: "#fff",
-          borderTopColor: "#E5E0D8",
+          backgroundColor: isDark ? "#202322" : "#FFFFFF",
+          borderTopColor: isDark ? "#3E4542" : "#E5E0D8",
         },
       }}
     >

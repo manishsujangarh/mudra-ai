@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-sand: 245 242 241;
+    --color-surface: 255 255 255;
+    --color-ink: 17 17 17;
+    --color-muted: 107 123 119;
+  }
+
+  .dark:root {
+    --color-sand: 18 20 19;
+    --color-surface: 32 35 34;
+    --color-ink: 246 241 236;
+    --color-muted: 177 188 184;
+  }
+}

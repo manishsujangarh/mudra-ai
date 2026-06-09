@@ -66,6 +66,8 @@ export interface UserPreferences {
   preferredTime: string | null;
   wellnessGoal: WellnessGoal | null;
   onboardingCompleted: boolean;
+  /** One-time purchase to remove ads from the app. */
+  adsRemoved: boolean;
 }
 
 export type WellnessGoal =

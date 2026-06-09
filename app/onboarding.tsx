@@ -24,12 +24,31 @@ export default function Onboarding() {
   const [time, setTime] = useState("07:30");
 
   const finish = async () => {
-    await requestNotificationPermissions();
-    await update.mutateAsync({
-      wellnessGoal: goal ?? "general",
-      preferredTime: time,
-      onboardingCompleted: true,
-    });
+
+
+
+
+    // i want to request permissions before marking onboarding as complete, so that we can show the notification on time without needing to ask for permissions later
+
+    // check if permissions are already granted, if not then request them
+    // const { status } = await getNotificationPermissionsAsync();
+    // if (status !== "granted") {
+    //   const { status: newStatus } = await requestNotificationPermissions();
+    //   if (newStatus !== "granted") {
+    //     Alert.alert(
+    //       "Permissions required",
+    //       "Please enable notifications to receive your daily Mudra practice reminders.",
+    //       [{ text: "OK" }]
+    //     );
+    //     return;
+    //   }
+    // }    
+    // await requestNotificationPermissions();
+    // await update.mutateAsync({
+    //   wellnessGoal: goal ?? "general",
+    //   preferredTime: time,
+    //   onboardingCompleted: true,
+    // });
     router.replace("/(tabs)");
   };
 

@@ -37,7 +37,7 @@ export function TimePicker({ value, onChange }: Props) {
             className={`mr-2 mb-2 rounded-full px-3 py-2 ${
               `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` === p
                 ? "bg-brand"
-                : "bg-white border border-brand-light/40"
+                : "bg-surface border border-brand-light/40"
             }`}
           >
             <Text
@@ -54,7 +54,7 @@ export function TimePicker({ value, onChange }: Props) {
         ))}
       </View>
 
-      <View className="mt-3 flex-row items-center justify-center rounded-2xl bg-white p-4">
+      <View className="mt-3 flex-row items-center justify-center rounded-2xl bg-surface p-4">
         <Stepper
           label="Hour"
           onUp={() => apply(h + 1, m)}

@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
+import { useSessionCompletionInterstitial } from "@/ads/useSessionCompletionInterstitial";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { Button, LoadingScreen, SectionTitle } from "@/components/ui";
 import { useRoutine } from "@/hooks/useRoutines";
@@ -14,6 +15,7 @@ export default function Practice() {
   const { data: routine, isLoading } = useRoutine(id);
   const complete = useCompleteSession();
   const [timerDone, setTimerDone] = useState(false);
+  const sessionCompletionAd = useSessionCompletionInterstitial();
 
   if (isLoading) return <LoadingScreen />;
   if (!routine) {
@@ -29,11 +31,13 @@ export default function Practice() {
 
   const onComplete = async () => {
     const { streak } = await complete.mutateAsync(routine.id);
-    Alert.alert(
-      "Session complete 🎉",
-      `Great work! Your streak is now ${streak} day${streak === 1 ? "" : "s"}.`,
-      [{ text: "Done", onPress: () => router.back() }]
-    );
+    sessionCompletionAd.showAfterCompletion(() => {
+      Alert.alert(
+        "Session complete 🎉",
+        `Great work! Your streak is now ${streak} day${streak === 1 ? "" : "s"}.`,
+        [{ text: "Done", onPress: () => router.back() }]
+      );
+    });
   };
 
   const { mudra } = routine;

@@ -40,7 +40,7 @@ export function Button({
     "flex-row items-center justify-center rounded-2xl px-5 py-4 active:opacity-80";
   const styles = {
     primary: "bg-brand",
-    secondary: "bg-white border border-brand",
+    secondary: "bg-surface border border-brand",
     ghost: "bg-transparent",
   }[variant];
   const textStyles = {
@@ -56,7 +56,7 @@ export function Button({
       className={`${base} ${styles} ${disabled ? "opacity-50" : ""}`}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "primary" ? "#fff" : "#0E7C66"} />
+        <ActivityIndicator color={variant === "primary" ? "#fff" : "#C8102E"} />
       ) : (
         <Text className={`text-base font-semibold ${textStyles}`}>{label}</Text>
       )}
@@ -76,9 +76,8 @@ export function Chip({
   return (
     <Pressable
       onPress={onPress}
-      className={`mr-2 mb-2 rounded-full px-3 py-1.5 ${
-        active ? "bg-brand" : "bg-white border border-brand-light/40"
-      }`}
+      className={`mr-2 mb-2 rounded-full px-3 py-1.5 ${active ? "bg-brand" : "bg-surface border border-brand-light/40"
+        }`}
     >
       <Text
         className={`text-xs font-medium ${active ? "text-white" : "text-brand"}`}
@@ -92,7 +91,7 @@ export function Chip({
 export function LoadingScreen({ message }: { message?: string }) {
   return (
     <View className="flex-1 items-center justify-center bg-sand">
-      <ActivityIndicator size="large" color="#0E7C66" />
+      <ActivityIndicator size="large" color="#C8102E" />
       {message ? (
         <Text className="mt-3 text-sm text-muted">{message}</Text>
       ) : null}

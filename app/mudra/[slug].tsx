@@ -91,11 +91,12 @@ export default function MudraDetail() {
             </View>
           )}
         </View>
+        <View className="absolute bottom-0 left-0 right-0 border-t border-brand-light/15 bg-sand p-4">
+          <Button label="Add to daily routine" onPress={buildRoutine} />
+        </View>
       </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 border-t border-brand-light/15 bg-sand p-4">
-        <Button label="Add to daily routine" onPress={buildRoutine} />
-      </View>
+
     </View>
   );
 }

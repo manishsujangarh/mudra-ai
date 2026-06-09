@@ -38,7 +38,7 @@ export default function Search() {
       <View className="px-5 pt-3">
         <Text className="text-2xl font-bold text-ink">Explore Mudras</Text>
 
-        <View className="mt-3 flex-row items-center rounded-2xl bg-white px-4">
+        <View className="mt-3 flex-row items-center rounded-2xl bg-surface px-4">
           <Text className="text-base">🔍</Text>
           <TextInput
             value={searchQuery}
