@@ -44,7 +44,13 @@ async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
     }
   });
 
-  if (current < 2) {
+  // if (current < 2) {
+  //   await db.execAsync(
+  //     "ALTER TABLE user_preferences ADD COLUMN ads_removed INTEGER NOT NULL DEFAULT 0;"
+  //   );
+  // }
+
+  if (current === 1) {
     await db.execAsync(
       "ALTER TABLE user_preferences ADD COLUMN ads_removed INTEGER NOT NULL DEFAULT 0;"
     );

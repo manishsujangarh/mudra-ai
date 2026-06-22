@@ -20,7 +20,7 @@
     ],
     "duration": 15,
     "category": "meditation",
-    "image_url": "https://7pranayama.com/wp-content/uploads/mudra/gyan-mudra.webp",
+    "image_url": "../assets/mudras/gyanmudra.webp",
     "source_url": "https://7pranayama.com/gyan-mudra/"
   },
   {
@@ -44,7 +44,7 @@
     ],
     "duration": 15,
     "category": "energy",
-    "image_url": "https://7pranayama.com/wp-content/uploads/mudra/prana-mudra.webp",
+    "image_url": "../assets/mudras/pranamudra.webp",
     "source_url": "https://7pranayama.com/prana-mudra/"
   },
   {
@@ -68,7 +68,7 @@
     ],
     "duration": 10,
     "category": "digestion",
-    "image_url": "https://7pranayama.com/wp-content/uploads/apana-mudra.jpg",
+    "image_url": "../assets/mudras/apana.webp",
     "source_url": "https://7pranayama.com/apana-mudra/"
   },
   {
@@ -92,7 +92,7 @@
     ],
     "duration": 10,
     "category": "balance",
-    "image_url": "https://7pranayama.com/wp-content/uploads/vayu-mudra.jpg",
+    "image_url": "../assets/mudras/vayumudra.webp",
     "source_url": "https://7pranayama.com/vayu-mudra/"
   },
   {
@@ -116,7 +116,7 @@
     ],
     "duration": 10,
     "category": "balance",
-    "image_url": "https://7pranayama.com/wp-content/uploads/shunya-mudra.jpg",
+    "image_url": "../assets/mudras/shunyamudra.webp",
     "source_url": "https://7pranayama.com/shunya-mudra/"
   },
   {
@@ -140,7 +140,7 @@
     ],
     "duration": 12,
     "category": "energy",
-    "image_url": "https://7pranayama.com/wp-content/uploads/2019/09/surya-mudra.jpg",
+    "image_url": "../assets/mudras/suryamudra.webp",
     "source_url": "https://7pranayama.com/surya-mudra/"
   },
   {
@@ -164,7 +164,7 @@
     ],
     "duration": 20,
     "category": "meditation",
-    "image_url": "../assets/mudras/dhyana-mudra.webp",
+    "image_url": "../assets/mudras/dhyanmudra.webp",
     "source_url": "https://7pranayama.com/dhyana-mudra/"
   },
   {
@@ -188,7 +188,7 @@
     ],
     "duration": 12,
     "category": "focus",
-    "image_url": "https://7pranayama.com/wp-content/uploads/buddhi-mudra.jpg",
+    "image_url": "../assets/mudras/budhamudra.webp",
     "source_url": "https://7pranayama.com/buddhi-mudra/"
   },
   {
@@ -212,7 +212,7 @@
     ],
     "duration": 15,
     "category": "energy",
-    "image_url": "https://7pranayama.com/wp-content/uploads/prithvi-mudra.jpg",
+    "image_url": "../assets/mudras/prithvimudra.webp",
     "source_url": "https://7pranayama.com/prithvi-mudra/"
   },
   {
@@ -236,7 +236,7 @@
     ],
     "duration": 10,
     "category": "balance",
-    "image_url": "https://7pranayama.com/wp-content/uploads/varun-mudra.jpg",
+    "image_url": "../assets/mudras/varunmudra.webp",
     "source_url": "https://7pranayama.com/varun-mudra/"
   },
   {
@@ -260,7 +260,7 @@
     ],
     "duration": 12,
     "category": "heart",
-    "image_url": "https://7pranayama.com/wp-content/uploads/apan-vayu-mudra.jpg",
+    "image_url": "../assets/mudras/apana-vayu.webp",
     "source_url": "https://7pranayama.com/apan-vayu-mudra/"
   },
   {
@@ -284,7 +284,7 @@
     ],
     "duration": 10,
     "category": "sleep",
-    "image_url": "https://7pranayama.com/wp-content/uploads/adi-mudra.jpg",
+    "image_url": "../assets/mudras/adimudra.webp",
     "source_url": "https://7pranayama.com/adi-mudra/"
   }
 ]

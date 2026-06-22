@@ -5,6 +5,7 @@ import { ScrollView, Text, View } from "react-native";
 import { Button, LoadingScreen, SectionTitle } from "@/components/ui";
 import { useMudraBySlug } from "@/hooks/useMudras";
 import { useAppStore } from "@/store/useAppStore";
+import { getMudraImage } from "@/utils/images";
 
 export default function MudraDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -33,13 +34,16 @@ export default function MudraDetail() {
     router.push("/routine-builder");
   };
 
+  const imageSource = getMudraImage(mudra.imageUrl);
+
+
   return (
     <View className="flex-1 bg-sand">
       <Stack.Screen options={{ title: mudra.name }} />
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         <Image
-          source={mudra.imageUrl ?? undefined}
-          contentFit="cover"
+          source={imageSource ?? undefined}
+          contentFit="contain"
           style={{ height: 240, width: "100%" }}
           className="bg-brand-light/30"
         />

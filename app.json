@@ -70,6 +70,11 @@
       "eas": {
         "projectId": "67808059-d729-41c6-968d-0f0c26532e31"
       }
+    },
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E85C33"
     }
   }
 }

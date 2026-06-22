@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 
 import { Mudra } from "@/types";
+import { getMudraImage } from "@/utils/images";
 
 interface Props {
   mudra: Mudra;
@@ -12,13 +13,16 @@ interface Props {
 const BLUR_HASH = "L6Pj0^jE.AyE_3t7t7R**0o#DgR4";
 
 export function MudraCard({ mudra, onPress, compact }: Props) {
+
+  const imageSource = getMudraImage(mudra.imageUrl);
+
   return (
     <Pressable
       onPress={onPress}
       className="mb-3 flex-row overflow-hidden rounded-2xl bg-surface shadow-sm active:opacity-80"
     >
       <Image
-        source={mudra.imageUrl ?? undefined}
+        source={imageSource ?? undefined}
         placeholder={BLUR_HASH}
         contentFit="cover"
         transition={200}

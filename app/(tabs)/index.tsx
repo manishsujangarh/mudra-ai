@@ -9,6 +9,7 @@ import { useActiveRoutines } from "@/hooks/useRoutines";
 import { useStats } from "@/hooks/useSessions";
 import { useTodaysMudra } from "@/hooks/useTodaysMudra";
 import { formatTime } from "@/lib/utils";
+import { getMudraImage } from "@/utils/images";
 
 export default function Home() {
   const router = useRouter();
@@ -18,6 +19,9 @@ export default function Home() {
 
   const activeRoutine = routines[0];
   const topStreak = routines.reduce((max, r) => Math.max(max, r.streak), 0);
+
+  const imageSource = getMudraImage(todaysMudra?.imageUrl);
+
 
   return (
     <Screen>
@@ -39,8 +43,8 @@ export default function Home() {
               className="overflow-hidden rounded-3xl bg-brand active:opacity-90"
             >
               <Image
-                source={todaysMudra.imageUrl ?? undefined}
-                contentFit="cover"
+                source={imageSource ?? undefined}
+                contentFit="contain"
                 style={{ height: 160, width: "100%" }}
                 className="bg-brand-light/30"
               />

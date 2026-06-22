@@ -8,6 +8,7 @@ import { CountdownTimer } from "@/components/CountdownTimer";
 import { Button, LoadingScreen, SectionTitle } from "@/components/ui";
 import { useRoutine } from "@/hooks/useRoutines";
 import { useCompleteSession } from "@/hooks/useSessions";
+import { getMudraImage } from "@/utils/images";
 
 export default function Practice() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -41,6 +42,7 @@ export default function Practice() {
   };
 
   const { mudra } = routine;
+  const imageSource = getMudraImage(mudra.imageUrl);
 
   return (
     <View className="flex-1 bg-sand">
@@ -54,7 +56,7 @@ export default function Practice() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
         <View className="items-center">
           <Image
-            source={mudra.imageUrl ?? undefined}
+            source={imageSource ?? undefined}
             contentFit="cover"
             style={{ height: 140, width: 140, borderRadius: 70 }}
             className="bg-brand-light/30"
