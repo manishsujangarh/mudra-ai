@@ -1,20 +1,38 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Platform } from "react-native";
+import { Platform, DeviceEventEmitter } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { configuredInterstitialUnitId } from "@/ads/units";
-import { usePreferences } from "@/hooks/usePreferences";
 
 type AdsModule = typeof import("react-native-google-mobile-ads");
 type InterstitialAd = ReturnType<AdsModule["InterstitialAd"]["createForAdRequest"]>;
 
 export function useSessionCompletionInterstitial() {
-  const { data: preferences, isLoading } = usePreferences();
   const adRef = useRef<InterstitialAd | null>(null);
   const adsRef = useRef<AdsModule | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isPremium, setIsPremium] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (Platform.OS === "web" || isLoading || preferences?.adsRemoved) return;
+    const checkPremiumStatus = async () => {
+      try {
+        
+        const status = await AsyncStorage.getItem("mudra_ai_is_premium");
+        setIsPremium(status === "true");
+      } catch {
+        setIsPremium(false);
+      }
+    };
+
+    checkPremiumStatus();
+    const subscription = DeviceEventEmitter.addListener("PremiumUpdated", checkPremiumStatus);
+
+    return () => subscription.remove();
+  }, []);
+
+  // 2. Ad Loading Logic
+  useEffect(() => {
+    if (Platform.OS === "web" || isPremium === null || isPremium === true) return;
 
     try {
       const ads = require("react-native-google-mobile-ads") as AdsModule;
@@ -47,11 +65,11 @@ export function useSessionCompletionInterstitial() {
       adRef.current = null;
       adsRef.current = null;
     }
-  }, [preferences?.adsRemoved]);
+  }, [isPremium]);
 
   const showAfterCompletion = useCallback(
     (onFinished: () => void) => {
-      if (preferences?.adsRemoved) {
+      if (isPremium === true) {
         onFinished();
         return false;
       }
@@ -59,7 +77,7 @@ export function useSessionCompletionInterstitial() {
       const ad = adRef.current;
       const ads = adsRef.current;
 
-      if (isLoading || preferences?.adsRemoved) {
+      if (isPremium === null) {
         onFinished();
         return false;
       }
@@ -88,7 +106,7 @@ export function useSessionCompletionInterstitial() {
         return false;
       }
     },
-    [isLoaded, preferences?.adsRemoved]
+    [isLoaded, isPremium]
   );
 
   return { isLoaded, showAfterCompletion };

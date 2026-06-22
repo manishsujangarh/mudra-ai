@@ -5,7 +5,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -22,6 +22,7 @@ export default function RootLayout() {
   const isDark = colorScheme === "dark";
   const headerBackground = isDark ? "#121413" : "#F5F2F1";
   const headerTint = isDark ? "#F6F1EC" : "#111111";
+  const insects = useSafeAreaInsets();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -70,7 +71,11 @@ export default function RootLayout() {
               />
             </Stack>
           )}
-          {ready ? <AdBanner /> : null}
+          {ready ? (
+            <View style={{ marginBottom: insects.bottom }}>
+              <AdBanner />
+            </View>
+          ) : null}
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

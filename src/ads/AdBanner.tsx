@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Platform, View } from "react-native";
+import { DeviceEventEmitter, Platform, View } from "react-native";
 
 import { configuredBannerUnitId } from "@/ads/units";
-import { usePreferences } from "@/hooks/usePreferences";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AdsModule = typeof import("react-native-google-mobile-ads");
 
 export function AdBanner() {
-  const { data: preferences, isLoading } = usePreferences();
+  const [isPremium, setIsPremium] = useState<boolean | null>(null);
   const [ads, setAds] = useState<AdsModule | null>(null);
   const [hidden, setHidden] = useState(false);
 
@@ -21,7 +21,23 @@ export function AdBanner() {
     }
   }, []);
 
-  if (preferences?.adsRemoved || isLoading || !ads || hidden) return null;
+  useEffect(() => {
+    const checkPremiumStatus = async () => {
+      try {
+        const status = await AsyncStorage.getItem("mudra_ai_is_premium");
+        setIsPremium(status === "true");
+      } catch {
+        setIsPremium(false);
+      }
+    };
+
+    checkPremiumStatus();
+    const subscription = DeviceEventEmitter.addListener("PremiumUpdated", checkPremiumStatus);
+
+    return () => subscription.remove();
+  }, []);
+
+  if (isPremium === true || isPremium === null || !ads || hidden) return null;
 
   const unitId = configuredBannerUnitId ?? ads.TestIds.BANNER;
 

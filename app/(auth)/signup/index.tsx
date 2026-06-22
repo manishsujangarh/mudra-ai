@@ -6,10 +6,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { apiFetch } from '../../../src/lib/api';
 import { Button } from "@/components/ui"; // 👉 Custom Button Use Kiya Hai
+import WebView from 'react-native-webview';
 
 export default function SignupScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+
+    const [legalUrl, setLegalUrl] = useState('');
+    const [legalTitle, setLegalTitle] = useState('');
+    const [isLegalLoading, setIsLegalLoading] = useState(true);
 
     const COUNTRIES = [
         { name: "Afghanistan", code: "AF", dialCode: "+93", flag: "🇦🇫" },
@@ -117,6 +122,24 @@ export default function SignupScreen() {
         } catch (error) { showToast({ message: 'Error', description: 'Network error.', type: 'danger' }); } finally { setLoading(false); }
     };
 
+    const hideHeaderScript = `
+      setTimeout(function() {
+          let headers = document.getElementsByTagName('header');
+          for(let i=0; i<headers.length; i++) { headers[i].style.display = 'none'; }
+          let footers = document.getElementsByTagName('footer');
+          for(let i=0; i<footers.length; i++) { footers[i].style.display = 'none'; }
+      }, 100);
+      true;
+  `;
+    const openLegalWebView = (url: string, title: string) => {
+        setLegalUrl(url);
+        setLegalTitle(title);
+        setIsLegalLoading(true);
+        setLegalModalVisible(true);
+    };
+
+
+
     return (
         <SafeAreaView style={{ flex: 1 }} className="bg-sand" edges={['bottom', 'top']}>
             <Animated.View className={`absolute w-[90%] self-center p-4 rounded-xl border z-50 shadow-lg ${getToastColor()}`} style={{ transform: [{ translateY: toastAnimY }] }}>
@@ -166,7 +189,7 @@ export default function SignupScreen() {
                         </TouchableOpacity>
                         <View className="flex-row flex-wrap flex-1">
                             <Text className="text-muted text-sm">{t('i_agree_to_7pranayama')} </Text>
-                            <TouchableOpacity onPress={() => setLegalModalVisible(true)}><Text className="text-brand text-sm font-medium underline">{t('terms_conditions')}</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => openLegalWebView("https://7pranayama.com/terms", t('terms_conditions'))}><Text className="text-brand text-sm font-medium underline">{t('terms_conditions')}</Text></TouchableOpacity>
                         </View>
                     </View>
 
@@ -179,14 +202,33 @@ export default function SignupScreen() {
                 </Animated.View>
             </ScrollView>
 
-            {/* Modals remain the same but ensure bg is dynamic */}
-            <Modal visible={isCountryModalVisible} animationType="slide" transparent={true}>
-                <View className="flex-1 bg-black/50 justify-end">
-                    <View className="bg-sand rounded-t-3xl p-5 h-[80%]">
-                        {/* Country List UI goes here using theme classes */}
+            <Modal visible={legalModalVisible} animationType="slide" onRequestClose={() => setLegalModalVisible(false)}>
+                <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
+                    <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+                        <TouchableOpacity onPress={() => setLegalModalVisible(false)} className="p-1">
+                            <MaterialIcons name="close" size={28} color="#f97316" />
+                        </TouchableOpacity>
+                        <Text className="text-lg font-bold text-black dark:text-white">{legalTitle}</Text>
+                        <View className="w-7" />
                     </View>
-                </View>
+
+                    <View className="flex-1 bg-white dark:bg-zinc-950">
+                        {isLegalLoading && (
+                            <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-zinc-950">
+                                <ActivityIndicator size="large" color="#f97316" />
+                            </View>
+                        )}
+                        <WebView
+                            source={{ uri: legalUrl }}
+                            onLoadEnd={() => setIsLegalLoading(false)}
+                            injectedJavaScript={hideHeaderScript}
+                            javaScriptEnabled={true}
+                            showsVerticalScrollIndicator={false}
+                            className="flex-1"
+                        />
+                    </View>
+                </SafeAreaView>
             </Modal>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
