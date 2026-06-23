@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons, FontAwesome as Icon } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { apiFetch } from '@/lib/api';
 
 import {
     fetchPremiumCatalogFromStore,
@@ -89,7 +90,7 @@ export default function PremiumScreen() {
                 Alert.alert(
                     "Login Required",
                     "Please sign in to purchase the ad-free experience.",
-                    [{ text: "Go to Login", onPress: () => router.push('/login') }, { text: "Cancel", style: "cancel" }]
+                    [{ text: "Go to Login", onPress: () => router.push('/(auth)/login') }, { text: "Cancel", style: "cancel" }]
                 );
                 return;
             }
@@ -126,15 +127,32 @@ export default function PremiumScreen() {
                 throw new Error('Purchase failed or receipt missing.');
             }
 
-            await savePremiumFlag(true);
-            Alert.alert('Congratulations! 🎉', 'Ads have been successfully removed forever!', [
-                { text: 'Awesome', onPress: () => router.back() }
-            ]);
-            DeviceEventEmitter.emit('PremiumUpdated');
+            // ==========================================
+            // 🌟 NAYA CODE: Backend ko verification request bhejein
+            // ==========================================
+            const verification = await apiFetch('/mudra/verify-purchase', {
+                method: 'POST',
+                body: JSON.stringify({
+                    receipt_token: purchaseResult.receiptToken,
+                    product_id: product?.productId || ONE_TIME_SKU,
+                    platform: Platform.OS
+                })
+            });
+
+            if (verification && verification.success) {
+                // Backend validation successful hone par hi premium flag save karein
+                await savePremiumFlag(true);
+                Alert.alert('Congratulations! 🎉', 'Ads have been successfully removed forever!', [
+                    { text: 'Awesome', onPress: () => router.back() }
+                ]);
+                DeviceEventEmitter.emit('PremiumUpdated');
+            } else {
+                throw new Error(verification.message || 'Receipt validation failed on server.');
+            }
 
         } catch (err: any) {
             console.warn(err);
-            Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
+            Alert.alert('Purchase Failed', err?.message || 'Something went wrong. Please try again.');
         } finally {
             setIsPurchasing(false);
         }
@@ -144,7 +162,9 @@ export default function PremiumScreen() {
         try {
             const isLogged = await AsyncStorage.getItem('isLogged');
             if (isLogged !== 'true') {
-                Alert.alert("Login Required", "Please sign in to restore your purchase.");
+                Alert.alert("Login Required", "Please sign in to restore your purchase.", [
+                    { text: "Go to Login", onPress: () => router.push('/(auth)/login') }, { text: "Cancel", style: "cancel" }
+                ]);
                 return;
             }
 

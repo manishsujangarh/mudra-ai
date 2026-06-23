@@ -44,18 +44,34 @@ export default function Settings() {
                 try {
                     // Auth Check
                     const loggedStatus = await AsyncStorage.getItem("isLogged");
+
                     if (loggedStatus === "true") {
                         setIsLoggedIn(true);
                         const name = await SecureStore.getItemAsync("user_name");
                         if (name) setUserName(name);
+
+                        try {
+                            const response = await apiFetch('/mudra/user', { method: 'GET' });
+                            if (response && response.success && response.userdata) {
+                                const isPremiumServer = response.userdata.mudra_is_premium;
+                                await AsyncStorage.setItem("mudra_ai_is_premium", isPremiumServer ? "true" : "false");
+                                setIsPremium(isPremiumServer);
+                            } else {
+                                const premiumStatus = await AsyncStorage.getItem("mudra_ai_is_premium");
+                                setIsPremium(premiumStatus === "true");
+                            }
+                        } catch (apiErr) {
+                            console.log("Failed to fetch user profile from server, using local fallback");
+                            const premiumStatus = await AsyncStorage.getItem("mudra_ai_is_premium");
+                            setIsPremium(premiumStatus === "true");
+                        }
+
                     } else {
                         setIsLoggedIn(false);
                         setUserName("");
+                        const premiumStatus = await AsyncStorage.getItem("mudra_ai_is_premium");
+                        setIsPremium(premiumStatus === "true");
                     }
-
-                    // Premium Check 
-                    const premiumStatus = await AsyncStorage.getItem("mudra_ai_is_premium");
-                    setIsPremium(premiumStatus === "true");
 
                     // Keep Awake Check
                     const keepAwakeStatus = await AsyncStorage.getItem("keep_screen_awake");
