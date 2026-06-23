@@ -23,6 +23,7 @@
     "expo-file-system": "~56.0.7",
     "expo-iap": "^4.3.1",
     "expo-image": "~56.0.9",
+    "expo-keep-awake": "~56.0.3",
     "expo-linking": "^56.0.13",
     "expo-network": "~56.0.4",
     "expo-notifications": "^56.0.15",

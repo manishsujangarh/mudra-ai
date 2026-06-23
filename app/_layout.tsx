@@ -1,25 +1,44 @@
 import "../global.css";
-
+import { Ionicons } from "@expo/vector-icons";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
-import { Pressable, Text, View } from "react-native";
+import { DeviceEventEmitter, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
-import { AdBanner } from "@/ads/AdBanner";
 import { MobileAdsInitializer } from "@/ads/MobileAdsInitializer";
-import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { LoadingScreen } from "@/components/ui";
 import { useBootstrap } from "@/hooks/useBootstrap";
 import { queryClient } from "@/lib/queryClient";
 import { useEffect } from "react";
 import { queryPremiumOwnershipStatus } from "@/utils/iap";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 
 export default function RootLayout() {
+  useEffect(() => {
+    const initKeepAwake = async () => {
+      try {
+        const keepAwakeState = await AsyncStorage.getItem("keep_screen_awake");
+
+        if (keepAwakeState === "false") {
+          deactivateKeepAwake();
+        } else {
+          await activateKeepAwakeAsync();
+        }
+      } catch (e) {
+        console.error("Keep awake error:", e);
+      }
+    };
+
+    initKeepAwake();
+    const subscription = DeviceEventEmitter.addListener("KeepAwakeUpdated", initKeepAwake);
+    return () => subscription.remove();
+  }, []);
+
   const { ready, error } = useBootstrap();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -118,10 +137,12 @@ function SettingsHeaderRight() {
 
   return (
     <View className="flex-row items-center">
-      <Pressable onPress={() => router.push("/settings" as any)} className="p-2 mr-2">
-        <Text className="text-base text-muted">⚙️</Text>
+      <Pressable
+        onPress={() => router.push("/settings" as any)}
+        className="p-2 mr-2"
+      >
+        <Ionicons name="settings-outline" size={24} color="#777777" />
       </Pressable>
-      <ThemeSwitch />
     </View>
   );
 }
