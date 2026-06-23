@@ -10,6 +10,7 @@ import { useStats } from "@/hooks/useSessions";
 import { useTodaysMudra } from "@/hooks/useTodaysMudra";
 import { formatTime } from "@/lib/utils";
 import { getMudraImage } from "@/utils/images";
+import { AdBanner } from "@/ads/AdBanner";
 
 export default function Home() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function Home() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
         <View className="mt-2 flex-row items-center justify-between">
           <View>
             <Text className="text-sm text-muted">Namaste 🙏</Text>
@@ -117,8 +118,9 @@ export default function Home() {
             <Text className="text-xs text-muted">Sessions done</Text>
           </View>
         </View>
-
-
+        <View className="mt-6">
+          <AdBanner />
+        </View>
       </ScrollView>
     </Screen>
   );

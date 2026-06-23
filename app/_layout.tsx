@@ -87,11 +87,6 @@ export default function RootLayout() {
               />
             </Stack>
           )}
-          {ready ? (
-            <View style={{ marginBottom: insects.bottom }}>
-              <AdBanner />
-            </View>
-          ) : null}
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

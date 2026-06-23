@@ -5,6 +5,7 @@ import { StreakBadge } from "@/components/StreakBadge";
 import { Button, EmptyState, Screen } from "@/components/ui";
 import { useActiveRoutines, useDeleteRoutine } from "@/hooks/useRoutines";
 import { formatTime } from "@/lib/utils";
+import { AdBanner } from "@/ads/AdBanner";
 
 export default function Routines() {
   const router = useRouter();
@@ -66,6 +67,9 @@ export default function Routines() {
           )
         }
       />
+
+      <AdBanner />
+
     </Screen>
   );
 }

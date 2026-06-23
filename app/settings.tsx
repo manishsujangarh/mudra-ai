@@ -1,4 +1,4 @@
-import { View, Text, Alert, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, Alert, ScrollView, TouchableOpacity, ActivityIndicator, Modal } from "react-native";
 import { Screen } from "@/components/ui";
 import { Button, SectionTitle } from "@/components/ui";
 import { useRouter, useFocusEffect } from "expo-router";
@@ -7,6 +7,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import * as Updates from "expo-updates";
 import { apiFetch } from "@/lib/api";
+import { AdBanner } from "@/ads/AdBanner";
+import * as SQLite from "expo-sqlite";
+
+// NEW IMPORTS FOR LEGAL WEBVIEW
+import { WebView } from "react-native-webview";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Settings() {
     const router = useRouter();
@@ -17,6 +24,12 @@ export default function Settings() {
     const [isPremium, setIsPremium] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // --- LEGAL WEBVIEW STATE ---
+    const [legalModalVisible, setLegalModalVisible] = useState(false);
+    const [legalUrl, setLegalUrl] = useState("");
+    const [legalTitle, setLegalTitle] = useState("");
+    const [isLegalLoading, setIsLegalLoading] = useState(true);
 
     // Check Auth & Premium Status
     useFocusEffect(
@@ -48,6 +61,24 @@ export default function Settings() {
             checkAppStatus();
         }, [])
     );
+
+    // --- LEGAL WEBVIEW LOGIC ---
+    const openLegalWebView = (url: string, title: string) => {
+        setLegalUrl(url);
+        setLegalTitle(title);
+        setIsLegalLoading(true);
+        setLegalModalVisible(true);
+    };
+
+    const hideHeaderScript = `
+        setTimeout(function() {
+            let headers = document.getElementsByTagName('header');
+            for(let i=0; i<headers.length; i++) { headers[i].style.display = 'none'; }
+            let footers = document.getElementsByTagName('footer');
+            for(let i=0; i<footers.length; i++) { footers[i].style.display = 'none'; }
+        }, 100);
+        true;
+    `;
 
     // --- REMOVE ADS BUTTON CLICK HANDLER ---
     const handleRemoveAdsPress = () => {
@@ -136,14 +167,16 @@ export default function Settings() {
                     onPress: async () => {
                         setIsDeleting(true);
                         try {
-                            // 1. Agar logged in hai, toh backend API call karo account delete ke liye
                             if (isLoggedIn) {
                                 try { await apiFetch('/delete-account', { method: 'POST' }); } catch (e) { console.log("Delete API fail", e) }
                             }
 
-                            // 2. YAHAN LOCAL DB (SQLite) CLEAR KARNE KA CODE DAALEIN (Agar use kar rahe hain)
-                            // Example: await clearAllLocalDatabaseData(db);
-
+                            try {
+                                await SQLite.deleteDatabaseAsync("mudra-ai.db");
+                                console.log("Local Database deleted successfully.");
+                            } catch (dbError) {
+                                console.log("Error deleting local database:", dbError);
+                            }
                             // 3. AsyncStorage aur SecureStore puri tarah se saaf karo
                             await AsyncStorage.clear();
                             await SecureStore.deleteItemAsync("auth_token");
@@ -162,7 +195,6 @@ export default function Settings() {
                                     {
                                         text: "OK",
                                         onPress: async () => {
-                                            // Pura data delete hone ke baad app ko fresh restart karo
                                             try {
                                                 await Updates.reloadAsync();
                                             } catch (error) {
@@ -187,113 +219,172 @@ export default function Settings() {
 
     return (
         <Screen>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="p-5 pb-10">
+            <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
 
-                <SectionTitle>Settings</SectionTitle>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="p-5 pb-10">
 
-                {/* --- 1. REMOVE ADS CARD --- */}
-                <View className="mt-4 rounded-3xl bg-surface p-5">
-                    <View className="flex-row items-center justify-between">
-                        <Text className="text-lg font-semibold text-ink">Remove Ads</Text>
-                        {isPremium ? (
-                            <Text className="text-sm font-semibold text-brand">Purchased</Text>
-                        ) : null}
-                    </View>
+                    <SectionTitle>Settings</SectionTitle>
 
-                    <Text className="mt-2 text-sm text-muted">
-                        {isPremium
-                            ? "You have successfully removed all banner and interstitial ads from the app."
-                            : "Remove banner and interstitial ads forever with a simple one-time purchase."}
-                    </Text>
-
-                    {!isPremium && (
-                        <View className="mt-4">
-                            <Button
-                                label="Remove Ads"
-                                variant="secondary"
-                                onPress={handleRemoveAdsPress}
-                            />
+                    {/* --- 1. REMOVE ADS CARD --- */}
+                    <View className="mt-4 rounded-3xl bg-surface p-5">
+                        <View className="flex-row items-center justify-between">
+                            <Text className="text-lg font-semibold text-ink">Remove Ads</Text>
+                            {isPremium ? (
+                                <Text className="text-sm font-semibold text-brand">Purchased</Text>
+                            ) : null}
                         </View>
-                    )}
-                </View>
 
-                {/* --- 2. ACCOUNT / AUTH CARD --- */}
-                <View className="mt-4 rounded-3xl bg-surface p-5">
-                    {isLoggedIn ? (
-                        <>
-                            <View className="flex-row items-center justify-between">
-                                <Text className="text-lg font-semibold text-ink">Account</Text>
-                                <Text className="text-sm font-semibold text-brand">Logged In</Text>
-                            </View>
+                        <Text className="mt-2 text-sm text-muted">
+                            {isPremium
+                                ? "You have successfully removed all banner and interstitial ads from the app."
+                                : "Remove banner and interstitial ads forever with a simple one-time purchase."}
+                        </Text>
 
-                            <Text className="mt-2 text-sm text-muted">
-                                Namaste, {userName || "Yogi"}. Your progress and routines are securely backed up to the cloud.
-                            </Text>
-
+                        {!isPremium && (
                             <View className="mt-4">
                                 <Button
-                                    label={isLoggingOut ? "Logging out..." : "Log Out"}
+                                    label="Remove Ads"
                                     variant="secondary"
-                                    onPress={handleLogout}
-                                    disabled={isLoggingOut}
+                                    onPress={handleRemoveAdsPress}
                                 />
                             </View>
-                        </>
-                    ) : (
-                        <>
-                            <View className="flex-row items-center justify-between">
-                                <Text className="text-lg font-semibold text-ink">Account</Text>
-                                <Text className="text-sm font-semibold text-muted">Guest</Text>
-                            </View>
-                            <Text className="mt-2 text-sm text-muted">
-                                Create an account to save your custom routines, track your progress, and securely back up your data.
-                            </Text>
-
-                            <View className="mt-4 flex-row justify-between gap-3">
-                                <View className="flex-1">
-                                    <Button
-                                        label="Log In"
-                                        variant="secondary"
-                                        onPress={() => router.push("/(auth)/login")}
-                                    />
-                                </View>
-                                <View className="flex-1">
-                                    <Button
-                                        label="Sign Up"
-                                        variant="secondary"
-                                        onPress={() => router.push("/(auth)/signup")}
-                                    />
-                                </View>
-                            </View>
-                        </>
-                    )}
-                </View>
-
-                {/* --- 3. DANGER ZONE (ALWAYS VISIBLE) --- */}
-                <View className="mt-4 rounded-3xl bg-surface p-5 border border-red-500/30">
-                    <Text className="text-lg font-semibold text-red-500">Danger Zone</Text>
-                    <Text className="mt-2 text-sm text-muted">
-                        Permanently delete your account and wipe all associated data. This action cannot be recovered.
-                    </Text>
-
-                    <View className="mt-4">
-                        <TouchableOpacity
-                            onPress={handleDeleteAccount}
-                            disabled={isDeleting}
-                            className={`w-full h-14 rounded-full items-center justify-center border border-red-500/50 ${isDeleting ? 'opacity-50' : ''}`}
-                        >
-                            {isDeleting ? (
-                                <ActivityIndicator color="#ef4444" size="small" />
-                            ) : (
-                                <Text className="font-semibold text-red-500">
-                                    Delete Account
-                                </Text>
-                            )}
-                        </TouchableOpacity>
+                        )}
                     </View>
-                </View>
 
-            </ScrollView>
+                    {/* --- 2. ACCOUNT / AUTH CARD --- */}
+                    <View className="mt-4 rounded-3xl bg-surface p-5">
+                        {isLoggedIn ? (
+                            <>
+                                <View className="flex-row items-center justify-between">
+                                    <Text className="text-lg font-semibold text-ink">Account</Text>
+                                    <Text className="text-sm font-semibold text-brand">Logged In</Text>
+                                </View>
+
+                                <Text className="mt-2 text-sm text-muted">
+                                    Namaste, {userName || "Yogi"}. Your progress and routines are securely backed up to the cloud.
+                                </Text>
+
+                                <View className="mt-4">
+                                    <Button
+                                        label={isLoggingOut ? "Logging out..." : "Log Out"}
+                                        variant="secondary"
+                                        onPress={handleLogout}
+                                        disabled={isLoggingOut}
+                                    />
+                                </View>
+                            </>
+                        ) : (
+                            <>
+                                <View className="flex-row items-center justify-between">
+                                    <Text className="text-lg font-semibold text-ink">Account</Text>
+                                    <Text className="text-sm font-semibold text-muted">Guest</Text>
+                                </View>
+                                <Text className="mt-2 text-sm text-muted">
+                                    Create an account to save your custom routines, track your progress, and securely back up your data.
+                                </Text>
+
+                                <View className="mt-4 flex-row justify-between gap-3">
+                                    <View className="flex-1">
+                                        <Button
+                                            label="Log In"
+                                            variant="secondary"
+                                            onPress={() => router.push("/(auth)/login")}
+                                        />
+                                    </View>
+                                    <View className="flex-1">
+                                        <Button
+                                            label="Sign Up"
+                                            variant="secondary"
+                                            onPress={() => router.push("/(auth)/signup")}
+                                        />
+                                    </View>
+                                </View>
+                            </>
+                        )}
+                    </View>
+
+                    {/* --- 3. DANGER ZONE (ALWAYS VISIBLE) --- */}
+                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-red-500/30">
+                        <Text className="text-lg font-semibold text-red-500">Danger Zone</Text>
+                        <Text className="mt-2 text-sm text-muted">
+                            Permanently delete your account and wipe all associated data. This action cannot be recovered.
+                        </Text>
+
+                        <View className="mt-4">
+                            <TouchableOpacity
+                                onPress={handleDeleteAccount}
+                                disabled={isDeleting}
+                                className={`w-full h-14 rounded-full items-center justify-center border border-red-500/50 ${isDeleting ? 'opacity-50' : ''}`}
+                            >
+                                {isDeleting ? (
+                                    <ActivityIndicator color="#ef4444" size="small" />
+                                ) : (
+                                    <Text className="font-semibold text-red-500">
+                                        Delete Account
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {/* --- 4. LEGAL SECTION --- */}
+                    <View className="mt-4 rounded-3xl bg-surface p-5">
+                        <Text className="text-lg font-semibold text-ink">Legal</Text>
+                        <Text className="mt-2 text-sm text-muted">
+                            Read our terms of service and privacy policy to understand how we protect your data.
+                        </Text>
+
+                        <View className="mt-4 flex-row justify-between gap-3">
+                            <View className="flex-1">
+                                <Button
+                                    label="Terms"
+                                    variant="secondary"
+                                    onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")}
+                                />
+                            </View>
+                            <View className="flex-1">
+                                <Button
+                                    label="Privacy Policy"
+                                    variant="secondary"
+                                    onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")}
+                                />
+                            </View>
+                        </View>
+                    </View>
+
+                </ScrollView>
+
+                {/* --- LEGAL WEBVIEW MODAL --- */}
+                <Modal visible={legalModalVisible} animationType="slide" onRequestClose={() => setLegalModalVisible(false)}>
+                    <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
+                        <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+                            <TouchableOpacity onPress={() => setLegalModalVisible(false)} className="p-1">
+                                <MaterialIcons name="close" size={28} color="#f97316" />
+                            </TouchableOpacity>
+                            <Text className="text-lg font-bold text-black dark:text-white">{legalTitle}</Text>
+                            <View className="w-7" />
+                        </View>
+
+                        <View className="flex-1 bg-white dark:bg-zinc-950">
+                            {isLegalLoading && (
+                                <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-zinc-950">
+                                    <ActivityIndicator size="large" color="#f97316" />
+                                </View>
+                            )}
+                            <WebView
+                                source={{ uri: legalUrl }}
+                                onLoadEnd={() => setIsLegalLoading(false)}
+                                injectedJavaScript={hideHeaderScript}
+                                javaScriptEnabled={true}
+                                showsVerticalScrollIndicator={false}
+                                className="flex-1"
+                            />
+                        </View>
+                    </SafeAreaView>
+                </Modal>
+
+                <AdBanner />
+            </SafeAreaView>
         </Screen>
     );
 }

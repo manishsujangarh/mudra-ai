@@ -6,6 +6,7 @@ import { Button, LoadingScreen, SectionTitle } from "@/components/ui";
 import { useMudraBySlug } from "@/hooks/useMudras";
 import { useAppStore } from "@/store/useAppStore";
 import { getMudraImage } from "@/utils/images";
+import { AdBanner } from "@/ads/AdBanner";
 
 export default function MudraDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -100,6 +101,7 @@ export default function MudraDetail() {
         </View>
       </ScrollView>
 
+      <AdBanner />
 
     </View>
   );

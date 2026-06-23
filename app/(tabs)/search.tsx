@@ -6,6 +6,7 @@ import { MudraCard } from "@/components/MudraCard";
 import { Chip, EmptyState, Screen, SectionTitle } from "@/components/ui";
 import { useCategories, useFilteredMudras, useMudras } from "@/hooks/useMudras";
 import { useAppStore } from "@/store/useAppStore";
+import { AdBanner } from "@/ads/AdBanner";
 
 export default function Search() {
   const router = useRouter();
@@ -105,6 +106,7 @@ export default function Search() {
           )
         }
       />
+      <AdBanner />
     </Screen>
   );
 }
