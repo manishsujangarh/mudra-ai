@@ -228,7 +228,7 @@ export default function Settings() {
                     {/* --- 1. REMOVE ADS CARD --- */}
                     <View className="mt-4 rounded-3xl bg-surface p-5">
                         <View className="flex-row items-center justify-between">
-                            <Text className="text-lg font-semibold text-ink">Remove Ads</Text>
+                            <Text className="text-lg font-semibold text-ink">Ads Free Version</Text>
                             {isPremium ? (
                                 <Text className="text-sm font-semibold text-brand">Purchased</Text>
                             ) : null}

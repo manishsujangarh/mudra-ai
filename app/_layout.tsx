@@ -16,6 +16,8 @@ import { LoadingScreen } from "@/components/ui";
 import { useBootstrap } from "@/hooks/useBootstrap";
 import { queryClient } from "@/lib/queryClient";
 import { useEffect } from "react";
+import { queryPremiumOwnershipStatus } from "@/utils/iap";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RootLayout() {
   const { ready, error } = useBootstrap();
@@ -27,6 +29,24 @@ export default function RootLayout() {
   const router = useRouter();
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
+
+  useEffect(() => {
+    const silentRestore = async () => {
+      try {
+        const ownershipStatus = await queryPremiumOwnershipStatus();
+
+        if (ownershipStatus?.hasPremium) {
+          await AsyncStorage.setItem("mudra_ai_is_premium", "true");
+        } else {
+          await AsyncStorage.setItem("mudra_ai_is_premium", "false");
+        }
+      } catch (error) {
+        console.log("Silent premium check failed", error);
+      }
+    };
+
+    silentRestore();
+  }, []);
 
   useEffect(() => {
     if (lastNotificationResponse) {

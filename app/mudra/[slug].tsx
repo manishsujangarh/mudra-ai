@@ -7,6 +7,7 @@ import { useMudraBySlug } from "@/hooks/useMudras";
 import { useAppStore } from "@/store/useAppStore";
 import { getMudraImage } from "@/utils/images";
 import { AdBanner } from "@/ads/AdBanner";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MudraDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -39,7 +40,7 @@ export default function MudraDetail() {
 
 
   return (
-    <View className="flex-1 bg-sand">
+    <SafeAreaView className="flex-1 bg-sand" edges={['bottom']}>
       <Stack.Screen options={{ title: mudra.name }} />
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         <Image
@@ -103,6 +104,6 @@ export default function MudraDetail() {
 
       <AdBanner />
 
-    </View>
+    </SafeAreaView>
   );
 }
