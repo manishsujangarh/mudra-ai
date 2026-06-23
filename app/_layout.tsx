@@ -8,13 +8,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-
+import * as Notifications from "expo-notifications";
 import { AdBanner } from "@/ads/AdBanner";
 import { MobileAdsInitializer } from "@/ads/MobileAdsInitializer";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { LoadingScreen } from "@/components/ui";
 import { useBootstrap } from "@/hooks/useBootstrap";
 import { queryClient } from "@/lib/queryClient";
+import { useEffect } from "react";
 
 export default function RootLayout() {
   const { ready, error } = useBootstrap();
@@ -23,6 +24,21 @@ export default function RootLayout() {
   const headerBackground = isDark ? "#121413" : "#F5F2F1";
   const headerTint = isDark ? "#F6F1EC" : "#111111";
   const insects = useSafeAreaInsets();
+  const router = useRouter();
+
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+
+  useEffect(() => {
+    if (lastNotificationResponse) {
+      const data = lastNotificationResponse.notification.request.content.data;
+
+      if (data?.type === "practice" && data?.routineId) {
+        if (ready) {
+          router.push(`/practice/${data.routineId}`);
+        }
+      }
+    }
+  }, [lastNotificationResponse, ready, router]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
