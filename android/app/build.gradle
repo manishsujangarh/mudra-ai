@@ -92,7 +92,7 @@ android {
         applicationId 'com.ai.mudra'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
+        versionCode 13
         versionName "1.0.0"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
@@ -109,16 +109,32 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
-        release {
+        // release {
+        //     // Caution! In production, you need to generate your own keystore file.
+        //     // see https://reactnative.dev/docs/signed-apk-android.
+        //     signingConfig signingConfigs.debug
+        //     def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
+        //     shrinkResources enableShrinkResources.toBoolean()
+        //     minifyEnabled enableMinifyInReleaseBuilds
+        //     proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        //     def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
+        //     crunchPngs enablePngCrunchInRelease.toBoolean()
+        // }
+                release {
             // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
-            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
-            shrinkResources enableShrinkResources.toBoolean()
-            minifyEnabled enableMinifyInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
-            crunchPngs enablePngCrunchInRelease.toBoolean()
+            
+            // 1. Force Resource Shrinking (Unused images/xml remove karega)
+            shrinkResources true
+            
+            // 2. Force Code Minification (Unused Java/Kotlin C++ code remove karega)
+            minifyEnabled true
+            
+            // 3. Use OPTIMIZED Proguard file instead of normal one
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            
+            // 4. PNG Crunching
+            crunchPngs true
         }
     }
     packagingOptions {
