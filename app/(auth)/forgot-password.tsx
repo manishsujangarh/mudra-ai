@@ -81,7 +81,7 @@ export default function ForgotPasswordScreen() {
     try {
       const data = await apiFetch('/forgot-password', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, app_source: 'mudra' }),
       });
 
       if (data.success) {
@@ -106,8 +106,8 @@ export default function ForgotPasswordScreen() {
         <Stack.Screen options={{ title: '', headerStyle: { backgroundColor: 'transparent' }, headerShadowVisible: false }} />
 
         {/* 👉 CUSTOM TOAST UI */}
-        <Animated.View 
-          className={`absolute w-[90%] self-center p-4 rounded-xl border z-50 shadow-lg ${getToastColor()}`} 
+        <Animated.View
+          className={`absolute w-[90%] self-center p-4 rounded-xl border z-50 shadow-lg ${getToastColor()}`}
           style={{ transform: [{ translateY: toastAnimY }] }}
         >
           <Text className="text-white font-bold text-base">{toastConfig.message}</Text>
@@ -115,7 +115,7 @@ export default function ForgotPasswordScreen() {
         </Animated.View>
 
         <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6" keyboardShouldPersistTaps="handled">
-          <Animated.View 
+          <Animated.View
             className="w-full max-w-lg pb-10"
             style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}
           >
@@ -139,11 +139,11 @@ export default function ForgotPasswordScreen() {
             </View>
 
             {/* 👉 USE CUSTOM BUTTON */}
-            <Button 
-                label={t('reset_password')} 
-                onPress={handlePasswordReset} 
-                loading={loading} 
-                disabled={loading}
+            <Button
+              label={t('reset_password')}
+              onPress={handlePasswordReset}
+              loading={loading}
+              disabled={loading}
             />
 
           </Animated.View>

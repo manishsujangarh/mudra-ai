@@ -31,7 +31,7 @@ export default function LoginScreen() {
     const [isChecked, setIsChecked] = useState(true);
     const [loading, setLoading] = useState(false);
     const [otpLoading, setOtpLoading] = useState(false);
-    
+
     // 👉 1. CUSTOM ANIMATION SETUP (Replaces animatable)
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const toggleCheckbox = () => setIsChecked(!isChecked);
@@ -63,9 +63,9 @@ export default function LoginScreen() {
 
     // 👉 Helper function for toast colors (Updated to Tailwind colors)
     const getToastColor = () => {
-        if (toastConfig.type === 'danger') return 'bg-red-500 border-red-700'; 
-        if (toastConfig.type === 'warning') return 'bg-orange-500 border-orange-700'; 
-        return 'bg-green-500 border-green-700'; 
+        if (toastConfig.type === 'danger') return 'bg-red-500 border-red-700';
+        if (toastConfig.type === 'warning') return 'bg-orange-500 border-orange-700';
+        return 'bg-green-500 border-green-700';
     };
 
     // 👉 COMMON SUCCESS HANDLER
@@ -122,7 +122,7 @@ export default function LoginScreen() {
         try {
             const data = await apiFetch('/send-email-otp', {
                 method: 'POST',
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, app_source: 'mudra' }),
             });
 
             if (data.success) {

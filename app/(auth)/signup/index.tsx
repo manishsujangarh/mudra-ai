@@ -109,7 +109,11 @@ export default function SignupScreen() {
                 setLoading(false); return;
             }
 
-            const otpData = await apiFetch('/send-email-otp', { method: 'POST', body: JSON.stringify({ email, type: 'signup' }) });
+            const otpData = await apiFetch('/send-email-otp', {
+                method: 'POST',
+                body: JSON.stringify({ email, type: 'signup', app_source: 'mudra' })
+            });
+            
             if (otpData.success) {
                 showToast({ message: t('success'), description: t('otp_sent_to_email'), type: 'success' });
                 setTimeout(() => {

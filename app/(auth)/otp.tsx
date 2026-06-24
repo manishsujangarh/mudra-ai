@@ -135,7 +135,7 @@ export default function OtpScreen() {
 
             const data = await apiFetch('/send-email-otp', {
                 method: 'POST',
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, app_source: 'mudra' }),
             });
 
             if (data.success) {
