@@ -108,3 +108,28 @@ export async function cancelReminder(notificationId: string): Promise<void> {
 export async function cancelAllReminders(): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync();
 }
+
+export async function updateNotificationTime(opts: {
+  time: string;
+}): Promise<string | null> {
+  const granted = await requestNotificationPermissions();
+  if (!granted) return null;
+
+  const { hour, minute } = parseTime(opts.time);
+
+  const id = await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Mudra Practice Time 🧘",
+      body: "It's time for your daily mindful practice. Keep your streak alive!",
+      data: { type: "Daily" },
+      ...(Platform.OS === "android" ? { channelId: "reminders" } : {}),
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour,
+      minute,
+    },
+  });
+
+  return id;
+}

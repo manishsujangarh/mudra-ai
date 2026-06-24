@@ -17,7 +17,7 @@ export function Screen({
   className?: string;
 }) {
   return (
-    <SafeAreaView className="flex-1 bg-sand" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-sand" edges={[]}>
       <View className={`flex-1 ${className}`}>{children}</View>
     </SafeAreaView>
   );

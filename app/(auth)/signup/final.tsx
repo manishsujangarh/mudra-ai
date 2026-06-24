@@ -60,7 +60,7 @@ export default function FinalStep() {
         try {
             const data = await apiFetch('/register', {
                 method: 'POST',
-                body: JSON.stringify({ name, email, phone, password, password_confirmation: password, gender, goals, source: 'mudra_ai_app' }),
+                body: JSON.stringify({ name, email, phone, password, password_confirmation: password, gender, goals: goals && goals.length > 0 ? goals : 'General Wellness', source: 'mudra_ai_app' }),
             });
 
             if (data.success || data.token) {

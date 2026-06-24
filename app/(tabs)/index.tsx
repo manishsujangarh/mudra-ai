@@ -118,7 +118,7 @@ export default function Home() {
             <Text className="text-xs text-muted">Sessions done</Text>
           </View>
         </View>
-        <View className="mt-6">
+        <View className="mt-6" style={{ marginHorizontal: -20 }}>
           <AdBanner />
         </View>
       </ScrollView>

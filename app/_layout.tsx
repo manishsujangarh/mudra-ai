@@ -75,6 +75,8 @@ export default function RootLayout() {
         if (ready) {
           router.push(`/practice/${data.routineId}`);
         }
+      } else {
+        router.replace("/(tabs)");
       }
     }
   }, [lastNotificationResponse, ready, router]);

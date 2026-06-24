@@ -83,7 +83,7 @@ export default function GenderStep() {
 
   useEffect(() => {
     const getGender = async () => {
-      try { const storedGender = await AsyncStorage.getItem('gender'); if (storedGender) setGender(storedGender); } 
+      try { const storedGender = await AsyncStorage.getItem('gender'); if (storedGender) setGender(storedGender); }
       catch (error) { console.error(error); }
     };
     getGender();
@@ -91,19 +91,22 @@ export default function GenderStep() {
 
   const handleGenderSelect = async (selectedGender: string) => {
     setGender(selectedGender);
-    try { await AsyncStorage.setItem('gender', selectedGender); } 
+    try { await AsyncStorage.setItem('gender', selectedGender); }
     catch (error) { console.error(error); }
   };
 
   const handleNext = () => {
     if (!gender) return showToast({ message: t('alert'), description: t('select_your_gender'), type: "warning" });
-    const updatedSignupData = { ...signupData, gender };
-    router.push({ pathname: '/(auth)/signup/goals', params: { signupData: JSON.stringify(updatedSignupData) } });
+    const updatedSignupData = { ...signupData, gender, goals: [] };
+    router.push({
+      pathname: '/(auth)/signup/final',
+      params: { signupData: JSON.stringify(updatedSignupData) }
+    });
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-sand" edges={['bottom','top']}>
-      
+    <SafeAreaView style={{ flex: 1 }} className="bg-sand" edges={['bottom', 'top']}>
+
       {/* 👉 CUSTOM TOAST UI */}
       <Animated.View className={`absolute w-[90%] self-center p-4 rounded-xl border z-50 shadow-lg ${getToastColor()}`} style={{ transform: [{ translateY: toastAnimY }] }}>
         <Text className="text-white font-bold text-base">{toastConfig.message}</Text>

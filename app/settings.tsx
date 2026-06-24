@@ -215,7 +215,7 @@ export default function Settings() {
 
     return (
         <Screen>
-            <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+            <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'top']}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="p-5 pb-10">
 
                     <SectionTitle>Settings</SectionTitle>
@@ -253,6 +253,26 @@ export default function Settings() {
                                 trackColor={{ false: "#D8D1C8", true: "#f97316" }}
                                 thumbColor={isKeepAwake ? "#F6F1EC" : "#FFFFFF"}
                                 ios_backgroundColor="#D8D1C8"
+                            />
+                        </View>
+                    </View>
+
+                    {/* --- REMINDER SETTINGS CARD --- */}
+                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
+                        <Text className="text-lg font-semibold text-ink">Reminders</Text>
+                        <Text className="mt-2 text-sm text-muted">
+                            Update your preferred daily practice time.
+                        </Text>
+                        <View className="mt-4">
+                            <Button
+                                label="Edit Reminder Time"
+                                variant="secondary"
+                                onPress={() => {
+                                    router.push({
+                                        pathname: "/onboarding",
+                                        params: { mode: "edit_notification" } // Yahi wo param hai
+                                    });
+                                }}
                             />
                         </View>
                     </View>
