@@ -6,18 +6,20 @@ import { Button, EmptyState, Screen } from "@/components/ui";
 import { useActiveRoutines, useDeleteRoutine } from "@/hooks/useRoutines";
 import { formatTime } from "@/lib/utils";
 import { AdBanner } from "@/ads/AdBanner";
+import { useTranslation } from "react-i18next";
 
 export default function Routines() {
   const router = useRouter();
   const { data: routines = [], isLoading } = useActiveRoutines();
   const del = useDeleteRoutine();
+  const { t } = useTranslation();
 
   return (
     <Screen>
       <View className="px-5 pt-3">
-        <Text className="text-2xl font-bold text-ink">Your Routines</Text>
+        <Text className="text-2xl font-bold text-ink">{t("your_routines")}</Text>
         <Text className="text-xs text-muted">
-          Daily reminders keep your practice consistent.
+          {t("your_routines_dis")}
         </Text>
       </View>
 
@@ -29,18 +31,18 @@ export default function Routines() {
           <View className="mb-3 rounded-3xl bg-surface p-5">
             <View className="flex-row items-center justify-between">
               <Text className="flex-1 text-lg font-semibold text-ink">
-                {item.mudra.name}
+                {t(item.mudra.name)}
               </Text>
               <StreakBadge streak={item.streak} />
             </View>
             <Text className="mt-1 text-sm text-muted">
-              Daily at {formatTime(item.reminderTime)} · {item.duration} min
+              {t("daily_at")} {formatTime(item.reminderTime)} · {item.duration} {t("min")}
             </Text>
 
             <View className="mt-4 flex-row gap-2">
               <View className="flex-1">
                 <Button
-                  label="Practice"
+                  label={t("practice")}
                   onPress={() => router.push(`/practice/${item.id}`)}
                 />
               </View>
@@ -53,7 +55,7 @@ export default function Routines() {
                 }
                 className="items-center justify-center rounded-2xl border border-brand-light/40 bg-surface px-5 active:opacity-70"
               >
-                <Text className="font-semibold text-muted">Remove</Text>
+                <Text className="font-semibold text-muted">{t("remove")}</Text>
               </Pressable>
             </View>
           </View>
@@ -61,8 +63,8 @@ export default function Routines() {
         ListEmptyComponent={
           isLoading ? null : (
             <EmptyState
-              title="No routines yet"
-              subtitle="Ask the AI Guide for a recommendation and build your first daily routine."
+              title={t("no_routines")}
+              subtitle={t("ask_routines")}
             />
           )
         }

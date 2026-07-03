@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { Mudra } from "@/types";
 import { getMudraImage } from "@/utils/images";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   mudra: Mudra;
@@ -14,6 +15,7 @@ const BLUR_HASH = "L6Pj0^jE.AyE_3t7t7R**0o#DgR4";
 
 export function MudraCard({ mudra, onPress, compact }: Props) {
 
+  const { t } = useTranslation();
   const imageSource = getMudraImage(mudra.imageUrl);
 
   return (
@@ -32,20 +34,20 @@ export function MudraCard({ mudra, onPress, compact }: Props) {
       <View className="flex-1 justify-center px-4 py-3">
         <View className="flex-row items-center">
           <Text className="flex-1 text-base font-semibold text-ink" numberOfLines={1}>
-            {mudra.name}
+            {t(mudra.name)}
           </Text>
           <View className="ml-2 rounded-full bg-sand px-2 py-0.5">
             <Text className="text-[10px] font-medium uppercase text-muted">
-              {mudra.category}
+              {t(mudra.category)}
             </Text>
           </View>
         </View>
         <Text className="mt-1 text-xs text-muted" numberOfLines={2}>
-          {mudra.description}
+          {t(mudra.description)}
         </Text>
         {mudra.benefits.length > 0 && !compact && (
           <Text className="mt-1 text-xs text-brand" numberOfLines={1}>
-            ✓ {mudra.benefits[0]}
+            ✓ {t(mudra.benefits[0])}
           </Text>
         )}
       </View>

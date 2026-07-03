@@ -15,11 +15,14 @@ import {
     queryPremiumOwnershipStatus,
     PremiumCatalogItem
 } from '../src/utils/iap';
+import { useTranslation } from 'react-i18next';
 
 export default function PremiumScreen() {
     const [product, setProduct] = useState<PremiumCatalogItem | null>(null);
     const [isPurchasing, setIsPurchasing] = useState(false);
     const [isLoadingPrices, setIsLoadingPrices] = useState(true);
+
+    const { t } = useTranslation();
 
     // Modals State
     const [legalModalVisible, setLegalModalVisible] = useState(false);
@@ -88,9 +91,9 @@ export default function PremiumScreen() {
             const isLogged = await AsyncStorage.getItem('isLogged');
             if (isLogged !== 'true') {
                 Alert.alert(
-                    "Login Required",
-                    "Please sign in to purchase the ad-free experience.",
-                    [{ text: "Go to Login", onPress: () => router.push('/(auth)/login') }, { text: "Cancel", style: "cancel" }]
+                    t("login_required"),
+                    t("login_required_sub"),
+                    [{ text: t("login"), onPress: () => router.push('/(auth)/login') }, { text: "Cancel", style: "cancel" }]
                 );
                 return;
             }
@@ -99,17 +102,22 @@ export default function PremiumScreen() {
 
             const ownershipStatus = await refreshPremiumStatus();
             if (ownershipStatus?.hasPremium) {
-                Alert.alert('Already Purchased', 'You have already removed the ads forever.', [
-                    { text: 'OK', onPress: () => router.back() }
+                Alert.alert(
+                    t('already_purchased'),
+                    t('already_purchased_sub'), [
+                    { text: t('ok'), onPress: () => router.back() }
                 ]);
                 return;
             }
 
             if (canSimulateIap) {
                 await savePremiumFlag(true);
-                Alert.alert('Purchase Successful', 'Test purchase complete! Ads are now removed.', [
-                    { text: 'OK', onPress: () => router.back() }
-                ]);
+                Alert.alert(
+                    t('purchased_success'),
+                    t('purchased_success_sub'),
+                    [
+                        { text: t('ok'), onPress: () => router.back() }
+                    ]);
                 DeviceEventEmitter.emit('PremiumUpdated');
                 return;
             }
@@ -142,8 +150,8 @@ export default function PremiumScreen() {
             if (verification && verification.success) {
                 // Backend validation successful hone par hi premium flag save karein
                 await savePremiumFlag(true);
-                Alert.alert('Congratulations! 🎉', 'Ads have been successfully removed forever!', [
-                    { text: 'Awesome', onPress: () => router.back() }
+                Alert.alert(`${t("congratulations")} 🎉`, t('ads_remove_success'), [
+                    { text: t('awesome'), onPress: () => router.back() }
                 ]);
                 DeviceEventEmitter.emit('PremiumUpdated');
             } else {
@@ -162,9 +170,12 @@ export default function PremiumScreen() {
         try {
             const isLogged = await AsyncStorage.getItem('isLogged');
             if (isLogged !== 'true') {
-                Alert.alert("Login Required", "Please sign in to restore your purchase.", [
-                    { text: "Go to Login", onPress: () => router.push('/(auth)/login') }, { text: "Cancel", style: "cancel" }
-                ]);
+                Alert.alert(
+                    t("login_required"),
+                    t("restore_require"),
+                    [
+                        { text: t("login"), onPress: () => router.push('/(auth)/login') }, { text: "Cancel", style: "cancel" }
+                    ]);
                 return;
             }
 
@@ -173,9 +184,15 @@ export default function PremiumScreen() {
 
             if (ownershipStatus?.hasPremium) {
                 DeviceEventEmitter.emit('PremiumUpdated');
-                Alert.alert('Success', 'Your Ad-Free experience has been restored!');
+                Alert.alert(
+                    t('success'),
+                    t('restore_success')
+                );
             } else {
-                Alert.alert('No Purchase Found', 'We could not find an active purchase for this account.');
+                Alert.alert(
+                    t('no_purchase'),
+                    t('no_purchase_sub')
+                );
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to restore purchases.');
@@ -204,19 +221,19 @@ export default function PremiumScreen() {
                 {/* Header Section */}
                 <View className="items-center mb-8">
                     <Text className="font-black text-3xl text-black dark:text-white">
-                        Remove <Text className="text-orange-500">Ads</Text>
+                        {t("remove")} <Text className="text-orange-500">{t("ads")}</Text>
                     </Text>
                     <Text className="mt-2 text-base text-gray-500 dark:text-gray-400 text-center">
-                        Enjoy a seamless, interruption-free experience
+                        {t("ads_fre")}
                     </Text>
                 </View>
 
                 {/* Features Box */}
                 <View className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-zinc-900 p-5 mb-6">
-                    {renderFeatureItem('No Annoying Banner Ads')}
-                    {renderFeatureItem('No Interstitial Popup Ads')}
-                    {renderFeatureItem('Faster App Performance')}
-                    {renderFeatureItem('One-time payment, lifetime access')}
+                    {renderFeatureItem(t('ads_1'))}
+                    {renderFeatureItem(t("ads_2"))}
+                    {renderFeatureItem(t("ads_3"))}
+                    {renderFeatureItem(t("ads_4"))}
                 </View>
 
                 {/* Single Plan Card */}

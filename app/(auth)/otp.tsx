@@ -6,6 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import { apiFetch } from '../../src/lib/api';
 import { Button } from "@/components/ui"; // 👉 TUMHARA CUSTOM BUTTON IMPORT KIYA HAI
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 export default function OtpScreen() {
     const router = useRouter();
@@ -18,17 +19,7 @@ export default function OtpScreen() {
     // Agar signupData pass hua hai toh usko wapas object me parse karna padega
     const signupData = params.signupData ? JSON.parse(params.signupData as string) : {};
 
-    const t = (key: string) => {
-        const translations: any = {
-            otp_verification: 'OTP Verification', otp_description: 'Enter the OTP sent to',
-            enter_otp: 'Enter 6-digit OTP', verify: 'Verify', resend_otp_in: 'Resend OTP in',
-            seconds: 'seconds', did_not_receive_otp: 'Did not receive OTP?', resend: 'Resend',
-            alert: 'Alert', please_enter_valid_otp: 'Please enter a valid 6-digit OTP',
-            error: 'Error', failed_to_connect: 'Network error', otp_sent_to_email: 'OTP sent to your email',
-            otp_resend_failed: 'Failed to resend OTP', sign_up: 'Sign Up', login: 'Login'
-        };
-        return translations[key] || key;
-    };
+    const { t } = useTranslation();
 
     const [otp, setOtp] = useState('');
     const [resendOtpCountdown, setResendOtpCountdown] = useState(60);
@@ -208,11 +199,11 @@ export default function OtpScreen() {
 
                         {/* Resend Link */}
                         <View className="flex-row justify-center items-center mt-10">
-                            <Text className="text-muted text-base">
+                            <Text className="text-muted text-base" numberOfLines={1}>
                                 {resendOtpCountdown > 0 ? `${t('resend_otp_in')} ${resendOtpCountdown} ${t('seconds')}` : t('did_not_receive_otp')}
                             </Text>
                             <TouchableOpacity disabled={isResendDisabled} onPress={handleResendOTP} className={`ml-2 ${isResendDisabled ? 'opacity-50' : 'opacity-100'}`}>
-                                <Text className="text-brand font-bold text-base">{t('resend')}</Text>
+                                <Text className="text-brand font-bold text-base" numberOfLines={1}>{t('resend')}</Text>
                             </TouchableOpacity>
                         </View>
 

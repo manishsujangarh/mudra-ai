@@ -1,5 +1,6 @@
 import { useAudioPlayer } from "expo-audio";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
 interface Props {
@@ -20,6 +21,7 @@ function fmt(totalSeconds: number): string {
  */
 export function CountdownTimer({ minutes, onComplete }: Props) {
   const total = Math.max(1, Math.round(minutes * 60));
+  const { t } = useTranslation();
   const [remaining, setRemaining] = useState(total);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -108,7 +110,7 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
         />
         <Text className="text-5xl font-bold text-ink">{fmt(remaining)}</Text>
         <Text className="mt-1 text-xs uppercase tracking-widest text-muted">
-          {running ? "in practice" : remaining === 0 ? "complete" : "paused"}
+          {running ? t("in_practice") : remaining === 0 ? t("complete") : t("paused")}
         </Text>
       </View>
 
@@ -118,8 +120,8 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
             onPress={() => setRunning((r) => !r)}
             className="rounded-2xl bg-brand px-8 py-4 active:opacity-80"
           >
-            <Text className="text-base font-semibold text-white">
-              {running ? "Pause" : remaining === total ? "Start" : "Resume"}
+            <Text className="text-base font-semibold text-white" numberOfLines={1}>
+              {running ? t("pause") : remaining === total ? t("start") : t("resume")}
             </Text>
           </Pressable>
         )}
@@ -137,7 +139,7 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
           }}
           className="rounded-2xl border border-brand bg-surface px-6 py-4 active:opacity-80"
         >
-          <Text className="text-base font-semibold text-brand">Reset</Text>
+          <Text className="text-base font-semibold text-brand" numberOfLines={1}>{t("reset")}</Text>
         </Pressable>
       </View>
     </View>

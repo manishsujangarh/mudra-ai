@@ -4,29 +4,12 @@ import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiFetch } from '../../src/lib/api';
 import { Button } from "@/components/ui";
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
 
-  const t = (key: string) => {
-    const translations: any = {
-      forgot_password_question: 'Forgot Password?',
-      enter_email_reset_password: 'Enter your email address to get a password reset link.',
-      email_address: 'Email Address',
-      email: 'Email',
-      reset_password: 'Reset Password',
-      alert: 'Alert',
-      please_enter_your_email: 'Please enter your email',
-      please_enter_valid_email: 'Invalid email format',
-      success: 'Success',
-      password_reset_link_sent: 'Reset link sent to your email!',
-      error: 'Error',
-      no_user_found: 'User not found',
-      login: 'Login',
-      failed_to_connect: 'Failed to connect to the server.'
-    };
-    return translations[key] || key;
-  };
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);

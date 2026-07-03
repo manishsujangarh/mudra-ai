@@ -37,7 +37,7 @@ export function Button({
   loading?: boolean;
 }) {
   const base =
-    "flex-row items-center justify-center rounded-2xl px-5 py-4 active:opacity-80";
+    "rounded-2xl px-5 py-4 active:opacity-80";
   const styles = {
     primary: "bg-brand",
     secondary: "bg-surface border border-brand",
@@ -58,7 +58,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={variant === "primary" ? "#fff" : "#C8102E"} />
       ) : (
-        <Text className={`text-base font-semibold ${textStyles}`}>{label}</Text>
+        <Text className={`text-base text-center font-semibold ${textStyles}`}>{label}</Text>
       )}
     </Pressable>
   );

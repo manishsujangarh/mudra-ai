@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 const GENDER_OPTIONS = [
   { id: 'Male', labelKey: 'men', icon: '👨' },
@@ -18,15 +19,7 @@ export default function GenderStep() {
 
   const signupData = params.signupData ? JSON.parse(params.signupData as string) : {};
 
-  const t = (key: string) => {
-    const translations: any = {
-      select_your_gender: 'Select your gender',
-      understand_you: 'This helps us understand you better and personalize your practice.',
-      men: 'Male', woman: 'Female', other: 'Other', prefer_not_to_say: 'Prefer not to say',
-      skip: 'Skip', next: 'Next', alert: 'Alert',
-    };
-    return translations[key] || key;
-  };
+  const { t } = useTranslation();
 
   const [gender, setGender] = useState<string | null>(null);
 

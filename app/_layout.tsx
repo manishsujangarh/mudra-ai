@@ -1,4 +1,5 @@
 import "../global.css";
+import '../src/i18n';
 import { Ionicons } from "@expo/vector-icons";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
@@ -17,8 +18,10 @@ import { useEffect } from "react";
 import { queryPremiumOwnershipStatus } from "@/utils/iap";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import { useTranslation } from "react-i18next";
 
 export default function RootLayout() {
+  const { t } = useTranslation();
   useEffect(() => {
     const initKeepAwake = async () => {
       try {
@@ -123,7 +126,7 @@ export default function RootLayout() {
                 options={{
                   presentation: "modal",
                   headerShown: true,
-                  title: "Build Routine",
+                  title: t("build_routine"),
                 }}
               />
             </Stack>

@@ -9,9 +9,11 @@ import { Button, LoadingScreen, SectionTitle } from "@/components/ui";
 import { useRoutine } from "@/hooks/useRoutines";
 import { useCompleteSession } from "@/hooks/useSessions";
 import { getMudraImage } from "@/utils/images";
+import { useTranslation } from "react-i18next";
 
 export default function Practice() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: routine, isLoading } = useRoutine(id);
   const complete = useCompleteSession();
@@ -22,9 +24,9 @@ export default function Practice() {
   if (!routine) {
     return (
       <View className="flex-1 items-center justify-center bg-sand">
-        <Text className="text-muted">Routine not found.</Text>
+        <Text className="text-muted">{t("routine_not_found")}</Text>
         <Pressable onPress={() => router.back()} className="mt-4">
-          <Text className="font-semibold text-brand">Close</Text>
+          <Text className="font-semibold text-brand">{t("close")}</Text>
         </Pressable>
       </View>
     );
@@ -34,9 +36,9 @@ export default function Practice() {
     const { streak } = await complete.mutateAsync(routine.id);
     sessionCompletionAd.showAfterCompletion(() => {
       Alert.alert(
-        "Session complete 🎉",
-        `Great work! Your streak is now ${streak} day${streak === 1 ? "" : "s"}.`,
-        [{ text: "Done", onPress: () => router.back() }]
+        `${t("session_complete")} 🎉`,
+        `${t("session_complete_sub")} ${streak} ${streak === 1 ? t("day") : t("days")}.`,
+        [{ text: t("done"), onPress: () => router.back() }]
       );
     });
   };
@@ -47,7 +49,11 @@ export default function Practice() {
   return (
     <View className="flex-1 bg-sand">
       <View className="flex-row items-center justify-between px-5 pt-14">
-        <Text className="text-lg font-bold text-ink">{mudra.name}</Text>
+        <Text className="text-lg font-bold text-ink flex-1 mr-4" numberOfLines={1}
+        >
+          {t(mudra.name)}
+        </Text>
+
         <Pressable onPress={() => router.back()} className="p-2">
           <Text className="text-base text-muted">✕</Text>
         </Pressable>
@@ -72,7 +78,7 @@ export default function Practice() {
 
         <View className="mt-10">
           <Button
-            label={timerDone ? "Complete Session" : "Complete Session Early"}
+            label={timerDone ? t("complete_session") : t("complete_session_early")}
             onPress={onComplete}
             loading={complete.isPending}
             variant={timerDone ? "primary" : "secondary"}
@@ -81,11 +87,11 @@ export default function Practice() {
 
         {mudra.instructions.length > 0 && (
           <View className="mt-8">
-            <SectionTitle>Steps</SectionTitle>
+            <SectionTitle>{t("steps")}</SectionTitle>
             {mudra.instructions.map((step, i) => (
               <View key={i} className="mb-2 flex-row">
                 <Text className="mr-2 font-bold text-brand">{i + 1}.</Text>
-                <Text className="flex-1 text-sm text-ink">{step}</Text>
+                <Text className="flex-1 text-sm text-ink">{t(step)}</Text>
               </View>
             ))}
           </View>
@@ -93,11 +99,11 @@ export default function Practice() {
 
         {mudra.benefits.length > 0 && (
           <View className="mt-6">
-            <SectionTitle>Benefits</SectionTitle>
+            <SectionTitle>{t("benefits")}</SectionTitle>
             {mudra.benefits.map((b, i) => (
               <View key={i} className="mb-1 flex-row">
                 <Text className="mr-2 text-brand">✓</Text>
-                <Text className="flex-1 text-sm text-ink">{b}</Text>
+                <Text className="flex-1 text-sm text-ink">{t(b)}</Text>
               </View>
             ))}
           </View>

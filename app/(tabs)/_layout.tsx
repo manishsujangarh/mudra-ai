@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import { useColorScheme } from "nativewind";
+import { useTranslation } from "react-i18next";
 import { ColorValue } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 
@@ -69,6 +70,7 @@ function TabIcon({
 export default function TabsLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  const { t } = useTranslation();
 
   return (
     <Tabs
@@ -85,28 +87,28 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: t("home"),
           tabBarIcon: ({ color }) => <TabIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          title: "Explore",
+          title: t("explore"),
           tabBarIcon: ({ color }) => <TabIcon name="search" color={color} />,
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
-          title: "AI Guide",
+          title: t("ai_guide"),
           tabBarIcon: ({ color }) => <TabIcon name="sparkles" color={color} />,
         }}
       />
       <Tabs.Screen
         name="routines"
         options={{
-          title: "Routines",
+          title: t("routines"),
           tabBarIcon: ({ color }) => <TabIcon name="calendar" color={color} />,
         }}
       />

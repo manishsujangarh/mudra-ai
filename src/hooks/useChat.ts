@@ -3,12 +3,13 @@ import { useCallback } from "react";
 import { recommendForCondition } from "@/ai/recommend";
 import { useAppStore } from "@/store/useAppStore";
 import { useChatStore } from "@/store/useChatStore";
-
+import { useTranslation } from "react-i18next";
 /**
  * Drives the AI chat: appends the user message, runs the RAG pipeline against
  * local SQLite, then appends the assistant reply with any recommendation.
  */
 export function useChat() {
+  const { t, i18n } = useTranslation();
   const addUserMessage = useChatStore((s) => s.addUserMessage);
   const addAssistantMessage = useChatStore((s) => s.addAssistantMessage);
   const setThinking = useChatStore((s) => s.setThinking);
@@ -24,7 +25,7 @@ export function useChat() {
       addUserMessage(trimmed);
       setThinking(true);
       try {
-        const result = await recommendForCondition(trimmed);
+        const result = await recommendForCondition(trimmed, t, i18n.language);
         addAssistantMessage(result.reply, {
           recommendedMudraIds: result.recommendation
             ? [result.recommendation.mudra.id]
@@ -41,7 +42,7 @@ export function useChat() {
         setThinking(false);
       }
     },
-    [addUserMessage, addAssistantMessage, setThinking, setPendingRecommendation]
+    [addUserMessage, addAssistantMessage, setThinking, setPendingRecommendation, t]
   );
 
   return { send };

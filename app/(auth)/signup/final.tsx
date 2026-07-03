@@ -6,6 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { apiFetch } from '../../../src/lib/api';
 import { Button } from "@/components/ui"; // 👉 Custom Button Use Kiya Hai
+import { useTranslation } from 'react-i18next';
 
 export default function FinalStep() {
     const router = useRouter();
@@ -17,17 +18,7 @@ export default function FinalStep() {
     const signupData = params.signupData ? JSON.parse(params.signupData as string) : {};
     const { name, email, phone, password, gender, goals } = signupData;
 
-    const t = (key: string) => {
-        const translations: any = {
-            welcome_onbording: "Let's Begin",
-            welcome_message: 'Welcome to Mudra AI',
-            registration_success: 'Your account has been created successfully.',
-            error: 'Error',
-            registration_failed: 'Failed to create account.',
-            failed_to_connect: 'Network error.'
-        };
-        return translations[key] || key;
-    };
+    const { t } = useTranslation();
 
     const scaleValue = useRef(new Animated.Value(0)).current;
     const [loading, setLoading] = useState(true);

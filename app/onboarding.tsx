@@ -10,18 +10,20 @@ import { WellnessGoal } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { updateNotificationTime } from "@/notifications";
 import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 const GOALS: { key: WellnessGoal; label: string; emoji: string }[] = [
-  { key: "anxiety", label: "Ease anxiety", emoji: "🌿" },
-  { key: "stress", label: "Reduce stress", emoji: "🍃" },
-  { key: "sleep", label: "Sleep better", emoji: "🌙" },
-  { key: "energy", label: "More energy", emoji: "⚡" },
-  { key: "focus", label: "Sharper focus", emoji: "🎯" },
-  { key: "general", label: "General wellness", emoji: "🧘" },
+  { key: "anxiety", label: "goals_1", emoji: "🌿" },
+  { key: "stress", label: "goals_2", emoji: "🍃" },
+  { key: "sleep", label: "goals_3", emoji: "🌙" },
+  { key: "energy", label: "goals_4", emoji: "⚡" },
+  { key: "focus", label: "goals_5", emoji: "🎯" },
+  { key: "general", label: "goals_6", emoji: "🧘" },
 ];
 
 export default function Onboarding() {
   const router = useRouter();
+  const { t } = useTranslation();
   const update = useUpdatePreferences();
   const [goal, setGoal] = useState<WellnessGoal | null>(null);
   const [time, setTime] = useState<string | null>(null);
@@ -29,11 +31,11 @@ export default function Onboarding() {
   const params = useLocalSearchParams();
   const isEditMode = params.mode === 'edit_notification';
 
-  const titleText = isEditMode ? "Update Reminder" : "Welcome to\nMudra AI 🙏";
+  const titleText = isEditMode ? t("update_reminder") : `${t("welcome")} 🙏`;
   const subTitleText = isEditMode
-    ? "Adjust the time for your daily practice reminder."
-    : "Ancient hand gestures, guided by AI. Everything works offline once set up.";
-  const buttonLabel = isEditMode ? "Save Changes" : "Begin my practice";
+    ? t("update_reminder_sub")
+    : t("welcome_sub");
+  const buttonLabel = isEditMode ? t("save_changes") : t("my_practice");
 
   useEffect(() => {
     const loadSavedTime = async () => {
@@ -105,12 +107,12 @@ export default function Onboarding() {
 
         {!isEditMode && (
           <View className="mt-8">
-            <SectionTitle>What brings you here?</SectionTitle>
+            <SectionTitle>{t("what_brings")}</SectionTitle>
             <View className="flex-row flex-wrap">
               {GOALS.map((g) => (
                 <Chip
                   key={g.key}
-                  label={`${g.emoji} ${g.label}`}
+                  label={`${g.emoji} ${t(g.label)}`}
                   active={goal === g.key}
                   onPress={() => setGoal(g.key)}
                 />
@@ -120,7 +122,7 @@ export default function Onboarding() {
         )}
 
         <View className="mt-6">
-          <SectionTitle>{isEditMode ? "Set New Time" : "When do you want to practice?"}</SectionTitle>
+          <SectionTitle>{isEditMode ? t("set_time") : t("want_practice")}</SectionTitle>
           {time !== null ? (
             <TimePicker value={time} onChange={setTime} />
           ) : (

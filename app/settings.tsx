@@ -13,12 +13,15 @@ import { useColorScheme } from "nativewind";
 
 // Legal WebView 
 import { WebView } from "react-native-webview";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import { LANGUAGES } from "../src/i18n";
 
 export default function Settings() {
     const router = useRouter();
-
+    const { t, i18n } = useTranslation();
+    const insets = useSafeAreaInsets();
     // --- STATES ---
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("");
@@ -30,6 +33,8 @@ export default function Settings() {
     const { colorScheme, setColorScheme } = useColorScheme();
     const isDark = colorScheme === "dark";
     const [isKeepAwake, setIsKeepAwake] = useState(true);
+
+    const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
     // --- LEGAL WEBVIEW STATES ---
     const [legalModalVisible, setLegalModalVisible] = useState(false);
@@ -95,6 +100,12 @@ export default function Settings() {
         DeviceEventEmitter.emit("KeepAwakeUpdated");
     };
 
+    const changeLanguage = async (langCode: string) => {
+        await AsyncStorage.setItem('language', langCode);
+        i18n.changeLanguage(langCode);
+        setLanguageModalVisible(false);
+    };
+
     // --- LEGAL WEBVIEW LOGIC ---
     const openLegalWebView = (url: string, title: string) => {
         setLegalUrl(url);
@@ -119,11 +130,11 @@ export default function Settings() {
             router.push("/premium");
         } else {
             Alert.alert(
-                "Login Required",
-                "Please log in to your account first to purchase the ad-free experience.",
+                t("login_required"),
+                t("login_required_sub"),
                 [
-                    { text: "Cancel", style: "cancel" },
-                    { text: "Log In", onPress: () => router.push("/(auth)/login") }
+                    { text: t("cancel"), style: "cancel" },
+                    { text: t("login"), onPress: () => router.push("/(auth)/login") }
                 ]
             );
         }
@@ -154,11 +165,11 @@ export default function Settings() {
 
     const handleLogoutPress = () => {
         Alert.alert(
-            "Log Out",
-            "Are you sure you want to log out? You will need to log in again.",
+            t("logout"),
+            t("logout_sub"),
             [
-                { text: "Cancel", style: "cancel" },
-                { text: "Log Out", style: "destructive", onPress: processLogout }
+                { text: t("cancel"), style: "cancel" },
+                { text: t("logout"), style: "destructive", onPress: processLogout }
             ]
         );
     };
@@ -181,11 +192,11 @@ export default function Settings() {
             setIsLoggedIn(false); setUserName(""); setIsPremium(false);
 
             Alert.alert(
-                "Success",
-                "Your account and data have been completely removed.",
+                t("success"),
+                t("removed_sub"),
                 [
                     {
-                        text: "OK", onPress: async () => {
+                        text: t("ok"), onPress: async () => {
                             try { await Updates.reloadAsync(); } catch (error) { router.replace("/(auth)/login"); }
                         }
                     }
@@ -200,15 +211,15 @@ export default function Settings() {
 
     const handleDeletePress = () => {
         const message = isLoggedIn
-            ? "Are you absolutely sure? All your data and cloud account will be erased."
-            : "Are you absolutely sure? All your saved routines and local app data will be erased.";
+            ? t("delete_cloud")
+            : t("delete_local");
 
         Alert.alert(
-            "Delete Account",
+            t("delete_account"),
             message,
             [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete Account", style: "destructive", onPress: processDeleteAccount }
+                { text: t("cancel"), style: "cancel" },
+                { text: t("delete_account"), style: "destructive", onPress: processDeleteAccount }
             ]
         );
     };
@@ -218,17 +229,17 @@ export default function Settings() {
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'top']}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="p-5 pb-10">
 
-                    <SectionTitle>Settings</SectionTitle>
+                    <SectionTitle>{t("settings")}</SectionTitle>
 
                     {/* --- 1. PREFERENCES CARD (NEW) --- */}
                     <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <Text className="text-lg font-semibold text-ink mb-4">Preferences</Text>
+                        <Text className="text-lg font-semibold text-ink mb-4">{t("preferences")}</Text>
 
                         {/* Theme Switch */}
                         <View className="flex-row items-center justify-between mb-4">
                             <View className="flex-1 pr-4">
-                                <Text className="text-base font-medium text-ink">Dark Mode</Text>
-                                <Text className="text-sm text-muted mt-1">Change the app's appearance.</Text>
+                                <Text className="text-base font-medium text-ink">{t("dark_mode")}</Text>
+                                <Text className="text-sm text-muted mt-1">{t("dark_mode_sub")}</Text>
                             </View>
                             <Switch
                                 value={isDark}
@@ -244,8 +255,8 @@ export default function Settings() {
                         {/* Keep Awake Switch */}
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1 pr-4">
-                                <Text className="text-base font-medium text-ink">Keep Screen Awake</Text>
-                                <Text className="text-sm text-muted mt-1">Prevent screen from sleeping while practicing.</Text>
+                                <Text className="text-base font-medium text-ink">{t("keep_awake")}</Text>
+                                <Text className="text-sm text-muted mt-1">{t("keep_awake_sub")}</Text>
                             </View>
                             <Switch
                                 value={isKeepAwake}
@@ -255,22 +266,38 @@ export default function Settings() {
                                 ios_backgroundColor="#D8D1C8"
                             />
                         </View>
+                        <View className="h-px bg-sand-deep/30 mb-4" />
+                        <TouchableOpacity
+                            className="flex-row items-center justify-between"
+                            onPress={() => setLanguageModalVisible(true)}
+                        >
+                            <View className="flex-1 pr-4">
+                                <Text className="text-base font-medium text-ink">{t("language")}</Text>
+                                <Text className="text-sm text-muted mt-1">{t("language_sub")}</Text>
+                            </View>
+                            <View className="flex-row items-center">
+                                <Text className="text-base text-brand font-medium mr-1">
+                                    {LANGUAGES.find(l => l.code === i18n.language)?.label || 'English'}
+                                </Text>
+                                <MaterialIcons name="chevron-right" size={24} color="#9AA8A4" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
 
                     {/* --- REMINDER SETTINGS CARD --- */}
                     <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <Text className="text-lg font-semibold text-ink">Reminders</Text>
+                        <Text className="text-lg font-semibold text-ink">{t("reminders")}</Text>
                         <Text className="mt-2 text-sm text-muted">
-                            Update your preferred daily practice time.
+                            {t("reminders_sub")}
                         </Text>
                         <View className="mt-4">
                             <Button
-                                label="Edit Reminder Time"
+                                label={t("reminders_btn")}
                                 variant="secondary"
                                 onPress={() => {
                                     router.push({
                                         pathname: "/onboarding",
-                                        params: { mode: "edit_notification" } // Yahi wo param hai
+                                        params: { mode: "edit_notification" }
                                     });
                                 }}
                             />
@@ -280,19 +307,20 @@ export default function Settings() {
                     {/* --- 2. REMOVE ADS CARD --- */}
                     <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
                         <View className="flex-row items-center justify-between">
-                            <Text className="text-lg font-semibold text-ink">Ads Free Version</Text>
-                            {isPremium && <Text className="text-sm font-semibold text-brand">Purchased</Text>}
+                            <Text className="text-lg font-semibold text-ink" numberOfLines={1}>{t("ads_free")}</Text>
+                            {isPremium && <Text className="text-sm font-semibold text-brand">{t("purchased")}</Text>}
                         </View>
 
                         <Text className="mt-2 text-sm text-muted">
                             {isPremium
-                                ? "You have successfully removed all banner and popup ads from the app."
-                                : "Remove banner and popup ads forever with a simple one-time purchase."}
+                                ? t("purchased_sub")
+                                : t("ads_free_sub")
+                            }
                         </Text>
 
                         {!isPremium && (
                             <View className="mt-4">
-                                <Button label="Remove Ads" variant="secondary" onPress={handleRemoveAdsPress} />
+                                <Button label={t("remove_ads")} variant="secondary" onPress={handleRemoveAdsPress} />
                             </View>
                         )}
                     </View>
@@ -302,15 +330,15 @@ export default function Settings() {
                         {isLoggedIn ? (
                             <>
                                 <View className="flex-row items-center justify-between">
-                                    <Text className="text-lg font-semibold text-ink">Account</Text>
-                                    <Text className="text-sm font-semibold text-brand">Logged In</Text>
+                                    <Text className="text-lg font-semibold text-ink">{t("account")}</Text>
+                                    <Text className="text-sm font-semibold text-brand">{t("logedin")}</Text>
                                 </View>
                                 <Text className="mt-2 text-sm text-muted">
-                                    Namaste, {userName || "Yogi"}. Your progress and routines are securely backed up to the cloud.
+                                    {t("namaste")}, {userName || t("yogi")}. {t("yogi_sub")}
                                 </Text>
                                 <View className="mt-4">
                                     <Button
-                                        label={isLoggingOut ? "Logging out..." : "Log Out"}
+                                        label={isLoggingOut ? t("logouting") : t("logout")}
                                         variant="secondary"
                                         onPress={handleLogoutPress}
                                         disabled={isLoggingOut}
@@ -320,18 +348,18 @@ export default function Settings() {
                         ) : (
                             <>
                                 <View className="flex-row items-center justify-between">
-                                    <Text className="text-lg font-semibold text-ink">Account</Text>
-                                    <Text className="text-sm font-semibold text-muted">Guest</Text>
+                                    <Text className="text-lg font-semibold text-ink">{t("account")}</Text>
+                                    <Text className="text-sm font-semibold text-muted">{t("guest")}</Text>
                                 </View>
                                 <Text className="mt-2 text-sm text-muted">
-                                    Create an account to save your custom routines, track your progress, and back up your data.
+                                    {t("guest_sub")}
                                 </Text>
                                 <View className="mt-4 flex-row justify-between gap-3">
                                     <View className="flex-1">
-                                        <Button label="Log In" variant="secondary" onPress={() => router.push("/(auth)/login")} />
+                                        <Button label={t("login")} variant="secondary" onPress={() => router.push("/(auth)/login")} />
                                     </View>
                                     <View className="flex-1">
-                                        <Button label="Sign Up" variant="secondary" onPress={() => router.push("/(auth)/signup")} />
+                                        <Button label={t("sign_up")} variant="secondary" onPress={() => router.push("/(auth)/signup")} />
                                     </View>
                                 </View>
                             </>
@@ -340,25 +368,25 @@ export default function Settings() {
 
                     {/* --- 4. LEGAL SECTION --- */}
                     <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <Text className="text-lg font-semibold text-ink">Legal</Text>
+                        <Text className="text-lg font-semibold text-ink">{t("legal")}</Text>
                         <Text className="mt-2 text-sm text-muted">
-                            Read our terms of service and privacy policy to understand how we protect your data.
+                            {t("legal_sub")}
                         </Text>
                         <View className="mt-4 flex-row justify-between gap-3">
                             <View className="flex-1">
-                                <Button label="Terms" variant="secondary" onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")} />
+                                <Button label={t("terms")} variant="secondary" onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")} />
                             </View>
                             <View className="flex-1">
-                                <Button label="Privacy" variant="secondary" onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")} />
+                                <Button label={t("privacy")} variant="secondary" onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")} />
                             </View>
                         </View>
                     </View>
 
                     {/* --- 5. DANGER ZONE --- */}
                     <View className="mt-4 rounded-3xl bg-surface p-5 border border-red-500/30">
-                        <Text className="text-lg font-semibold text-red-500">Danger Zone</Text>
+                        <Text className="text-lg font-semibold text-red-500">{t("danger_zone")}</Text>
                         <Text className="mt-2 text-sm text-muted">
-                            Permanently delete your account and wipe all associated data. This action cannot be recovered.
+                            {t("danger_zone_sub")}
                         </Text>
                         <View className="mt-4">
                             <TouchableOpacity
@@ -369,13 +397,65 @@ export default function Settings() {
                                 {isDeleting ? (
                                     <ActivityIndicator color="#ef4444" size="small" />
                                 ) : (
-                                    <Text className="font-semibold text-red-500">Delete Account</Text>
+                                    <Text className="font-semibold text-red-500">{t("delete_account")}</Text>
                                 )}
                             </TouchableOpacity>
                         </View>
                     </View>
 
                 </ScrollView>
+
+                <Modal
+                    visible={languageModalVisible}
+                    animationType="slide"
+                    transparent={true}
+                    onRequestClose={() => setLanguageModalVisible(false)}
+                >
+                    <TouchableOpacity
+                        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+                        activeOpacity={1}
+                        onPress={() => setLanguageModalVisible(false)}
+                    >
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            className="bg-surface rounded-t-3xl px-5"
+                            style={{ paddingBottom: insets.bottom }}
+                        >
+                            <View className="w-12 h-1.5 bg-gray-300 rounded-full self-center mb-6" />
+
+                            <View className="flex-row items-center justify-between mb-5">
+                                <Text className="text-xl font-bold text-ink">{t("select_language")}</Text>
+                                <TouchableOpacity
+                                    onPress={() => setLanguageModalVisible(false)}
+                                    className="p-2 -mr-2 bg-sand rounded-full"
+                                >
+                                    <MaterialIcons name="close" size={24} color="#f97316" />
+                                </TouchableOpacity>
+                            </View>
+
+                            {LANGUAGES.map((lang) => {
+                                const isSelected = i18n.language === lang.code;
+                                return (
+                                    <TouchableOpacity
+                                        key={lang.code}
+                                        onPress={() => changeLanguage(lang.code)}
+                                        className={`p-4 rounded-2xl mb-3 flex-row justify-between items-center border ${isSelected ? 'bg-brand/10 border-brand' : 'bg-sand border-transparent'
+                                            }`}
+                                    >
+                                        <Text className={`text-base ${isSelected ? 'font-bold text-brand' : 'text-ink font-medium'}`}>
+                                            {lang.label}
+                                        </Text>
+                                        {isSelected && (
+                                            <View className="bg-brand rounded-full p-1">
+                                                <MaterialIcons name="check" size={16} color="#FFF" />
+                                            </View>
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </Modal>
 
                 {/* --- LEGAL WEBVIEW MODAL --- */}
                 <Modal visible={legalModalVisible} animationType="slide" onRequestClose={() => setLegalModalVisible(false)}>

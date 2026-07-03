@@ -20,8 +20,7 @@ interface ChatState {
 const WELCOME: ChatMessage = {
   id: "welcome",
   role: "assistant",
-  content:
-    "Namaste 🙏 Tell me what you're feeling — for example \"I have anxiety\", \"I'm stressed\", \"I want better sleep\", or \"I have low energy\" — and I'll suggest a mudra from your library.",
+  content: "chat_welcome",
   createdAt: 0,
 };
 

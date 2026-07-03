@@ -8,9 +8,11 @@ import { useAppStore } from "@/store/useAppStore";
 import { getMudraImage } from "@/utils/images";
 import { AdBanner } from "@/ads/AdBanner";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 export default function MudraDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: mudra, isLoading } = useMudraBySlug(slug);
   const setPendingRecommendation = useAppStore(
@@ -21,7 +23,7 @@ export default function MudraDetail() {
   if (!mudra) {
     return (
       <View className="flex-1 items-center justify-center bg-sand">
-        <Text className="text-muted">Mudra not found.</Text>
+        <Text className="text-muted">{t("mudra_not_found")}</Text>
       </View>
     );
   }
@@ -29,7 +31,7 @@ export default function MudraDetail() {
   const buildRoutine = () => {
     setPendingRecommendation({
       mudra,
-      reason: "Selected from the mudra library.",
+      reason: t("selected_library"),
       suggestedDuration: mudra.duration,
       score: 0,
     });
@@ -41,7 +43,7 @@ export default function MudraDetail() {
 
   return (
     <SafeAreaView className="flex-1 bg-sand" edges={['bottom']}>
-      <Stack.Screen options={{ title: mudra.name }} />
+      <Stack.Screen options={{ title: t(mudra.name) }} />
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         <Image
           source={imageSource ?? undefined}
@@ -53,29 +55,29 @@ export default function MudraDetail() {
         <View className="p-5">
           <View className="flex-row items-center justify-between">
             <Text className="flex-1 text-2xl font-bold text-ink">
-              {mudra.name}
+              {t(mudra.name)}
             </Text>
             <View className="rounded-full bg-brand/10 px-3 py-1">
               <Text className="text-xs font-medium text-brand">
-                {mudra.duration} min
+                {mudra.duration} {t("min")}
               </Text>
             </View>
           </View>
           <Text className="mt-1 text-xs uppercase tracking-wide text-muted">
-            {mudra.category}
+            {t(mudra.category)}
           </Text>
 
           <Text className="mt-4 text-base leading-6 text-ink">
-            {mudra.description}
+            {t(mudra.description)}
           </Text>
 
           {mudra.benefits.length > 0 && (
             <View className="mt-6">
-              <SectionTitle>Benefits</SectionTitle>
+              <SectionTitle>{t("benefits")}</SectionTitle>
               {mudra.benefits.map((b, i) => (
                 <View key={i} className="mb-2 flex-row">
                   <Text className="mr-2 text-brand">✓</Text>
-                  <Text className="flex-1 text-sm text-ink">{b}</Text>
+                  <Text className="flex-1 text-sm text-ink">{t(b)}</Text>
                 </View>
               ))}
             </View>
@@ -83,14 +85,14 @@ export default function MudraDetail() {
 
           {mudra.instructions.length > 0 && (
             <View className="mt-6">
-              <SectionTitle>How to practice</SectionTitle>
+              <SectionTitle>{t("how_practice")}</SectionTitle>
               {mudra.instructions.map((step, i) => (
                 <View key={i} className="mb-3 flex-row">
                   <View className="mr-3 h-6 w-6 items-center justify-center rounded-full bg-brand">
                     <Text className="text-xs font-bold text-white">{i + 1}</Text>
                   </View>
                   <Text className="flex-1 text-sm leading-5 text-ink">
-                    {step}
+                    {t(step)}
                   </Text>
                 </View>
               ))}
@@ -98,7 +100,7 @@ export default function MudraDetail() {
           )}
         </View>
         <View className="absolute bottom-0 left-0 right-0 border-t border-brand-light/15 bg-sand p-4">
-          <Button label="Add to daily routine" onPress={buildRoutine} />
+          <Button label={t("add_daily")} onPress={buildRoutine} />
         </View>
       </ScrollView>
 
