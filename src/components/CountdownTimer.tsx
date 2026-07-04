@@ -109,7 +109,7 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
           style={{ opacity: 0.25 + progress * 0.75 }}
         />
         <Text className="text-5xl font-bold text-ink">{fmt(remaining)}</Text>
-        <Text className="mt-1 text-xs uppercase tracking-widest text-muted">
+        <Text className="mt-1 text-xs uppercase tracking-widest text-muted" numberOfLines={1}>
           {running ? t("in_practice") : remaining === 0 ? t("complete") : t("paused")}
         </Text>
       </View>

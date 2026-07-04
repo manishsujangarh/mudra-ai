@@ -7,7 +7,7 @@
  * `user_preferences` is a single-row table (enforced via a fixed primary key).
  */
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export const CREATE_STATEMENTS = [
   `CREATE TABLE IF NOT EXISTS mudras (
@@ -45,6 +45,8 @@ export const CREATE_STATEMENTS = [
     routine_id TEXT NOT NULL,
     completed INTEGER NOT NULL DEFAULT 0,
     completed_at TEXT,
+    pre_mood TEXT,
+    post_mood TEXT,
     FOREIGN KEY (routine_id) REFERENCES routines(id) ON DELETE CASCADE
   );`,
 

@@ -59,6 +59,8 @@ export interface Session {
   completed: boolean;
   /** ISO datetime, null until completed. */
   completedAt: string | null;
+  preMood?: string | null;
+  postMood?: string | null;
 }
 
 export interface UserPreferences {

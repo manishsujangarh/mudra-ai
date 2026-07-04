@@ -92,7 +92,7 @@ export default function RootLayout() {
           <StatusBar style={isDark ? "light" : "dark"} />
           {!ready ? (
             <LoadingScreen
-              message={error ? `Error: ${error}` : "Preparing your mudras…"}
+              message={error ? `Error: ${error}` : t("preparing")}
             />
           ) : (
             <Stack

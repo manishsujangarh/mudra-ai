@@ -220,7 +220,7 @@ export default function PremiumScreen() {
 
                 {/* Header Section */}
                 <View className="items-center mb-8">
-                    <Text className="font-black text-3xl text-black dark:text-white">
+                    <Text className="font-black p-2 text-3xl text-black dark:text-white" numberOfLines={1}>
                         {t("remove")} <Text className="text-orange-500">{t("ads")}</Text>
                     </Text>
                     <Text className="mt-2 text-base text-gray-500 dark:text-gray-400 text-center">
@@ -239,12 +239,12 @@ export default function PremiumScreen() {
                 {/* Single Plan Card */}
                 <View className="border-2 border-orange-500 rounded-2xl p-5 mb-6 bg-orange-50/50 dark:bg-orange-500/10">
                     <View className="flex-row justify-between items-center">
-                        <Text className="font-extrabold text-xl text-black dark:text-white">{product?.title || 'Lifetime Access'}</Text>
+                        <Text className="font-extrabold text-xl text-black dark:text-white">{product?.title || t('life_time')}</Text>
                         <View className="bg-orange-500 px-3 py-1 rounded-full">
-                            <Text className="text-white text-xs font-bold">Best Value</Text>
+                            <Text className="text-white text-xs font-bold" numberOfLines={1}>{t("best_value")}</Text>
                         </View>
                     </View>
-                    <Text className="mt-1 text-sm text-gray-600 dark:text-gray-400">Pay once, remove ads forever</Text>
+                    <Text className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t("life_time_sub")}</Text>
 
                     <View className="mt-4">
                         {isLoadingPrices ? (
@@ -266,7 +266,7 @@ export default function PremiumScreen() {
                     {isPurchasing ? (
                         <ActivityIndicator color="#ffffff" size="small" />
                     ) : (
-                        <Text className="font-bold text-lg text-white">Remove Ads Now</Text>
+                        <Text className="font-bold text-lg text-white" numberOfLines={1}>{t("remove_ads_now")}</Text>
                     )}
                 </TouchableOpacity>
 
@@ -281,19 +281,19 @@ export default function PremiumScreen() {
                 )}
 
                 <TouchableOpacity onPress={handleRestore} disabled={isPurchasing} className="mt-6 items-center p-2">
-                    <Text className="underline font-semibold text-gray-500 dark:text-gray-400">Restore Previous Purchase</Text>
+                    <Text className="underline font-semibold text-gray-500 dark:text-gray-400">{t("restore_previous")}</Text>
                 </TouchableOpacity>
 
                 {/* Legal & Terms Section */}
                 <View className="mt-8 items-center px-3">
                     <Text className="text-center leading-5 text-sm text-gray-500 dark:text-gray-400">
-                        By proceeding, you agree to our{' '}
+                        {t("agree")}{' '}
                         <Text className="font-bold text-orange-500" onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")}>
-                            Terms of Service
+                            {t("terms_full")}
                         </Text>
-                        {' '}and{' '}
+                        {' '}{t("and")}{' '}
                         <Text className="font-bold text-orange-500" onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")}>
-                            Privacy Policy
+                            {t("privacy_full")}
                         </Text>.
                     </Text>
                 </View>
