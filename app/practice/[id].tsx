@@ -10,6 +10,7 @@ import { Button, LoadingScreen, SectionTitle } from "@/components/ui";
 import { useRoutine } from "@/hooks/useRoutines";
 import { useCompleteSession } from "@/hooks/useSessions";
 import { getMudraImage } from "@/utils/images";
+import { Ionicons } from "@expo/vector-icons";
 
 // Mood Data with Translation Keys
 const PRE_MOODS = [
@@ -156,13 +157,16 @@ export default function Practice() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
-        <View className="items-center">
-          <Image
-            source={imageSource ?? undefined}
-            contentFit="cover"
-            style={{ height: 140, width: 140, borderRadius: 70 }}
-            className="bg-brand-light/30"
-          />
+        <View className="items-center mt-6 mb-8">
+          <View className="w-32 h-32 rounded-full items-center justify-center border border-brand/40 relative">
+            <View className="absolute w-36 h-36 rounded-full bg-orange-500/10 blur-2xl" />
+            <Image
+              source={imageSource ?? undefined}
+              contentFit="cover"
+              style={{ height: 110, width: 110, borderRadius: 55 }}
+              className="bg-slate-100 dark:bg-[#1A1A1A]"
+            />
+          </View>
         </View>
 
         <View className="mt-8">
@@ -172,7 +176,7 @@ export default function Practice() {
           />
         </View>
 
-        <View className="mt-10">
+        <View className="mt-10 mb-8">
           <Button
             label={timerDone ? t("complete_session") : t("complete_session_early")}
             onPress={() => setStep("post")}
@@ -181,24 +185,32 @@ export default function Practice() {
         </View>
 
         {mudra.instructions.length > 0 && (
-          <View className="mt-8">
-            <SectionTitle>{t("steps")}</SectionTitle>
+          <View className="mb-10">
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-base font-bold text-slate-900 dark:text-white">{t("steps") || "Steps"}</Text>
+              <Text className="text-xs text-slate-500 dark:text-gray-400">{mudra.instructions.length} {t("steps") || "Steps"}</Text>
+            </View>
             {mudra.instructions.map((step, i) => (
-              <View key={i} className="mb-2 flex-row">
-                <Text className="mr-2 font-bold text-brand">{i + 1}.</Text>
-                <Text className="flex-1 text-sm text-ink">{t(step)}</Text>
+              <View key={i} className="mb-3 flex-row items-start">
+                <View className="mr-3 h-5 w-5 items-center justify-center rounded-full bg-brand/10 border border-brand/20 mt-0.5">
+                  <Text className="text-[10px] font-bold text-brand">{i + 1}</Text>
+                </View>
+                <Text className="flex-1 text-sm leading-6 text-slate-600 dark:text-gray-300">{t(step)}</Text>
               </View>
             ))}
           </View>
         )}
 
         {mudra.benefits.length > 0 && (
-          <View className="mt-6">
-            <SectionTitle>{t("benefits")}</SectionTitle>
+          <View className="mb-8">
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-base font-bold text-slate-900 dark:text-white">{t("benefits") || "Benefits"}</Text>
+              <Text className="text-xs text-slate-500 dark:text-gray-400">{mudra.benefits.length} {t("benefits")?.toLowerCase() || "benefits"}</Text>
+            </View>
             {mudra.benefits.map((b, i) => (
-              <View key={i} className="mb-1 flex-row">
-                <Text className="mr-2 text-brand">✓</Text>
-                <Text className="flex-1 text-sm text-ink">{t(b)}</Text>
+              <View key={i} className="mb-2.5 flex-row items-start">
+                <Ionicons name="checkmark-circle-outline" size={18} color="#F97316" className="mt-0.5 mr-3" />
+                <Text className="flex-1 text-sm leading-6 text-slate-600 dark:text-gray-300">{t(b)}</Text>
               </View>
             ))}
           </View>

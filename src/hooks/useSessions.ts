@@ -5,6 +5,7 @@ import {
   getMoodInsights,
   getTotalCompletedSessions,
   hasCompletedToday,
+  getRecentSessions,
 } from "@/db/repositories/sessions";
 import { queryKeys } from "@/lib/queryClient";
 import { useAppStore } from "@/store/useAppStore";
@@ -38,6 +39,7 @@ export function useCompleteSession() {
       qc.invalidateQueries({ queryKey: queryKeys.routines });
       qc.invalidateQueries({ queryKey: queryKeys.stats });
       qc.invalidateQueries({ queryKey: ["completedToday", variables.routineId] });
+      qc.invalidateQueries({ queryKey: ["sessionHistory"] });
     },
   });
 }
@@ -47,6 +49,15 @@ export function useMoodInsights() {
   return useQuery({
     queryKey: ["moodInsights"],
     queryFn: getMoodInsights,
+    enabled: dbReady,
+  });
+}
+
+export function useSessionHistory() {
+  const dbReady = useAppStore((s) => s.dbReady);
+  return useQuery({
+    queryKey: ["sessionHistory"],
+    queryFn: getRecentSessions,
     enabled: dbReady,
   });
 }

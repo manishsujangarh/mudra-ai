@@ -161,3 +161,41 @@ export async function getMoodInsights() {
     totalAnalyzed: rows.length
   };
 }
+
+export async function getRecentSessions() {
+  const db = await getDatabase();
+
+  // SQL JOIN: sessions -> routines -> mudras
+  const rows = await db.getAllAsync<{
+    id: string;
+    completed_at: string;
+    pre_mood: string | null;
+    post_mood: string | null;
+    duration: number;
+    mudraName: string;
+  }>(
+    `SELECT 
+      s.id, 
+      s.completed_at, 
+      s.pre_mood, 
+      s.post_mood, 
+      r.duration, 
+      m.name AS mudraName
+    FROM sessions s
+    INNER JOIN routines r ON s.routine_id = r.id
+    INNER JOIN mudras m ON r.mudra_id = m.id
+    WHERE s.completed = 1
+    ORDER BY s.completed_at DESC 
+    LIMIT 20;` // पिछले 20 सेशंस लाएगा
+  );
+
+  // इसे frontend के लिए सही फॉर्मेट में मैप कर देते हैं
+  return rows.map((row) => ({
+    id: row.id,
+    createdAt: row.completed_at,
+    preMood: row.pre_mood,
+    postMood: row.post_mood,
+    duration: row.duration,
+    mudraName: row.mudraName,
+  }));
+}

@@ -13,6 +13,7 @@ import {
 } from "@/notifications";
 import { queryKeys } from "@/lib/queryClient";
 import { useAppStore } from "@/store/useAppStore";
+import { useTranslation } from "react-i18next";
 
 export function useActiveRoutines() {
   const dbReady = useAppStore((s) => s.dbReady);
@@ -34,6 +35,7 @@ export function useRoutine(id: string | undefined) {
 
 /** Create a routine AND schedule its daily reminder in one step. */
 export function useCreateRoutine() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: {
@@ -49,7 +51,7 @@ export function useCreateRoutine() {
       });
 
       const notificationId = await scheduleDailyReminder({
-        mudraName: input.mudraName,
+        mudraName: t(input.mudraName),
         time: input.reminderTime,
         routineId: routine.id,
       });

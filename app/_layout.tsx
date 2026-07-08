@@ -6,8 +6,8 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
-import { DeviceEventEmitter, Pressable, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { DeviceEventEmitter, Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { MobileAdsInitializer } from "@/ads/MobileAdsInitializer";
@@ -22,6 +22,68 @@ import { useTranslation } from "react-i18next";
 
 export default function RootLayout() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const syncMissedNotifications = async () => {
+      try {
+        const presentedNotifs = await Notifications.getPresentedNotificationsAsync();
+
+        const storedNotifs = await AsyncStorage.getItem("app_notifications");
+        const existingNotifs = storedNotifs ? JSON.parse(storedNotifs) : [];
+        let hasNew = false;
+
+        presentedNotifs.forEach((p) => {
+          const newNotif = {
+            id: p.request.identifier,
+            title: p.request.content.title,
+            desc: p.request.content.body,
+            time: p.date || Date.now(),
+            unread: true,
+            data: p.request.content.data,
+          };
+
+          if (!existingNotifs.some((n: any) => n.id === newNotif.id)) {
+            existingNotifs.unshift(newNotif);
+            hasNew = true;
+          }
+        });
+
+        if (hasNew) {
+          await AsyncStorage.setItem("app_notifications", JSON.stringify(existingNotifs));
+        }
+      } catch (error) {
+        console.error("Error syncing missed notifications:", error);
+      }
+    };
+
+    syncMissedNotifications();
+
+    const subscription = Notifications.addNotificationReceivedListener(async (notification) => {
+      const newNotif = {
+        id: notification.request.identifier,
+        title: notification.request.content.title,
+        desc: notification.request.content.body,
+        time: Date.now(),
+        unread: true,
+        data: notification.request.content.data,
+      };
+
+      try {
+        const storedNotifs = await AsyncStorage.getItem("app_notifications");
+        const existingNotifs = storedNotifs ? JSON.parse(storedNotifs) : [];
+
+        if (!existingNotifs.some((n: any) => n.id === newNotif.id)) {
+          const updatedNotifs = [newNotif, ...existingNotifs];
+          await AsyncStorage.setItem("app_notifications", JSON.stringify(updatedNotifs));
+        }
+      } catch (error) {
+        console.error("Error saving foreground notification", error);
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
   useEffect(() => {
     const initKeepAwake = async () => {
       try {
@@ -47,7 +109,6 @@ export default function RootLayout() {
   const isDark = colorScheme === "dark";
   const headerBackground = isDark ? "#121413" : "#F5F2F1";
   const headerTint = isDark ? "#F6F1EC" : "#111111";
-  const insects = useSafeAreaInsets();
   const router = useRouter();
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
@@ -101,6 +162,7 @@ export default function RootLayout() {
                 headerStyle: { backgroundColor: headerBackground },
                 headerTintColor: headerTint,
                 headerShadowVisible: false,
+                contentStyle: { backgroundColor: headerBackground },
                 headerRight: () => <SettingsHeaderRight />,
               }}
             >
