@@ -13,11 +13,15 @@ import { useColorScheme } from "nativewind";
 
 // Legal WebView 
 import { WebView } from "react-native-webview";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialIcons } from "@expo/vector-icons";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialIcons, Feather, AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import { LANGUAGES } from "../src/i18n";
 
 export default function Settings() {
     const router = useRouter();
+    const { t, i18n } = useTranslation();
+    const insets = useSafeAreaInsets();
 
     // --- STATES ---
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,6 +34,8 @@ export default function Settings() {
     const { colorScheme, setColorScheme } = useColorScheme();
     const isDark = colorScheme === "dark";
     const [isKeepAwake, setIsKeepAwake] = useState(true);
+
+    const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
     // --- LEGAL WEBVIEW STATES ---
     const [legalModalVisible, setLegalModalVisible] = useState(false);
@@ -95,6 +101,12 @@ export default function Settings() {
         DeviceEventEmitter.emit("KeepAwakeUpdated");
     };
 
+    const changeLanguage = async (langCode: string) => {
+        await AsyncStorage.setItem('language', langCode);
+        i18n.changeLanguage(langCode);
+        setLanguageModalVisible(false);
+    };
+
     // --- LEGAL WEBVIEW LOGIC ---
     const openLegalWebView = (url: string, title: string) => {
         setLegalUrl(url);
@@ -119,11 +131,11 @@ export default function Settings() {
             router.push("/premium");
         } else {
             Alert.alert(
-                "Login Required",
-                "Please log in to your account first to purchase the ad-free experience.",
+                t("login_required"),
+                t("login_required_sub"),
                 [
-                    { text: "Cancel", style: "cancel" },
-                    { text: "Log In", onPress: () => router.push("/(auth)/login") }
+                    { text: t("cancel"), style: "cancel" },
+                    { text: t("login"), onPress: () => router.push("/(auth)/login") }
                 ]
             );
         }
@@ -154,11 +166,11 @@ export default function Settings() {
 
     const handleLogoutPress = () => {
         Alert.alert(
-            "Log Out",
-            "Are you sure you want to log out? You will need to log in again.",
+            t("logout"),
+            t("logout_sub"),
             [
-                { text: "Cancel", style: "cancel" },
-                { text: "Log Out", style: "destructive", onPress: processLogout }
+                { text: t("cancel"), style: "cancel" },
+                { text: t("logout"), style: "destructive", onPress: processLogout }
             ]
         );
     };
@@ -181,11 +193,11 @@ export default function Settings() {
             setIsLoggedIn(false); setUserName(""); setIsPremium(false);
 
             Alert.alert(
-                "Success",
-                "Your account and data have been completely removed.",
+                t("success"),
+                t("removed_sub"),
                 [
                     {
-                        text: "OK", onPress: async () => {
+                        text: t("ok"), onPress: async () => {
                             try { await Updates.reloadAsync(); } catch (error) { router.replace("/(auth)/login"); }
                         }
                     }
@@ -200,196 +212,329 @@ export default function Settings() {
 
     const handleDeletePress = () => {
         const message = isLoggedIn
-            ? "Are you absolutely sure? All your data and cloud account will be erased."
-            : "Are you absolutely sure? All your saved routines and local app data will be erased.";
+            ? t("delete_cloud")
+            : t("delete_local");
 
         Alert.alert(
-            "Delete Account",
+            t("delete_account"),
             message,
             [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete Account", style: "destructive", onPress: processDeleteAccount }
+                { text: t("cancel"), style: "cancel" },
+                { text: t("delete_account"), style: "destructive", onPress: processDeleteAccount }
             ]
         );
     };
 
     return (
-        <Screen>
+        <Screen className="bg-slate-50 dark:bg-[#0A0A0A]">
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'top']}>
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="p-5 pb-10">
 
-                    <SectionTitle>Settings</SectionTitle>
+                {/* Custom Styled Header */}
+                <View className="flex-row items-center px-5 pt-2 pb-4">
+                    <TouchableOpacity onPress={() => router.back()} className="p-1 -ml-1">
+                        <MaterialIcons name="arrow-back" size={26} color="#F6F1EC" className="text-slate-900 dark:text-white" />
+                    </TouchableOpacity>
+                    <Text className="text-2xl font-black text-slate-900 dark:text-white ml-4">{t("settings")}</Text>
+                </View>
 
-                    {/* --- 1. PREFERENCES CARD (NEW) --- */}
-                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <Text className="text-lg font-semibold text-ink mb-4">Preferences</Text>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
 
-                        {/* Theme Switch */}
-                        <View className="flex-row items-center justify-between mb-4">
+                    {/* --- 1. PREFERENCES CARD --- */}
+                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
+                                <Feather name="settings" size={18} color="#f97316" />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-base font-bold text-slate-900 dark:text-white">{t("preferences")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("preferences_sub")}</Text>
+                            </View>
+                        </View>
+
+                        {/* Dark Mode Row */}
+                        <View className="flex-row items-center justify-between mb-4 pl-11">
                             <View className="flex-1 pr-4">
-                                <Text className="text-base font-medium text-ink">Dark Mode</Text>
-                                <Text className="text-sm text-muted mt-1">Change the app's appearance.</Text>
+                                <Text className="text-sm font-bold text-slate-900 dark:text-white">{t("dark_mode")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("dark_mode_sub") || "Change the app's appearance."}</Text>
                             </View>
                             <Switch
                                 value={isDark}
                                 onValueChange={toggleTheme}
                                 trackColor={{ false: "#D8D1C8", true: "#f97316" }}
-                                thumbColor={isDark ? "#F6F1EC" : "#FFFFFF"}
+                                thumbColor={isDark ? "#FFFFFF" : "#FFFFFF"}
                                 ios_backgroundColor="#D8D1C8"
                             />
                         </View>
 
-                        <View className="h-px bg-sand-deep/30 mb-4" />
-
-                        {/* Keep Awake Switch */}
-                        <View className="flex-row items-center justify-between">
+                        {/* Keep Awake Row */}
+                        <View className="flex-row items-center justify-between mb-4 pl-11">
                             <View className="flex-1 pr-4">
-                                <Text className="text-base font-medium text-ink">Keep Screen Awake</Text>
-                                <Text className="text-sm text-muted mt-1">Prevent screen from sleeping while practicing.</Text>
+                                <Text className="text-sm font-bold text-slate-900 dark:text-white">{t("keep_awake")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("keep_awake_sub") || "Prevent screen from sleeping while practicing."}</Text>
                             </View>
                             <Switch
                                 value={isKeepAwake}
                                 onValueChange={toggleKeepAwake}
                                 trackColor={{ false: "#D8D1C8", true: "#f97316" }}
-                                thumbColor={isKeepAwake ? "#F6F1EC" : "#FFFFFF"}
+                                thumbColor={isKeepAwake ? "#FFFFFF" : "#FFFFFF"}
                                 ios_backgroundColor="#D8D1C8"
                             />
                         </View>
+
+                        {/* Language Row */}
+                        <TouchableOpacity
+                            className="flex-row items-center justify-between pl-11"
+                            onPress={() => setLanguageModalVisible(true)}
+                        >
+                            <View className="flex-1 pr-4">
+                                <Text className="text-sm font-bold text-slate-900 dark:text-white">{t("language")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("language_sub") || "Change app language"}</Text>
+                            </View>
+                            <View className="flex-row items-center">
+                                <Text className="text-sm text-orange-500 font-bold mr-1">
+                                    {LANGUAGES.find(l => l.code === i18n.language)?.label || 'English'}
+                                </Text>
+                                <MaterialIcons name="chevron-right" size={20} color="#f97316" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
 
-                    {/* --- REMINDER SETTINGS CARD --- */}
-                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <Text className="text-lg font-semibold text-ink">Reminders</Text>
-                        <Text className="mt-2 text-sm text-muted">
-                            Update your preferred daily practice time.
-                        </Text>
-                        <View className="mt-4">
-                            <Button
-                                label="Edit Reminder Time"
-                                variant="secondary"
-                                onPress={() => {
-                                    router.push({
-                                        pathname: "/onboarding",
-                                        params: { mode: "edit_notification" } // Yahi wo param hai
-                                    });
-                                }}
-                            />
+                    {/* --- 2. REMINDERS CARD --- */}
+                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
+                                <Feather name="bell" size={18} color="#f97316" />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-base font-bold text-slate-900 dark:text-white">{t("reminders")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("reminders_sub") || "Update your preferred daily practice time."}</Text>
+                            </View>
                         </View>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.push({
+                                    pathname: "/onboarding",
+                                    params: { mode: "edit_notification" }
+                                });
+                            }}
+                            className="flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent ml-11"
+                        >
+                            <MaterialIcons name="calendar-today" size={16} color="#f97316" style={{ marginRight: 8 }} />
+                            <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("reminders_btn") || "Edit Reminder Time"}</Text>
+                        </TouchableOpacity>
                     </View>
 
-                    {/* --- 2. REMOVE ADS CARD --- */}
-                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <View className="flex-row items-center justify-between">
-                            <Text className="text-lg font-semibold text-ink">Ads Free Version</Text>
-                            {isPremium && <Text className="text-sm font-semibold text-brand">Purchased</Text>}
+                    {/* --- 3. ADS FREE VERSION CARD --- */}
+                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
+                                <FontAwesome5 name="gem" size={16} color="#f97316" />
+                            </View>
+                            <View className="flex-1">
+                                <View className="flex-row items-center justify-between">
+                                    <Text className="text-base font-bold text-slate-900 dark:text-white">{t("ads_free") || "Ads Free Version"}</Text>
+                                    {isPremium && <Text className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">{t("purchased")}</Text>}
+                                </View>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                    {isPremium ? t("purchased_sub") : (t("ads_free_sub") || "Remove banner and popup ads forever with a simple one-time purchase.")}
+                                </Text>
+                            </View>
                         </View>
-
-                        <Text className="mt-2 text-sm text-muted">
-                            {isPremium
-                                ? "You have successfully removed all banner and popup ads from the app."
-                                : "Remove banner and popup ads forever with a simple one-time purchase."}
-                        </Text>
 
                         {!isPremium && (
-                            <View className="mt-4">
-                                <Button label="Remove Ads" variant="secondary" onPress={handleRemoveAdsPress} />
-                            </View>
+                            <TouchableOpacity
+                                onPress={handleRemoveAdsPress}
+                                className="flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent ml-11"
+                            >
+                                <MaterialIcons name="ad-units" size={16} color="#f97316" style={{ marginRight: 8 }} />
+                                <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("remove_ads") || "Remove Ads"}</Text>
+                            </TouchableOpacity>
                         )}
                     </View>
 
-                    {/* --- 3. ACCOUNT CARD --- */}
-                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        {isLoggedIn ? (
-                            <>
+                    {/* --- 4. ACCOUNT CARD --- */}
+                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
+                                <Feather name="user" size={18} color="#f97316" />
+                            </View>
+                            <View className="flex-1">
                                 <View className="flex-row items-center justify-between">
-                                    <Text className="text-lg font-semibold text-ink">Account</Text>
-                                    <Text className="text-sm font-semibold text-brand">Logged In</Text>
+                                    <Text className="text-base font-bold text-slate-900 dark:text-white">{t("account")}</Text>
+                                    <Text className="text-xs font-bold text-slate-400 dark:text-gray-400">{isLoggedIn ? t("logedin") : (t("guest") || "Guest")}</Text>
                                 </View>
-                                <Text className="mt-2 text-sm text-muted">
-                                    Namaste, {userName || "Yogi"}. Your progress and routines are securely backed up to the cloud.
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                    {isLoggedIn
+                                        ? `${t("namaste")}, ${userName || t("yogi")}. ${t("yogi_sub")}`
+                                        : (t("guest_sub") || "Create an account to save your custom routines, track your progress, and back up your data.")
+                                    }
                                 </Text>
-                                <View className="mt-4">
-                                    <Button
-                                        label={isLoggingOut ? "Logging out..." : "Log Out"}
-                                        variant="secondary"
-                                        onPress={handleLogoutPress}
-                                        disabled={isLoggingOut}
-                                    />
-                                </View>
-                            </>
-                        ) : (
-                            <>
-                                <View className="flex-row items-center justify-between">
-                                    <Text className="text-lg font-semibold text-ink">Account</Text>
-                                    <Text className="text-sm font-semibold text-muted">Guest</Text>
-                                </View>
-                                <Text className="mt-2 text-sm text-muted">
-                                    Create an account to save your custom routines, track your progress, and back up your data.
-                                </Text>
-                                <View className="mt-4 flex-row justify-between gap-3">
-                                    <View className="flex-1">
-                                        <Button label="Log In" variant="secondary" onPress={() => router.push("/(auth)/login")} />
-                                    </View>
-                                    <View className="flex-1">
-                                        <Button label="Sign Up" variant="secondary" onPress={() => router.push("/(auth)/signup")} />
-                                    </View>
-                                </View>
-                            </>
-                        )}
-                    </View>
+                            </View>
+                        </View>
 
-                    {/* --- 4. LEGAL SECTION --- */}
-                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-sand-deep/20">
-                        <Text className="text-lg font-semibold text-ink">Legal</Text>
-                        <Text className="mt-2 text-sm text-muted">
-                            Read our terms of service and privacy policy to understand how we protect your data.
-                        </Text>
-                        <View className="mt-4 flex-row justify-between gap-3">
-                            <View className="flex-1">
-                                <Button label="Terms" variant="secondary" onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")} />
-                            </View>
-                            <View className="flex-1">
-                                <Button label="Privacy" variant="secondary" onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")} />
-                            </View>
+                        <View className="ml-11">
+                            {isLoggedIn ? (
+                                <TouchableOpacity
+                                    onPress={handleLogoutPress}
+                                    disabled={isLoggingOut}
+                                    className="flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                >
+                                    <MaterialIcons name="logout" size={16} color="#f97316" style={{ marginRight: 8 }} />
+                                    <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>
+                                        {isLoggingOut ? t("logouting") : t("logout")}
+                                    </Text>
+                                </TouchableOpacity>
+                            ) : (
+                                <View className="flex-row gap-3">
+                                    <TouchableOpacity
+                                        onPress={() => router.push("/(auth)/login")}
+                                        className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                    >
+                                        <MaterialIcons name="login" size={16} color="#f97316" style={{ marginRight: 6 }} />
+                                        <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("login")}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => router.push("/(auth)/signup")}
+                                        className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                    >
+                                        <Feather name="user-plus" size={15} color="#f97316" style={{ marginRight: 6 }} />
+                                        <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("sign_up")}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     </View>
 
-                    {/* --- 5. DANGER ZONE --- */}
-                    <View className="mt-4 rounded-3xl bg-surface p-5 border border-red-500/30">
-                        <Text className="text-lg font-semibold text-red-500">Danger Zone</Text>
-                        <Text className="mt-2 text-sm text-muted">
-                            Permanently delete your account and wipe all associated data. This action cannot be recovered.
-                        </Text>
-                        <View className="mt-4">
+                    {/* --- 5. LEGAL CARD --- */}
+                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
+                                <Feather name="shield" size={18} color="#f97316" />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-base font-bold text-slate-900 dark:text-white">{t("legal")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                    {t("legal_sub") || "Read our terms of service and privacy policy to understand how we protect your data."}
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View className="flex-row gap-3 ml-11">
                             <TouchableOpacity
-                                onPress={handleDeletePress}
-                                disabled={isDeleting}
-                                className={`w-full h-14 rounded-full items-center justify-center border border-red-500/50 ${isDeleting ? 'opacity-50' : ''}`}
+                                onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")}
+                                className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
                             >
-                                {isDeleting ? (
-                                    <ActivityIndicator color="#ef4444" size="small" />
-                                ) : (
-                                    <Text className="font-semibold text-red-500">Delete Account</Text>
-                                )}
+                                <MaterialIcons name="description" size={16} color="#f97316" style={{ marginRight: 6 }} />
+                                <Text className="text-orange-500 font-bold text-sm">{t("terms")}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")}
+                                className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                            >
+                                <Feather name="lock" size={15} color="#f97316" style={{ marginRight: 6 }} />
+                                <Text className="text-orange-500 font-bold text-sm">{t("privacy")}</Text>
                             </TouchableOpacity>
                         </View>
+                    </View>
+
+                    {/* --- 6. DANGER ZONE --- */}
+                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-red-500/20 p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-red-500/10 rounded-xl mr-3">
+                                <AntDesign name="warning" size={18} color="#ef4444" />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-base font-bold text-red-500">{t("danger_zone")}</Text>
+                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                    {t("danger_zone_sub") || "Permanently delete your account and wipe all associated data. This action cannot be recovered."}
+                                </Text>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity
+                            onPress={handleDeletePress}
+                            disabled={isDeleting}
+                            className="flex-row items-center justify-center border border-red-500/40 rounded-2xl py-3.5 bg-transparent ml-11"
+                        >
+                            {isDeleting ? (
+                                <ActivityIndicator color="#ef4444" size="small" />
+                            ) : (
+                                <>
+                                    <Feather name="trash-2" size={16} color="#ef4444" style={{ marginRight: 8 }} />
+                                    <Text className="text-red-500 font-bold text-sm" numberOfLines={1}>{t("delete_account")}</Text>
+                                </>
+                            )}
+                        </TouchableOpacity>
                     </View>
 
                 </ScrollView>
 
+                <Modal
+                    visible={languageModalVisible}
+                    animationType="slide"
+                    transparent={true}
+                    onRequestClose={() => setLanguageModalVisible(false)}
+                >
+                    <TouchableOpacity
+                        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+                        activeOpacity={1}
+                        onPress={() => setLanguageModalVisible(false)}
+                    >
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            className="bg-white dark:bg-[#1A1A1A] rounded-t-3xl px-5"
+                            style={{ paddingBottom: insets.bottom }}
+                        >
+                            <View className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full self-center mb-6 mt-3" />
+
+                            <View className="flex-row items-center justify-between mb-5">
+                                <Text className="text-xl font-bold text-slate-900 dark:text-white">{t("select_language")}</Text>
+                                <TouchableOpacity
+                                    onPress={() => setLanguageModalVisible(false)}
+                                    className="p-2 bg-slate-100 dark:bg-gray-800 rounded-full"
+                                >
+                                    <MaterialIcons name="close" size={20} color="#f97316" />
+                                </TouchableOpacity>
+                            </View>
+
+                            {LANGUAGES.map((lang) => {
+                                const isSelected = i18n.language === lang.code;
+                                return (
+                                    <TouchableOpacity
+                                        key={lang.code}
+                                        onPress={() => changeLanguage(lang.code)}
+                                        className={`p-4 rounded-2xl mb-3 flex-row justify-between items-center border ${isSelected ? 'bg-brand/10 border-brand' : 'bg-sand border-transparent'
+                                            }`}
+                                    >
+                                        <Text className={`text-base ${isSelected ? 'font-bold text-orange-500' : 'text-slate-900 dark:text-white font-medium'}`}>
+                                            {lang.label}
+                                        </Text>
+                                        {isSelected && (
+                                            <View className="bg-orange-500 rounded-full p-1">
+                                                <MaterialIcons name="check" size={14} color="#FFF" />
+                                            </View>
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </Modal>
+
                 {/* --- LEGAL WEBVIEW MODAL --- */}
                 <Modal visible={legalModalVisible} animationType="slide" onRequestClose={() => setLegalModalVisible(false)}>
-                    <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
+                    <SafeAreaView className="flex-1 bg-white dark:bg-[#0A0A0A]" edges={['top', 'bottom']}>
                         <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
                             <TouchableOpacity onPress={() => setLegalModalVisible(false)} className="p-1">
-                                <MaterialIcons name="close" size={28} color="#f97316" />
+                                <MaterialIcons name="close" size={26} color="#f97316" />
                             </TouchableOpacity>
-                            <Text className="text-lg font-bold text-black dark:text-white">{legalTitle}</Text>
+                            <Text className="text-lg font-bold text-slate-900 dark:text-white">{legalTitle}</Text>
                             <View className="w-7" />
                         </View>
-                        <View className="flex-1 bg-white dark:bg-zinc-950">
+                        <View className="flex-1 bg-white dark:bg-[#0A0A0A]">
                             {isLegalLoading && (
-                                <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-zinc-950">
+                                <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-[#0A0A0A]">
                                     <ActivityIndicator size="large" color="#f97316" />
                                 </View>
                             )}

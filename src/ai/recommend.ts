@@ -37,16 +37,19 @@ function toRecommendation(s: ScoredMudra, reason: string): Recommendation {
 }
 
 /** Local, offline explanation built purely from retrieved DB content. */
-function localExplain(top: ScoredMudra, condition: string): string {
+function localExplain(top: ScoredMudra, condition: string, t: any): string {
   const benefits =
     top.matchedBenefits.length > 0
       ? top.matchedBenefits
       : top.mudra.benefits.slice(0, 3);
-  const benefitText = benefits.map((b) => `• ${b}`).join("\n");
+
+  // 💡 Benefits को ट्रांसलेट किया जा रहा है
+  const benefitText = benefits.map((b) => `• ${t(b)}`).join("\n");
+
   return (
-    `For what you described ("${condition.trim()}"), I'd suggest **${top.mudra.name}**.\n\n` +
-    `Why it fits:\n${benefitText}\n\n` +
-    `Try practicing it for about ${clamp(top.mudra.duration, 5, 30)} minutes.`
+    `${t("local_explain_1")} "${condition.trim()}", ${t("local_explain_2")} **${t(top.mudra.name)}**.\n\n` +
+    `${t("local_explain_why")}\n${benefitText}\n\n` +
+    `${t("local_explain_try")} ${clamp(top.mudra.duration, 5, 30)} ${t("local_explain_mins")}`
   );
 }
 
@@ -74,14 +77,15 @@ interface AiJson {
  * Main entry point used by the chat screen and routine builder.
  */
 export async function recommendForCondition(
-  condition: string
+  condition: string,
+  t: any,
+  lang: string
 ): Promise<ChatResult> {
   const scored = await retrieveRelevantMudras(condition, 4);
 
   if (scored.length === 0) {
     return {
-      reply:
-        "I don't have a matching mudra in your library yet. Try syncing your mudra content, then ask again.",
+      reply: t("no_matching_mudra") || "I don't have a matching mudra in your library yet. Try syncing your mudra content, then ask again.",
       recommendation: null,
       candidates: [],
       usedAi: false,
@@ -97,7 +101,7 @@ export async function recommendForCondition(
   // ---- Offline / no-key path: deterministic local recommendation ----
   if (!client) {
     const top = scored[0];
-    const reply = localExplain(top, condition);
+    const reply = localExplain(top, condition, t);
     return {
       reply,
       recommendation: toRecommendation(top, reply),
@@ -111,12 +115,12 @@ export async function recommendForCondition(
     .map((s) => {
       const m = s.mudra;
       return [
-        `Name: ${m.name}`,
+        `Name: ${t(m.name)}`,
         `Slug: ${m.slug}`,
-        `Category: ${m.category}`,
+        `Category: ${t(m.category)}`,
         `Default duration (min): ${m.duration}`,
-        `Benefits: ${m.benefits.join("; ")}`,
-        `Description: ${m.description}`,
+        `Benefits: ${m.benefits.map(b => t(b)).join("; ")}`,
+        `Description: ${t(m.description)}`,
       ].join("\n");
     })
     .join("\n---\n");
@@ -127,7 +131,7 @@ export async function recommendForCondition(
       temperature: 0.4,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: SYSTEM_PROMPT + `\nIMPORTANT: Write your reply strictly in the language code: '${lang}'.` },
         {
           role: "user",
           content:
@@ -153,7 +157,7 @@ export async function recommendForCondition(
     );
     const reason = parsed.reason?.trim() || "Matched on your described condition.";
     const reply =
-      parsed.reply?.trim() || localExplain(chosen, condition);
+      parsed.reply?.trim() || localExplain(chosen, condition, t);
 
     const recommendation: Recommendation = {
       mudra: chosen.mudra,
@@ -171,7 +175,7 @@ export async function recommendForCondition(
   } catch {
     // Any API failure -> graceful local fallback (still grounded in DB).
     const top = scored[0];
-    const reply = localExplain(top, condition);
+    const reply = localExplain(top, condition, t);
     return {
       reply,
       recommendation: toRecommendation(top, reply),

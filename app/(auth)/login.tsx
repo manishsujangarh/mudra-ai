@@ -5,24 +5,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { MaterialIcons } from '@expo/vector-icons';
 import { apiFetch } from '../../src/lib/api';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginScreen() {
     const router = useRouter();
 
-    // Hardcoded for now, replace with actual i18n logic if needed
-    const t = (key: string) => {
-        const translations: any = {
-            login: 'Login', message: 'Welcome back to Mudra AI', password: 'Password',
-            email: 'Email', otp: 'OTP', email_address: 'Email Address',
-            keep_me_signed_in: 'Keep me signed in', forgot_password: 'Forgot Password?',
-            send: 'Send', dont_have_an_account: "Don't have an account?", sign_up: 'Sign Up',
-            alert: 'Alert', email_required: 'Email is required', password_required: 'Password is required',
-            success: 'Success', login_successful: 'Login successful!', error: 'Error',
-            correct_credentials: 'Check your credentials', failed_to_connect: 'Network error',
-            otp_sent_to_email: 'OTP sent to your email', failed_to_send_otp: 'Failed to send OTP'
-        };
-        return translations[key] || key;
-    };
+    const { t } = useTranslation();
 
     const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
     const [email, setEmail] = useState('');
@@ -162,7 +150,7 @@ export default function LoginScreen() {
 
                     {/* Heading */}
                     <View className="mb-8">
-                        <Text className="text-ink font-bold text-3xl mb-2">{t('login')}</Text>
+                        <Text className="text-ink font-bold text-3xl mb-2">{t('login_')}</Text>
                         <Text className="text-muted text-base">{t('message')}</Text>
                     </View>
 
@@ -181,7 +169,7 @@ export default function LoginScreen() {
                             className={`flex-1 py-3 items-center ${loginMethod === 'otp' ? 'border-b-2 border-brand' : ''}`}
                             onPress={() => setLoginMethod('otp')}
                         >
-                            <Text className={`text-base ${loginMethod === 'otp' ? 'text-brand font-bold' : 'text-muted'}`}>
+                            <Text className={`text-base ${loginMethod === 'otp' ? 'text-brand font-bold' : 'text-muted'}`} numberOfLines={1}>
                                 {t("email")} {t("otp")}
                             </Text>
                         </TouchableOpacity>
@@ -233,7 +221,7 @@ export default function LoginScreen() {
                             {isChecked && <MaterialIcons name="check" size={16} color="#FFF" />}
                         </TouchableOpacity>
                         <TouchableOpacity onPress={toggleCheckbox} activeOpacity={0.8}>
-                            <Text className="text-muted text-sm">{t('keep_me_signed_in')}</Text>
+                            <Text className="text-muted text-sm" numberOfLines={1}>{t('keep_me_signed_in')}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -245,7 +233,7 @@ export default function LoginScreen() {
                                 className={`w-full h-14 bg-brand rounded-full items-center justify-center ${loading ? 'opacity-70' : 'opacity-100'}`}
                                 onPress={handlePasswordLogin}
                             >
-                                {loading ? <ActivityIndicator color="#FFF" /> : <Text className="text-white text-lg font-bold">{t('login')}</Text>}
+                                {loading ? <ActivityIndicator color="#FFF" /> : <Text className="text-white text-lg font-bold" numberOfLines={1}>{t('login')}</Text>}
                             </TouchableOpacity>
 
                             <TouchableOpacity className="mt-4 self-start" onPress={() => router.push('/(auth)/forgot-password')} disabled={loading}>
@@ -258,7 +246,7 @@ export default function LoginScreen() {
                             className={`w-full h-14 bg-brand rounded-full items-center justify-center ${otpLoading ? 'opacity-70' : 'opacity-100'}`}
                             onPress={handleSendOTP}
                         >
-                            {otpLoading ? <ActivityIndicator color="#FFF" /> : <Text className="text-white text-lg font-bold">{t("send")} {t("otp")}</Text>}
+                            {otpLoading ? <ActivityIndicator color="#FFF" /> : <Text className="text-white text-lg font-bold" numberOfLines={1}>{t("send")} {t("otp")}</Text>}
                         </TouchableOpacity>
                     )}
 
@@ -266,7 +254,7 @@ export default function LoginScreen() {
                     <View className="flex-row justify-center mt-10">
                         <Text className="text-muted text-base">{t('dont_have_an_account')} </Text>
                         <TouchableOpacity onPress={() => router.push('/(auth)/signup')} disabled={loading || otpLoading}>
-                            <Text className="text-brand font-bold text-base ml-1">{t('sign_up')}</Text>
+                            <Text className="text-brand font-bold text-base ml-1" numberOfLines={1}>{t('sign_up')}</Text>
                         </TouchableOpacity>
                     </View>
 

@@ -7,9 +7,11 @@ import { Chip, EmptyState, Screen, SectionTitle } from "@/components/ui";
 import { useCategories, useFilteredMudras, useMudras } from "@/hooks/useMudras";
 import { useAppStore } from "@/store/useAppStore";
 import { AdBanner } from "@/ads/AdBanner";
+import { useTranslation } from "react-i18next";
 
 export default function Search() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: results = [], isLoading } = useFilteredMudras();
   const { data: categories = [] } = useCategories();
   const { data: allMudras = [] } = useMudras();
@@ -26,25 +28,25 @@ export default function Search() {
     const keywords = ["anxiety", "stress", "sleep", "energy", "focus", "digestion"];
     const present = new Set<string>();
     for (const m of allMudras) {
-      const joined = m.benefits.join(" ").toLowerCase();
+      const joined = m.benefits.map((key) => t(key)).join(" ").toLowerCase();
       keywords.forEach((k) => {
-        if (joined.includes(k)) present.add(k);
+        if (joined.includes(t(k))) present.add(k);
       });
     }
     return [...present];
-  }, [allMudras]);
+  }, [allMudras, t]);
 
   return (
     <Screen>
       <View className="px-5 pt-3">
-        <Text className="text-2xl font-bold text-ink">Explore Mudras</Text>
+        <Text className="text-2xl font-bold text-ink">{t("explore_mudras")}</Text>
 
         <View className="mt-3 flex-row items-center rounded-2xl bg-surface px-4">
           <Text className="text-base">🔍</Text>
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search mudras or benefits…"
+            placeholder={t("search_placeholder")}
             placeholderTextColor="#9AA8A4"
             className="flex-1 py-3 pl-2 text-base text-ink"
           />
@@ -52,12 +54,12 @@ export default function Search() {
 
         {benefitFilters.length > 0 && (
           <View className="mt-3">
-            <SectionTitle>Filter by benefit</SectionTitle>
+            <SectionTitle>{t("filter_benefit")}</SectionTitle>
             <View className="flex-row flex-wrap">
               {benefitFilters.map((b) => (
                 <Chip
                   key={b}
-                  label={b}
+                  label={t(b)}
                   active={selectedBenefit === b}
                   onPress={() =>
                     setSelectedBenefit(selectedBenefit === b ? null : b)
@@ -70,12 +72,12 @@ export default function Search() {
 
         {categories.length > 0 && (
           <View className="mt-1">
-            <SectionTitle>Filter by category</SectionTitle>
+            <SectionTitle>{t("filter_category")}</SectionTitle>
             <View className="flex-row flex-wrap">
               {categories.map((c) => (
                 <Chip
                   key={c}
-                  label={c}
+                  label={t(c)}
                   active={selectedCategory === c}
                   onPress={() =>
                     setSelectedCategory(selectedCategory === c ? null : c)
@@ -100,8 +102,8 @@ export default function Search() {
         ListEmptyComponent={
           isLoading ? null : (
             <EmptyState
-              title="No matching mudras"
-              subtitle="Try clearing your filters or a different search."
+              title={t("no_match")}
+              subtitle={t("no_match_sub")}
             />
           )
         }

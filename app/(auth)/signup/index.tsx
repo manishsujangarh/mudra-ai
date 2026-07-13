@@ -7,6 +7,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { apiFetch } from '../../../src/lib/api';
 import { Button } from "@/components/ui"; // 👉 Custom Button Use Kiya Hai
 import WebView from 'react-native-webview';
+import { useTranslation } from 'react-i18next';
 
 export default function SignupScreen() {
     const router = useRouter();
@@ -25,20 +26,7 @@ export default function SignupScreen() {
         { name: "United States", code: "US", dialCode: "+1", flag: "🇺🇸" },
     ];
 
-    const t = (key: string) => {
-        const translations: any = {
-            join: 'Join Mudra AI', start_experience: 'Create an account to start your journey.',
-            name: 'Full Name', enter_your_name: 'e.g. Rishi Swami', phone_number: 'Phone Number',
-            email_address: 'Email Address', password: 'Password', i_agree_to_7pranayama: 'I agree to the',
-            terms_conditions: 'Terms & Conditions', sign_up: 'Sign Up', already_have_account: 'Already have an account?',
-            login: 'Login', alert: 'Alert', success: 'Success', error: 'Error',
-            please_enter_your_name: 'Please enter your name', please_enter_valid_email: 'Please enter a valid email',
-            please_enter_your_password: 'Please enter a password', password_validation_error: 'Password cannot contain spaces',
-            otp_sent_to_email: 'OTP sent to your email', failed_to_send_otp: 'Failed to send OTP'
-        };
-        return translations[key] || key;
-    };
-
+    const { t } = useTranslation();
     const nameInputRef = useRef<TextInput>(null);
     const phoneInputRef = useRef<TextInput>(null);
     const emailInputRef = useRef<TextInput>(null);
@@ -113,7 +101,7 @@ export default function SignupScreen() {
                 method: 'POST',
                 body: JSON.stringify({ email, type: 'signup', app_source: 'mudra' })
             });
-            
+
             if (otpData.success) {
                 showToast({ message: t('success'), description: t('otp_sent_to_email'), type: 'success' });
                 setTimeout(() => {
@@ -192,8 +180,12 @@ export default function SignupScreen() {
                             {isChecked && <MaterialIcons name="check" size={16} color="white" />}
                         </TouchableOpacity>
                         <View className="flex-row flex-wrap flex-1">
-                            <Text className="text-muted text-sm">{t('i_agree_to_7pranayama')} </Text>
-                            <TouchableOpacity onPress={() => openLegalWebView("https://7pranayama.com/terms", t('terms_conditions'))}><Text className="text-brand text-sm font-medium underline">{t('terms_conditions')}</Text></TouchableOpacity>
+                            <Text className="text-muted text-sm">{t('i_agree_to_mudra')} </Text>
+                            <TouchableOpacity onPress={() => openLegalWebView("https://7pranayama.com/terms", 'Terms & Conditions')}>
+                                <Text className="text-brand text-sm font-medium underline" numberOfLines={1}>
+                                    {t('terms_conditions')}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -201,7 +193,7 @@ export default function SignupScreen() {
 
                     <View className="flex-row justify-center mt-8">
                         <Text className="text-muted text-base">{t('already_have_account')} </Text>
-                        <TouchableOpacity onPress={() => router.replace('/(auth)/login')}><Text className="text-brand font-bold text-base ml-1">{t('login')}</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => router.replace('/(auth)/login')}><Text className="text-brand font-bold text-base ml-1" numberOfLines={1}>{t('login')}</Text></TouchableOpacity>
                     </View>
                 </Animated.View>
             </ScrollView>

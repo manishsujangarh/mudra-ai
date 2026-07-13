@@ -1,124 +1,173 @@
-import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
-
-import { StreakBadge } from "@/components/StreakBadge";
-import { Button, EmptyState, SectionTitle } from "@/components/ui";
+import { useState, useCallback } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { ScrollView, View, LayoutAnimation } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import { Screen } from "@/components/ui";
-import { useActiveRoutines } from "@/hooks/useRoutines";
-import { useStats } from "@/hooks/useSessions";
-import { useTodaysMudra } from "@/hooks/useTodaysMudra";
-import { formatTime } from "@/lib/utils";
-import { getMudraImage } from "@/utils/images";
+import { HomeHeader } from "@/components/home/HomeHeader";
+import { MoodSelector } from "@/components/home/MoodSelector";
+import { HeroCard } from "@/components/home/HeroCard";
+import { MoodTrackingWidget } from "@/components/home/MoodTrackingWidget";
+import { ProgressWidget } from "@/components/home/ProgressWidget";
+import { PlanWidget } from "@/components/home/PlanWidget";
+import { QuickReliefWidget } from "@/components/home/QuickReliefWidget";
 import { AdBanner } from "@/ads/AdBanner";
+import { useActiveRoutines, useCreateRoutine } from "@/hooks/useRoutines";
+import { useStats, useMoodInsights } from "@/hooks/useSessions";
+import { useTodaysMudra } from "@/hooks/useTodaysMudra";
+import { PlanData, useAppStore } from "@/store/useAppStore";
 
 export default function Home() {
+  const { t } = useTranslation();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const { data: todaysMudra } = useTodaysMudra();
   const { data: routines = [] } = useActiveRoutines();
   const { data: totalSessions = 0 } = useStats();
+  const { data: insights } = useMoodInsights();
+  const { mutateAsync: createRoutine, isPending: isCreating } = useCreateRoutine();
 
-  const activeRoutine = routines[0];
+  // App Store (Zustand)
+  const activePlans = useAppStore((s) => s.activePlans);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [loadingMudraId, setLoadingMudraId] = useState<string | null>(null);
+  const [savedMudras, setSavedMudras] = useState<string[]>([]);
+
   const topStreak = routines.reduce((max, r) => Math.max(max, r.streak), 0);
+  const totalMinutes = totalSessions * 10;
+  const consistencyRate = insights?.successRate ? Math.round(insights.successRate * 100) : 92;
 
-  const imageSource = getMudraImage(todaysMudra?.imageUrl);
+  useFocusEffect(
+    useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      queryClient.invalidateQueries({ queryKey: ["moodInsights"] });
+    }, [queryClient])
+  );
 
+  // 📌 Handlers
+  const handleMoodSelect = (moodId: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSelectedMood(selectedMood === moodId ? null : moodId);
+  };
+
+  const handleSaveMudra = (mudraId: string) => {
+    if (savedMudras.includes(mudraId)) {
+      setSavedMudras(savedMudras.filter(id => id !== mudraId));
+    } else {
+      setSavedMudras([...savedMudras, mudraId]);
+    }
+  };
+
+  const handleStartPractice = async (mudraId: string, mudraNameKey: string, duration: number) => {
+    try {
+      setLoadingMudraId(mudraId);
+      const existingRoutine = routines.find((r) => r.mudra.id === mudraId);
+
+      if (existingRoutine) {
+        router.push(`/practice/${existingRoutine.id}`);
+      } else {
+        const newRoutine = await createRoutine({
+          mudraId: mudraId,
+          mudraName: t(mudraNameKey),
+          reminderTime: "07:30",
+          duration: duration,
+        });
+        router.push(`/practice/${newRoutine.id}`);
+      }
+    } catch (error) {
+      console.error("Failed to start practice:", error);
+    } finally {
+      setLoadingMudraId(null);
+    }
+  };
+
+  // 🔥 Multi-Plan Continue Logic (With Safety Bypass)
+  const handleContinuePlan = async (plan: PlanData) => {
+    try {
+      const mudraIndex = plan.currentDay - 1;
+      let targetMudraId = plan.mudrasPerDay[mudraIndex] || plan.mudrasPerDay[0];
+
+      if (routines && routines.length > 0) {
+        const isValidId = routines.some(r => r.mudra.id === targetMudraId);
+        if (!isValidId) {
+          targetMudraId = routines[0].mudra.id;
+        }
+      }
+
+      const existingRoutine = routines?.find((r) => r.mudra.id === targetMudraId);
+
+      if (existingRoutine) {
+        router.push(`/practice/${existingRoutine.id}`);
+      } else {
+        const newRoutine = await createRoutine({
+          mudraId: targetMudraId,
+          mudraName: "Challenge Practice",
+          reminderTime: "08:00",
+          duration: 5,
+        });
+        router.push(`/practice/${newRoutine.id}`);
+      }
+    } catch (error) {
+      console.error("Failed to auto-create and start plan routine:", error);
+    }
+  };
+
+  // 📝 Hero Card formatting
+  const currentMudra = todaysMudra ? {
+    id: todaysMudra.id,
+    name: todaysMudra.name || "Adi Mudra",
+    description: todaysMudra.description || "Calms the nervous system and prepares your mind for deep restful sleep.",
+    imageUrl: todaysMudra.imageUrl,
+    duration: todaysMudra.duration || 10,
+    best_time: "before_bed",
+    tag: "best_for_sleep"
+  } : null;
+
+  const isMudraSaved = currentMudra ? savedMudras.includes(currentMudra.id) : false;
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
-        <View className="mt-2 flex-row items-center justify-between">
-          <View>
-            <Text className="text-sm text-muted">Namaste 🙏</Text>
-            <Text className="text-2xl font-bold text-ink">Your practice</Text>
-          </View>
-          <StreakBadge streak={topStreak} />
-        </View>
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 60 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <HomeHeader />
 
-        {/* Today's Mudra */}
-        <View className="mt-6">
-          <SectionTitle>Today's Mudra</SectionTitle>
-          {todaysMudra ? (
-            <Pressable
-              onPress={() => router.push(`/mudra/${todaysMudra.slug}`)}
-              className="overflow-hidden rounded-3xl bg-brand active:opacity-90"
-            >
-              <Image
-                source={imageSource ?? undefined}
-                contentFit="contain"
-                style={{ height: 160, width: "100%" }}
-                className="bg-brand-light/30"
-              />
-              <View className="p-5">
-                <Text className="text-xl font-bold text-white">
-                  {todaysMudra.name}
-                </Text>
-                <Text className="mt-1 text-sm text-white/80" numberOfLines={2}>
-                  {todaysMudra.description}
-                </Text>
-                <Text className="mt-2 text-xs font-medium text-white/90">
-                  Suggested · {todaysMudra.duration} min
-                </Text>
-              </View>
-            </Pressable>
-          ) : (
-            <EmptyState title="No mudras yet" subtitle="Content is syncing…" />
-          )}
-        </View>
+        <MoodSelector
+          selectedMood={selectedMood}
+          onMoodSelect={handleMoodSelect}
+        />
 
-        {/* Active Routine */}
-        <View className="mt-6">
-          <SectionTitle>Active Routine</SectionTitle>
-          {activeRoutine ? (
-            <View className="rounded-3xl bg-surface p-5">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-lg font-semibold text-ink">
-                  {activeRoutine.mudra.name}
-                </Text>
-                <StreakBadge streak={activeRoutine.streak} />
-              </View>
-              <Text className="mt-1 text-sm text-muted">
-                Daily at {formatTime(activeRoutine.reminderTime)} ·{" "}
-                {activeRoutine.duration} min
-              </Text>
-              <View className="mt-4">
-                <Button
-                  label="Start Practice"
-                  onPress={() => router.push(`/practice/${activeRoutine.id}`)}
-                />
-              </View>
-            </View>
-          ) : (
-            <View className="rounded-3xl bg-surface p-5">
-              <Text className="text-sm text-muted">
-                No routine yet. Ask the AI Guide for a recommendation, then
-                build a daily routine.
-              </Text>
-              <View className="mt-4">
-                <Button
-                  label="Ask AI Guide"
-                  variant="secondary"
-                  onPress={() => router.push("/(tabs)/chat")}
-                />
-              </View>
-            </View>
-          )}
-        </View>
+        <HeroCard
+          mudra={currentMudra}
+          isLoading={loadingMudraId === currentMudra?.id}
+          isSaved={isMudraSaved}
+          onStartPractice={handleStartPractice}
+          onSaveMudra={handleSaveMudra}
+        />
 
-        {/* Stats */}
-        <View className="mt-6 flex-row gap-3">
-          <View className="flex-1 rounded-3xl bg-surface p-5">
-            <Text className="text-3xl font-bold text-brand">{topStreak}</Text>
-            <Text className="text-xs text-muted">Best streak</Text>
-          </View>
-          <View className="flex-1 rounded-3xl bg-surface p-5">
-            <Text className="text-3xl font-bold text-brand">
-              {totalSessions}
-            </Text>
-            <Text className="text-xs text-muted">Sessions done</Text>
-          </View>
-        </View>
-        <View className="mt-6" style={{ marginHorizontal: -20 }}>
+        <MoodTrackingWidget insights={insights} />
+
+        <ProgressWidget
+          topStreak={topStreak}
+          totalMinutes={totalMinutes}
+          totalSessions={totalSessions}
+          consistencyRate={consistencyRate}
+        />
+
+        {/* <PlanWidget
+          activePlans={activePlans}
+          onContinuePlan={handleContinuePlan}
+        /> */}
+
+        <QuickReliefWidget
+          routines={routines}
+          onStartPractice={handleStartPractice}
+          isCreating={isCreating}
+        />
+        <View className="mt-8" style={{ marginHorizontal: -20 }}>
           <AdBanner />
         </View>
       </ScrollView>

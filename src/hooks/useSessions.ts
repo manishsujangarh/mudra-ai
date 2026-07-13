@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   completeSession,
+  getMoodInsights,
   getTotalCompletedSessions,
   hasCompletedToday,
+  getRecentSessions,
 } from "@/db/repositories/sessions";
 import { queryKeys } from "@/lib/queryClient";
 import { useAppStore } from "@/store/useAppStore";
@@ -30,11 +32,32 @@ export function useCompletedToday(routineId: string | undefined) {
 export function useCompleteSession() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (routineId: string) => completeSession(routineId),
-    onSuccess: (_data, routineId) => {
+    mutationFn: (data: { routineId: string; preMood?: string | null; postMood?: string | null }) =>
+      completeSession(data.routineId, data.preMood, data.postMood),
+
+    onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.routines });
       qc.invalidateQueries({ queryKey: queryKeys.stats });
-      qc.invalidateQueries({ queryKey: ["completedToday", routineId] });
+      qc.invalidateQueries({ queryKey: ["completedToday", variables.routineId] });
+      qc.invalidateQueries({ queryKey: ["sessionHistory"] });
     },
+  });
+}
+
+export function useMoodInsights() {
+  const dbReady = useAppStore((s) => s.dbReady);
+  return useQuery({
+    queryKey: ["moodInsights"],
+    queryFn: getMoodInsights,
+    enabled: dbReady,
+  });
+}
+
+export function useSessionHistory() {
+  const dbReady = useAppStore((s) => s.dbReady);
+  return useQuery({
+    queryKey: ["sessionHistory"],
+    queryFn: getRecentSessions,
+    enabled: dbReady,
   });
 }

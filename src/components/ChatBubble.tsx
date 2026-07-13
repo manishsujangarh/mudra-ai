@@ -1,9 +1,11 @@
 import { Text, View } from "react-native";
 
 import { ChatMessage } from "@/types";
+import { useTranslation } from "react-i18next";
 
 export function ChatBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === "user";
+  const { t } = useTranslation();
   return (
     <View
       className={`mb-3 max-w-[82%] ${isUser ? "self-end" : "self-start"}`}
@@ -18,7 +20,7 @@ export function ChatBubble({ message }: { message: ChatMessage }) {
         <Text
           className={`text-[15px] leading-5 ${isUser ? "text-white" : "text-ink"}`}
         >
-          {message.content}
+          {t(message.content)}
         </Text>
       </View>
     </View>

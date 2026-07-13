@@ -1,6 +1,9 @@
 import { useAudioPlayer } from "expo-audio";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Pressable, Text, View, useColorScheme } from "react-native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Svg, { Circle } from "react-native-svg"; // 👈 SVG इम्पोर्ट किया
 
 interface Props {
   /** Total duration in minutes. */
@@ -14,17 +17,18 @@ function fmt(totalSeconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-/**
- * Practice countdown timer with start/pause/reset. Fires onComplete once when
- * it reaches zero. Uses setInterval (1s tick) — fine for a foreground timer.
- */
 export function CountdownTimer({ minutes, onComplete }: Props) {
   const total = Math.max(1, Math.round(minutes * 60));
+  const { t } = useTranslation();
+  const colorScheme = useColorScheme(); // 👈 डार्क/लाइट थीम डिटेक्ट करने के लिए
+  
   const [remaining, setRemaining] = useState(total);
   const [running, setRunning] = useState(false);
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const bellTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const firedRef = useRef(false);
+
   const meditationPlayer = useAudioPlayer(
     require("../../assets/audio/meditation.wav")
   );
@@ -70,9 +74,7 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
             void bellPlayer.seekTo(0);
           }, 2000);
         })
-        .catch(() => {
-          // The player can be released if the screen unmounts during the seek.
-        });
+        .catch(() => {});
       onComplete?.();
       return () => {
         cancelled = true;
@@ -86,7 +88,6 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
       meditationPlayer.play();
       return;
     }
-
     meditationPlayer.pause();
   }, [meditationPlayer, remaining, running]);
 
@@ -97,48 +98,107 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
     };
   }, []);
 
-  const progress = 1 - remaining / total;
+  const resetTimer = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (bellTimeoutRef.current) clearTimeout(bellTimeoutRef.current);
+    firedRef.current = false;
+    setRunning(false);
+    setRemaining(total);
+    meditationPlayer.pause();
+    bellPlayer.pause();
+    void meditationPlayer.seekTo(0);
+    void bellPlayer.seekTo(0);
+  };
+
+  // 🧮 SVG Circle Math 
+  const size = 260; // टाइमर का साइज
+  const strokeWidth = 10; // लाइन की मोटाई
+  const center = size / 2;
+  const radius = center - strokeWidth;
+  const circumference = 2 * Math.PI * radius;
+  
+  const progress = remaining / total; 
+  const strokeDashoffset = circumference - (progress * circumference);
+
+  // 🎨 डार्क और लाइट मोड के हिसाब से बैकग्राउंड रिंग का कलर
+  const trackColor = colorScheme === 'dark' ? '#1E293B' : '#E2E8F0'; 
+  const brandColor = '#F97316'; // आपका ऑरेंज थीम कलर
 
   return (
-    <View className="items-center">
-      <View className="h-56 w-56 items-center justify-center rounded-full border-8 border-brand/15">
-        <View
-          className="absolute h-56 w-56 rounded-full border-8 border-brand"
-          style={{ opacity: 0.25 + progress * 0.75 }}
-        />
-        <Text className="text-5xl font-bold text-ink">{fmt(remaining)}</Text>
-        <Text className="mt-1 text-xs uppercase tracking-widest text-muted">
-          {running ? "in practice" : remaining === 0 ? "complete" : "paused"}
-        </Text>
+    <View className="items-center w-full">
+
+      {/* 🌟 Circular Timer UI (SVG) */}
+      <View className="items-center justify-center relative" style={{ width: size, height: size }}>
+        
+        {/* SVG Progress Ring */}
+        <Svg width={size} height={size} style={{ transform: [{ rotate: "-90deg" }] }}>
+          {/* Background Track Circle */}
+          <Circle
+            cx={center}
+            cy={center}
+            r={radius}
+            stroke={trackColor}
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+          {/* Animated Progress Circle */}
+          <Circle
+            cx={center}
+            cy={center}
+            r={radius}
+            stroke={brandColor}
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round" // 👈 इससे लाइन के किनारे गोल (Smooth) दिखेंगे
+          />
+        </Svg>
+
+        {/* Center Text (Timer & Subtitle) */}
+        <View className="absolute items-center justify-center">
+          <Text className="text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+            {fmt(remaining)}
+          </Text>
+          <Text className="mt-2 text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-gray-400">
+            {running ? t("remaining") || "REMAINING" : remaining === 0 ? t("complete") || "COMPLETE" : t("paused") || "PAUSED"}
+          </Text>
+        </View>
+
       </View>
 
-      <View className="mt-8 flex-row gap-3">
+      {/* ⏯️ Controls (Buttons) */}
+      <View className="mt-8 flex-row justify-center gap-4 w-full px-5">
+
+        {/* Play/Pause Button */}
         {remaining > 0 && (
           <Pressable
             onPress={() => setRunning((r) => !r)}
-            className="rounded-2xl bg-brand px-8 py-4 active:opacity-80"
+            className="flex-row items-center justify-center bg-brand px-8 py-4 rounded-2xl active:opacity-80 flex-1 max-w-[160px]"
           >
-            <Text className="text-base font-semibold text-white">
-              {running ? "Pause" : remaining === total ? "Start" : "Resume"}
+            <Ionicons
+              name={running ? "pause" : "play"}
+              size={18}
+              color="white"
+              className="mr-2"
+            />
+            <Text className="text-base font-bold text-white">
+              {running ? t("pause") || "Pause" : remaining === total ? t("start") || "Start" : t("resume") || "Resume"}
             </Text>
           </Pressable>
         )}
+
+        {/* Reset Button */}
         <Pressable
-          onPress={() => {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            if (bellTimeoutRef.current) clearTimeout(bellTimeoutRef.current);
-            firedRef.current = false;
-            setRunning(false);
-            setRemaining(total);
-            meditationPlayer.pause();
-            bellPlayer.pause();
-            void meditationPlayer.seekTo(0);
-            void bellPlayer.seekTo(0);
-          }}
-          className="rounded-2xl border border-brand bg-surface px-6 py-4 active:opacity-80"
+          onPress={resetTimer}
+          className="flex-row items-center justify-center border border-slate-300 dark:border-gray-700 bg-white dark:bg-[#1A1A1A] px-6 py-4 rounded-2xl active:bg-slate-100 dark:active:bg-[#262626]"
         >
-          <Text className="text-base font-semibold text-brand">Reset</Text>
+          <MaterialCommunityIcons name="reload" size={18} color="#F97316" className="mr-2" />
+          <Text className="text-base font-bold text-slate-700 dark:text-gray-300">
+            {t("reset") || "Reset"}
+          </Text>
         </Pressable>
+
       </View>
     </View>
   );

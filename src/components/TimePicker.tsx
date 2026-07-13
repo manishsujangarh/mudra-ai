@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { formatTime, parseTime } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   value: string; // "HH:mm"
@@ -12,6 +13,7 @@ const PRESETS = ["06:00", "07:30", "12:30", "18:00", "19:30", "21:00"];
 
 /** Lightweight time picker: quick presets + +/- steppers. No native deps. */
 export function TimePicker({ value, onChange }: Props) {
+  const { t } = useTranslation();
   const { hour, minute } = useMemo(() => parseTime(value), [value]);
   const [h, setH] = useState(hour);
   const [m, setM] = useState(minute);
@@ -34,19 +36,17 @@ export function TimePicker({ value, onChange }: Props) {
               const t = parseTime(p);
               apply(t.hour, t.minute);
             }}
-            className={`mr-2 mb-2 rounded-full px-3 py-2 ${
-              `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` === p
+            className={`mr-2 mb-2 rounded-full px-3 py-2 ${`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` === p
                 ? "bg-brand"
                 : "bg-surface border border-brand-light/40"
-            }`}
+              }`}
           >
             <Text
-              className={`text-xs font-medium ${
-                `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` ===
-                p
+              className={`text-xs font-medium ${`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` ===
+                  p
                   ? "text-white"
                   : "text-brand"
-              }`}
+                }`}
             >
               {formatTime(p)}
             </Text>
@@ -56,7 +56,7 @@ export function TimePicker({ value, onChange }: Props) {
 
       <View className="mt-3 flex-row items-center justify-center rounded-2xl bg-surface p-4">
         <Stepper
-          label="Hour"
+          label={t("hour")}
           onUp={() => apply(h + 1, m)}
           onDown={() => apply(h - 1, m)}
         />
@@ -64,7 +64,7 @@ export function TimePicker({ value, onChange }: Props) {
           {formatTime(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`)}
         </Text>
         <Stepper
-          label="Min"
+          label={t("min")}
           onUp={() => apply(h, m + 5)}
           onDown={() => apply(h, m - 5)}
         />
