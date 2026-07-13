@@ -1,2 +1,17 @@
+export { default as de } from "./de.json";
 export { default as en } from "./en.json";
+export { default as es } from "./es.json";
+export { default as fr } from "./fr.json";
 export { default as hi } from "./hi.json";
+export { default as it } from "./it.json";
+export { default as pt } from "./pt.json";
+export { default as ru } from "./ru.json";
+export { default as dc } from "./dc.json";
+export { default as mr } from "./mr.json";
+export { default as te } from "./te.json";
+export { default as bn } from "./bn.json";
+export { default as ta } from "./ta.json";
+export { default as zh } from "./zh.json";
+export { default as ja } from "./ja.json";
+export { default as gu } from "./gu.json";
+export { default as kn } from "./kn.json";
