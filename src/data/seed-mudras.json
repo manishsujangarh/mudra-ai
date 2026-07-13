@@ -286,5 +286,245 @@
     "category": "cat_sleep",
     "image_url": "../assets/mudras/adimudra.webp",
     "source_url": "https://7pranayama.com/adi-mudra/"
+  },
+  {
+    "id": "mudra-pushpaputa",
+    "name": "mudra-pushpaputa_name",
+    "slug": "pushpaputa-mudra",
+    "description": "mudra-pushpaputa_desc",
+    "benefits": [
+      "mudra-pushpaputa_benefits_1",
+      "mudra-pushpaputa_benefits_2",
+      "mudra-pushpaputa_benefits_3",
+      "mudra-pushpaputa_benefits_4",
+      "mudra-pushpaputa_benefits_5"
+    ],
+    "instructions": [
+      "mudra-pushpaputa_inst_1",
+      "mudra-pushpaputa_inst_2",
+      "mudra-pushpaputa_inst_3",
+      "mudra-pushpaputa_inst_4",
+      "mudra-pushpaputa_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_devotion",
+    "image_url": "../assets/mudras/pushpaputamudra.webp",
+    "source_url": "https://7pranayama.com/pushpaputa-mudra-steps-benefits/"
+  },
+  {
+    "id": "mudra-naga",
+    "name": "mudra-naga_name",
+    "slug": "naga-mudra",
+    "description": "mudra-naga_desc",
+    "benefits": [
+      "mudra-naga_benefits_1",
+      "mudra-naga_benefits_2",
+      "mudra-naga_benefits_3",
+      "mudra-naga_benefits_4",
+      "mudra-naga_benefits_5"
+    ],
+    "instructions": [
+      "mudra-naga_inst_1",
+      "mudra-naga_inst_2",
+      "mudra-naga_inst_3",
+      "mudra-naga_inst_4",
+      "mudra-naga_inst_5"
+    ],
+    "duration": 12,
+    "category": "cat_wisdom",
+    "image_url": "../assets/mudras/nagamudra.webp",
+    "source_url": "https://7pranayama.com/naga-mudra-steps-naga-mudra-benefits/"
+  },
+  {
+    "id": "mudra-bhairava",
+    "name": "mudra-bhairava_name",
+    "slug": "bhairava-mudra",
+    "description": "mudra-bhairava_desc",
+    "benefits": [
+      "mudra-bhairava_benefits_1",
+      "mudra-bhairava_benefits_2",
+      "mudra-bhairava_benefits_3",
+      "mudra-bhairava_benefits_4",
+      "mudra-bhairava_benefits_5"
+    ],
+    "instructions": [
+      "mudra-bhairava_inst_1",
+      "mudra-bhairava_inst_2",
+      "mudra-bhairava_inst_3",
+      "mudra-bhairava_inst_4",
+      "mudra-bhairava_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_meditation",
+    "image_url": "../assets/mudras/bhairavamudra.webp",
+    "source_url": "https://7pranayama.com/bhairava-mudra/"
+  },
+  {
+    "id": "mudra-anjali",
+    "name": "mudra-anjali_name",
+    "slug": "anjali-mudra",
+    "description": "mudra-anjali_desc",
+    "benefits": [
+      "mudra-anjali_benefits_1",
+      "mudra-anjali_benefits_2",
+      "mudra-anjali_benefits_3",
+      "mudra-anjali_benefits_4",
+      "mudra-anjali_benefits_5"
+    ],
+    "instructions": [
+      "mudra-anjali_inst_1",
+      "mudra-anjali_inst_2",
+      "mudra-anjali_inst_3",
+      "mudra-anjali_inst_4",
+      "mudra-anjali_inst_5"
+    ],
+    "duration": 12,
+    "category": "cat_balance",
+    "image_url": "../assets/mudras/anjalimudra.webp",
+    "source_url": "https://7pranayama.com/anjali-mudra-namaste-with-big-meaning/"
+  },
+  {
+    "id": "mudra-linga",
+    "name": "mudra-linga_name",
+    "slug": "linga-mudra",
+    "description": "mudra-linga_desc",
+    "benefits": [
+      "mudra-linga_benefits_1",
+      "mudra-linga_benefits_2",
+      "mudra-linga_benefits_3",
+      "mudra-linga_benefits_4",
+      "mudra-linga_benefits_5"
+    ],
+    "instructions": [
+      "mudra-linga_inst_1",
+      "mudra-linga_inst_2",
+      "mudra-linga_inst_3",
+      "mudra-linga_inst_4",
+      "mudra-linga_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_energy",
+    "image_url": "../assets/mudras/lingamudra.webp",
+    "source_url": "https://7pranayama.com/linga-mudra-steps-to-do-linga-mudra-of-heat-benefits/"
+  },
+  {
+    "id": "mudra-brahma",
+    "name": "mudra-brahma_name",
+    "slug": "brahma-mudra",
+    "description": "mudra-brahma_desc",
+    "benefits": [
+      "mudra-brahma_benefits_1",
+      "mudra-brahma_benefits_2",
+      "mudra-brahma_benefits_3",
+      "mudra-brahma_benefits_4",
+      "mudra-brahma_benefits_5"
+    ],
+    "instructions": [
+      "mudra-brahma_inst_1",
+      "mudra-brahma_inst_2",
+      "mudra-brahma_inst_3",
+      "mudra-brahma_inst_4",
+      "mudra-brahma_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_focus",
+    "image_url": "../assets/mudras/brahmamudra.webp",
+    "source_url": "https://7pranayama.com/brahma-mudra-steps-to-do-brahma-mudra-benefits/"
+  },
+  {
+    "id": "mudra-garuda",
+    "name": "mudra-garuda_name",
+    "slug": "garuda-mudra",
+    "description": "mudra-garuda_desc",
+    "benefits": [
+      "mudra-garuda_benefits_1",
+      "mudra-garuda_benefits_2",
+      "mudra-garuda_benefits_3",
+      "mudra-garuda_benefits_4",
+      "mudra-garuda_benefits_5"
+    ],
+    "instructions": [
+      "mudra-garuda_inst_1",
+      "mudra-garuda_inst_2",
+      "mudra-garuda_inst_3",
+      "mudra-garuda_inst_4",
+      "mudra-garuda_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_energy",
+    "image_url": "../assets/mudras/garudmudra.webp",
+    "source_url": "https://7pranayama.com/garuda-mudra-steps-to-do-garuda-mudra-benefits/"
+  },
+  {
+    "id": "mudra-kubera",
+    "name": "mudra-kubera_name",
+    "slug": "kubera-mudra",
+    "description": "mudra-kubera_desc",
+    "benefits": [
+      "mudra-kubera_benefits_1",
+      "mudra-kubera_benefits_2",
+      "mudra-kubera_benefits_3",
+      "mudra-kubera_benefits_4",
+      "mudra-kubera_benefits_5"
+    ],
+    "instructions": [
+      "mudra-kubera_inst_1",
+      "mudra-kubera_inst_2",
+      "mudra-kubera_inst_3",
+      "mudra-kubera_inst_4",
+      "mudra-kubera_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_focus",
+    "image_url": "../assets/mudras/kubermudra.webp",
+    "source_url": "https://7pranayama.com/kubera-mudra-steps-to-do-kubera-mudra-benefits/"
+  },
+  {
+    "id": "mudra-uttarabodhi",
+    "name": "mudra-uttarabodhi_name",
+    "slug": "uttarabodhi-mudra",
+    "description": "mudra-uttarabodhi_desc",
+    "benefits": [
+      "mudra-uttarabodhi_benefits_1",
+      "mudra-uttarabodhi_benefits_2",
+      "mudra-uttarabodhi_benefits_3",
+      "mudra-uttarabodhi_benefits_4",
+      "mudra-uttarabodhi_benefits_5"
+    ],
+    "instructions": [
+      "mudra-uttarabodhi_inst_1",
+      "mudra-uttarabodhi_inst_2",
+      "mudra-uttarabodhi_inst_3",
+      "mudra-uttarabodhi_inst_4",
+      "mudra-uttarabodhi_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_wisdom",
+    "image_url": "../assets/mudras/uttarabodhimudra.webp",
+    "source_url": "https://7pranayama.com/uttarabodhi-mudra-enlightenment-gesture/"
+  },
+  {
+    "id": "mudra-rudra",
+    "name": "mudra-rudra_name",
+    "slug": "rudra-mudra",
+    "description": "mudra-rudra_desc",
+    "benefits": [
+      "mudra-rudra_benefits_1",
+      "mudra-rudra_benefits_2",
+      "mudra-rudra_benefits_3",
+      "mudra-rudra_benefits_4",
+      "mudra-rudra_benefits_5"
+    ],
+    "instructions": [
+      "mudra-rudra_inst_1",
+      "mudra-rudra_inst_2",
+      "mudra-rudra_inst_3",
+      "mudra-rudra_inst_4",
+      "mudra-rudra_inst_5"
+    ],
+    "duration": 15,
+    "category": "cat_energy",
+    "image_url": "../assets/mudras/rudramudra.webp",
+    "source_url": "https://7pranayama.com/rudra-mudra-steps-to-do-rudra-mudra-benefits/"
   }
 ]

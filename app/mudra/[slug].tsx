@@ -152,22 +152,9 @@ export default function MudraDetail() {
                       <View className="h-6 w-6 items-center justify-center rounded-full bg-brand/10 border border-brand/20">
                         <Text className="text-[10px] font-bold text-brand">{i + 1}</Text>
                       </View>
-
-                      {i !== mudra.instructions.length - 1 && (
-                        <View
-                          style={{
-                            borderLeftWidth: 1,
-                            borderStyle: "dashed",
-                            height: 18,
-                            marginTop: 2,
-                            marginBottom: 2,
-                          }}
-                          className="border-slate-300 dark:border-gray-700"
-                        />
-                      )}
                     </View>
 
-                    <View className="flex-1 pb-6 justify-start">
+                    <View className="flex-1 pb-3 justify-start">
                       <Text className="text-sm leading-6 text-slate-600 dark:text-gray-300">
                         {t(step)}
                       </Text>
