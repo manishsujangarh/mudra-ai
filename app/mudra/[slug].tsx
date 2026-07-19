@@ -57,7 +57,7 @@ export default function MudraDetail() {
           <Pressable onPress={() => router.back()} className="p-2 -ml-2 active:opacity-70">
             <Ionicons name="arrow-back" size={24} color={Platform.OS === 'ios' ? '#000' : 'gray'} className="dark:color-white" />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-900 dark:text-white ml-2">
+          <Text className="text-lg font-bold text-slate-900 dark:text-white ml-2" numberOfLines={1}>
             {t(mudra.name)}
           </Text>
         </View>
@@ -113,7 +113,7 @@ export default function MudraDetail() {
             <View className="bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 rounded-3xl p-5">
               <View className="flex-row items-center mb-5">
                 <MaterialCommunityIcons name="leaf" size={18} color="#F97316" />
-                <Text className="text-base font-bold text-slate-900 dark:text-white ml-2">
+                <Text className="text-base font-bold text-slate-900 dark:text-white ml-2" numberOfLines={1}>
                   {t("benefits")}
                 </Text>
               </View>
@@ -136,7 +136,7 @@ export default function MudraDetail() {
             <View className="bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 rounded-3xl p-5">
               <View className="flex-row items-center mb-5">
                 <MaterialCommunityIcons name="flower-tulip" size={18} color="#F97316" />
-                <Text className="text-base font-bold text-slate-900 dark:text-white ml-2">
+                <Text className="text-base font-bold text-slate-900 dark:text-white ml-2" numberOfLines={1}>
                   {t("how_practice")}
                 </Text>
               </View>
@@ -173,14 +173,22 @@ export default function MudraDetail() {
 
       </ScrollView>
 
-      {/* 🔘 Bottom Action Bar */}
       <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#1A1A1A] border-t border-slate-200 dark:border-gray-800 p-5 pb-8">
-        <Pressable
-          onPress={buildRoutine}
-          className="bg-brand rounded-2xl flex-row items-center justify-center py-4 mb-3 active:opacity-80"
+
+        <Pressable onPress={() => router.push(`/verify-mudra/${mudra.id}`)}
+          className="bg-brand/10 rounded-2xl flex-row items-center justify-center py-4 mb-3 active:opacity-80 shadow-sm"
         >
-          <MaterialCommunityIcons name="calendar-plus" size={18} color="white" className="mr-2" />
-          <Text className="text-white font-bold text-sm" numberOfLines={1}>{t("add_daily") || "Add to Daily Routine"}</Text>
+          <Ionicons className="mr-2 dark:text-white text-black" color="white" name="scan-outline" size={18} />
+          <Text className="text-black dark:text-white font-bold text-sm" numberOfLines={1}>
+            {t("Test Posture with AI")}
+          </Text>
+        </Pressable>
+
+        <Pressable className="bg-brand/10 border border-brand/20 rounded-2xl flex-row items-center justify-center py-4 active:opacity-80" onPress={buildRoutine}>
+          <MaterialCommunityIcons className="mr-2" color="#F97316" name="calendar-plus" size={18} />
+          <Text className="text-brand font-bold text-sm" numberOfLines={1}>
+            {t("add_daily") || "Add to Daily Routine"}
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>

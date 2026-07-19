@@ -7,7 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { DeviceEventEmitter, Pressable, View } from "react-native";
+import { DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { MobileAdsInitializer } from "@/ads/MobileAdsInitializer";
@@ -204,12 +204,20 @@ function SettingsHeaderRight() {
 
   return (
     <View className="flex-row items-center">
+      <TouchableOpacity
+        onPress={() => router.push({
+          pathname: '/verify-mudra'
+        })}
+        className="bg-indigo-600 p-4 rounded-xl"
+      >
+        <Text className="text-white text-center font-bold">Verify Mudra</Text>
+      </TouchableOpacity>
       <Pressable
         onPress={() => router.push("/settings" as any)}
         className="p-2 mr-2"
       >
         <Ionicons name="settings-outline" size={24} color="#777777" />
       </Pressable>
-    </View>
+    </View >
   );
 }

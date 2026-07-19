@@ -169,6 +169,16 @@ export default function Practice() {
           </View>
         </View>
 
+        <Pressable
+          onPress={() => router.push(`/verify-mudra/${mudra.id}`)}
+          className="flex-row items-center justify-center bg-brand/5 border border-brand/20 p-4 rounded-full mt-4 active:opacity-70"
+        >
+          <Ionicons name="scan-outline" size={14} color="#F97316" />
+          <Text className="text-brand text-xs font-bold ml-2">
+            {t("Check Posture AI")}
+          </Text>
+        </Pressable>
+
         <View className="mt-8">
           <CountdownTimer
             minutes={routine.duration}

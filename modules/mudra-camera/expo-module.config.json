@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["MudraCameraModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.mudracamera.MudraCameraModule"]
+  }
+}
