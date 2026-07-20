@@ -22,6 +22,8 @@ class GestureRecognizerHelper(
     val gestureRecognizerListener: GestureRecognizerListener? = null
 ) {
     private var gestureRecognizer: GestureRecognizer? = null
+    
+    private var lastFrameTime = 0L
 
     init {
         setupGestureRecognizer()
@@ -32,7 +34,7 @@ class GestureRecognizerHelper(
         gestureRecognizer = null
     }
 
-    private fun setupGestureRecognizer() {
+    fun setupGestureRecognizer() {
         val baseOptionBuilder = BaseOptions.builder()
 
         when (currentDelegate) {
@@ -40,7 +42,6 @@ class GestureRecognizerHelper(
             DELEGATE_GPU -> baseOptionBuilder.setDelegate(Delegate.GPU)
         }
 
-        // Yahan par humne apni .task file ka naam diya hai jo humne assets mein rakhi thi
         baseOptionBuilder.setModelAssetPath("gesture_recognizer.task")
 
         try {
@@ -52,6 +53,7 @@ class GestureRecognizerHelper(
                     .setMinTrackingConfidence(minHandTrackingConfidence)
                     .setMinHandPresenceConfidence(minHandPresenceConfidence)
                     .setRunningMode(runningMode)
+                    .setNumHands(2)
 
             if (runningMode == RunningMode.LIVE_STREAM) {
                 optionsBuilder
@@ -61,17 +63,21 @@ class GestureRecognizerHelper(
 
             val options = optionsBuilder.build()
             gestureRecognizer = GestureRecognizer.createFromOptions(context, options)
-        } catch (e: IllegalStateException) {
-            gestureRecognizerListener?.onError("Gesture recognizer failed to initialize. See error logs for details")
-            Log.e(TAG, "MediaPipe failed to load the task with error: " + e.message)
-        } catch (e: RuntimeException) {
-            gestureRecognizerListener?.onError("Gesture recognizer failed to initialize. See error logs for details")
-            Log.e(TAG, "MediaPipe failed to load the task with error: " + e.message)
+        } catch (e: Exception) {
+            gestureRecognizerListener?.onError("Gesture recognizer failed to initialize")
+            Log.e(TAG, "MediaPipe setup error: ", e)
         }
     }
 
-    fun recognizeLiveStream(imageProxy: ImageProxy) {
+    fun recognizeLiveStream(imageProxy: ImageProxy, isFrontCamera: Boolean = true) {
         val frameTime = SystemClock.uptimeMillis()
+        
+        if (frameTime <= lastFrameTime) {
+            imageProxy.close()
+            return
+        }
+        lastFrameTime = frameTime
+
         val bitmapBuffer = android.graphics.Bitmap.createBitmap(
             imageProxy.width,
             imageProxy.height,
@@ -82,8 +88,9 @@ class GestureRecognizerHelper(
 
         val matrix = android.graphics.Matrix().apply {
             postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-            // Front camera ko mirror karne ke liye
-            postScale(-1f, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
+            if (isFrontCamera) {
+                postScale(-1f, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
+            }
         }
 
         val rotatedBitmap = android.graphics.Bitmap.createBitmap(
@@ -95,27 +102,23 @@ class GestureRecognizerHelper(
     }
 
     private fun recognizeAsync(mpImage: MPImage, frameTime: Long) {
-        gestureRecognizer?.recognizeAsync(mpImage, frameTime)
+        try {
+            gestureRecognizer?.recognizeAsync(mpImage, frameTime)
+        } catch (e: Exception) {
+            Log.e(TAG, "MediaPipe Exception handled securely!", e)
+            clearGestureRecognizer()
+            setupGestureRecognizer()
+        }
     }
 
-    private fun returnLivestreamResult(
-        result: GestureRecognizerResult,
-        input: MPImage
-    ) {
+    private fun returnLivestreamResult(result: GestureRecognizerResult, input: MPImage) {
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - result.timestampMs()
-        gestureRecognizerListener?.onResults(
-            ResultBundle(
-                listOf(result),
-                inferenceTime,
-                input.height,
-                input.width
-            )
-        )
+        gestureRecognizerListener?.onResults(ResultBundle(listOf(result), inferenceTime, input.height, input.width))
     }
 
     private fun returnLivestreamError(error: RuntimeException) {
-        gestureRecognizerListener?.onError(error.message ?: "An unknown error has occurred")
+        gestureRecognizerListener?.onError(error.message ?: "Unknown error")
     }
 
     companion object {
@@ -124,12 +127,7 @@ class GestureRecognizerHelper(
         const val DELEGATE_GPU = 1
     }
 
-    data class ResultBundle(
-        val results: List<GestureRecognizerResult>,
-        val inferenceTime: Long,
-        val inputImageHeight: Int,
-        val inputImageWidth: Int,
-    )
+    data class ResultBundle(val results: List<GestureRecognizerResult>, val inferenceTime: Long, val inputImageHeight: Int, val inputImageWidth: Int)
 
     interface GestureRecognizerListener {
         fun onError(error: String)

@@ -1,7 +1,9 @@
 package expo.modules.mudracamera
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.widget.FrameLayout
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -18,14 +20,16 @@ import java.util.concurrent.Executors
 class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(context, appContext),
     GestureRecognizerHelper.GestureRecognizerListener {
 
-    private val onAIStatusChange by EventDispatcher() // JS ko bhejne wala event
-    
+    private val onAIStatusChange by EventDispatcher()
+
     private var previewView: PreviewView = PreviewView(context)
     private var overlayView: OverlayView = OverlayView(context, null)
     private var gestureRecognizerHelper: GestureRecognizerHelper? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var backgroundExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+
+    private var isFrontCamera: Boolean = true
 
     init {
         previewView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
@@ -34,15 +38,30 @@ class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(conte
         previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         overlayView.setBackgroundColor(Color.TRANSPARENT)
         overlayView.elevation = 10f
+
         addView(previewView)
         addView(overlayView)
-        
+
         sendStatusToJS("Loading AI Model...")
     }
 
-    // React Native se ID receive karne ka function
     fun setMudraId(id: String) {
         overlayView.currentMudraId = id
+    }
+
+    fun setCameraType(type: String) {
+        val newIsFront = (type == "front")
+        if (isFrontCamera != newIsFront) {
+            isFrontCamera = newIsFront
+            
+            imageAnalyzer?.clearAnalyzer()
+            cameraProvider?.unbindAll()
+            
+            gestureRecognizerHelper?.clearGestureRecognizer()
+            gestureRecognizerHelper?.setupGestureRecognizer()
+            
+            bindCameraUseCases()
+        }
     }
 
     private fun sendStatusToJS(status: String) {
@@ -60,7 +79,10 @@ class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(conte
         }
     }
 
-    override fun onAttachedToWindow() { super.onAttachedToWindow(); setupCamera() }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        post { setupCamera() }
+    }
 
     private fun setupCamera() {
         gestureRecognizerHelper = GestureRecognizerHelper(context = context, gestureRecognizerListener = this)
@@ -74,27 +96,50 @@ class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(conte
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
         val cameraProvider = cameraProvider ?: return
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build()
-        val preview = Preview.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3).build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
-        imageAnalyzer = ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3).setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888).build().also {
-            it.setAnalyzer(backgroundExecutor) { imageProxy -> gestureRecognizerHelper?.recognizeLiveStream(imageProxy) }
-        }
+
+        val lensFacing = if (isFrontCamera) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+
+        val preview = Preview.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            .build()
+            .also { it.setSurfaceProvider(previewView.surfaceProvider) }
+
+        imageAnalyzer = ImageAnalysis.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .build()
+            .also {
+                it.setAnalyzer(backgroundExecutor) { imageProxy ->
+                    gestureRecognizerHelper?.recognizeLiveStream(imageProxy, isFrontCamera)
+                }
+            }
+
         cameraProvider.unbindAll()
+
         try {
-            val lifecycleOwner = (appContext.currentActivity as? LifecycleOwner) ?: (context as? LifecycleOwner)
-            lifecycleOwner?.let { cameraProvider.bindToLifecycle(it, cameraSelector, preview, imageAnalyzer) }
-        } catch (exc: Exception) { sendStatusToJS("Camera Error") }
+            val lifecycleOwner = (context as? LifecycleOwner) ?: (appContext.currentActivity as? LifecycleOwner)
+            if (lifecycleOwner != null) {
+                cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+            } else {
+                sendStatusToJS("Error: Lifecycle not found")
+            }
+        } catch (exc: Exception) {
+            sendStatusToJS("Camera Blocked: ${exc.message}")
+        }
     }
 
-    override fun onError(error: String) { sendStatusToJS("AI Error: $error") }
+    override fun onError(error: String) {
+        sendStatusToJS("AI Error: $error")
+    }
 
     override fun onResults(resultBundle: GestureRecognizerHelper.ResultBundle) {
         post {
             if (resultBundle.results.isNotEmpty() && resultBundle.results[0].landmarks().isNotEmpty()) {
                 val result = resultBundle.results[0]
-                // Let Overlay view calculate logic and return if Mudra is correct
-                val isCorrect = overlayView.setResultsAndCheck(result)
-                if (isCorrect) sendStatusToJS("Perfect Match! 🟢") else sendStatusToJS("Adjust Fingers... 🟡")
+                val checkResult = overlayView.setResultsAndCheck(result)
+                sendStatusToJS(checkResult.feedbackMessage)
             } else {
                 overlayView.clear()
                 sendStatusToJS("No Hand Detected 🔴")
@@ -102,5 +147,9 @@ class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(conte
         }
     }
 
-    override fun onDetachedFromWindow() { super.onDetachedFromWindow(); backgroundExecutor.shutdown(); gestureRecognizerHelper?.clearGestureRecognizer() }
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        backgroundExecutor.shutdown()
+        gestureRecognizerHelper?.clearGestureRecognizer()
+    }
 }
