@@ -55,13 +55,13 @@ class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(conte
         val newIsFront = (type == "front")
         if (isFrontCamera != newIsFront) {
             isFrontCamera = newIsFront
-            
+
             imageAnalyzer?.clearAnalyzer()
             cameraProvider?.unbindAll()
-            
+
             gestureRecognizerHelper?.clearGestureRecognizer()
             gestureRecognizerHelper?.setupGestureRecognizer()
-            
+
             bindCameraUseCases()
         }
     }
@@ -154,6 +154,14 @@ class MudraCameraView(context: Context, appContext: AppContext) : ExpoView(conte
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+
+        try {
+            imageAnalyzer?.clearAnalyzer()
+            cameraProvider?.unbindAll()
+        } catch (e: Exception) {
+            Log.e("MudraCamera", "Error releasing camera: ", e)
+        }
+
         backgroundExecutor.shutdown()
         gestureRecognizerHelper?.clearGestureRecognizer()
     }
