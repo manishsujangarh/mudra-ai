@@ -23,6 +23,9 @@ class GestureRecognizerHelper(
 ) {
     private var gestureRecognizer: GestureRecognizer? = null
     
+    @Volatile
+    var isRecognizerReady = false
+    
     private var lastFrameTime = 0L
 
     init {
@@ -30,11 +33,19 @@ class GestureRecognizerHelper(
     }
 
     fun clearGestureRecognizer() {
-        gestureRecognizer?.close()
-        gestureRecognizer = null
+        // Pura close karne se pehle lock laga do
+        isRecognizerReady = false
+        try {
+            gestureRecognizer?.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error closing gesture recognizer", e)
+        } finally {
+            gestureRecognizer = null
+        }
     }
 
     fun setupGestureRecognizer() {
+        isRecognizerReady = false
         val baseOptionBuilder = BaseOptions.builder()
 
         when (currentDelegate) {
@@ -63,6 +74,9 @@ class GestureRecognizerHelper(
 
             val options = optionsBuilder.build()
             gestureRecognizer = GestureRecognizer.createFromOptions(context, options)
+            
+            isRecognizerReady = true
+            
         } catch (e: Exception) {
             gestureRecognizerListener?.onError("Gesture recognizer failed to initialize")
             Log.e(TAG, "MediaPipe setup error: ", e)
@@ -70,6 +84,11 @@ class GestureRecognizerHelper(
     }
 
     fun recognizeLiveStream(imageProxy: ImageProxy, isFrontCamera: Boolean = true) {
+        if (!isRecognizerReady || gestureRecognizer == null) {
+            imageProxy.close()
+            return
+        }
+
         val frameTime = SystemClock.uptimeMillis()
         
         if (frameTime <= lastFrameTime) {
@@ -78,40 +97,46 @@ class GestureRecognizerHelper(
         }
         lastFrameTime = frameTime
 
-        val bitmapBuffer = android.graphics.Bitmap.createBitmap(
-            imageProxy.width,
-            imageProxy.height,
-            android.graphics.Bitmap.Config.ARGB_8888
-        )
-        imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
-        imageProxy.close()
-
-        val matrix = android.graphics.Matrix().apply {
-            postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-            if (isFrontCamera) {
-                postScale(-1f, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
+        try {
+            val bitmapBuffer = android.graphics.Bitmap.createBitmap(
+                imageProxy.width,
+                imageProxy.height,
+                android.graphics.Bitmap.Config.ARGB_8888
+            )
+            imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
+            
+            val matrix = android.graphics.Matrix().apply {
+                postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
+                if (isFrontCamera) {
+                    postScale(-1f, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
+                }
             }
+
+            val rotatedBitmap = android.graphics.Bitmap.createBitmap(
+                bitmapBuffer, 0, 0, bitmapBuffer.width, bitmapBuffer.height, matrix, true
+            )
+
+            val mpImage = BitmapImageBuilder(rotatedBitmap).build()
+            recognizeAsync(mpImage, frameTime)
+        } catch (e: Exception) {
+            Log.e(TAG, "Image processing error", e)
+        } finally {
+            imageProxy.close() // Hamesha ensure karein ki image close ho gayi hai
         }
-
-        val rotatedBitmap = android.graphics.Bitmap.createBitmap(
-            bitmapBuffer, 0, 0, bitmapBuffer.width, bitmapBuffer.height, matrix, true
-        )
-
-        val mpImage = BitmapImageBuilder(rotatedBitmap).build()
-        recognizeAsync(mpImage, frameTime)
     }
 
     private fun recognizeAsync(mpImage: MPImage, frameTime: Long) {
         try {
-            gestureRecognizer?.recognizeAsync(mpImage, frameTime)
+            if (isRecognizerReady && gestureRecognizer != null) {
+                gestureRecognizer?.recognizeAsync(mpImage, frameTime)
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "MediaPipe Exception handled securely!", e)
-            clearGestureRecognizer()
-            setupGestureRecognizer()
+            Log.e(TAG, "MediaPipe Async recognition error", e)
         }
     }
 
     private fun returnLivestreamResult(result: GestureRecognizerResult, input: MPImage) {
+        if (!isRecognizerReady) return
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - result.timestampMs()
         gestureRecognizerListener?.onResults(ResultBundle(listOf(result), inferenceTime, input.height, input.width))
