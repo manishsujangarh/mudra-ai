@@ -102,7 +102,7 @@ export default function RoutineBuilder() {
         {/* 🌟 Top Mudra Info Card */}
         <View className="flex-row items-center mt-4 mb-5">
           <View className="w-20 h-20 rounded-full items-center justify-center mr-4 border border-brand/40 bg-slate-100 dark:bg-[#1A1A1A] relative">
-            <View className="absolute w-24 h-24 rounded-full bg-orange-500/10 blur-xl" />
+            <View className="absolute w-24 h-24 rounded-full bg-brand/10 blur-xl" />
             <Image
               source={imageSource ?? undefined}
               contentFit="contain"
@@ -154,7 +154,7 @@ export default function RoutineBuilder() {
                   : 'bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-gray-800'
                   }`}
               >
-                <MaterialCommunityIcons name={qt.icon as any} size={14} color={isActive ? "white" : "#F97316"} />
+                <MaterialCommunityIcons name={qt.icon as any} size={14} color={isActive ? "white" : "#FF9500"} />
                 <Text className={`ml-1.5 text-xs font-medium ${isActive ? 'text-white' : 'text-slate-700 dark:text-gray-300'}`}>
                   {qt.label}
                 </Text>
@@ -176,13 +176,13 @@ export default function RoutineBuilder() {
           </View>
 
           <View className="items-center flex-1">
-            <MaterialCommunityIcons name="clock-outline" size={16} color="#F97316" className="mb-1" />
+            <MaterialCommunityIcons name="clock-outline" size={16} color="#FF9500" className="mb-1" />
             <Text className="text-4xl font-black text-slate-900 dark:text-white mb-1">
               {displayTime}
             </Text>
             <View className="flex-row items-center">
               {/* 🔥 FIXED ICON HERE (Used star-four-points instead of sparkles) */}
-              <MaterialCommunityIcons name="star-four-points" size={12} color="#F97316" />
+              <MaterialCommunityIcons name="star-four-points" size={12} color="#FF9500" />
               <Text className="text-[9px] text-slate-500 dark:text-gray-400 ml-1">
                 {t("recommended_beginners") || "Recommended for beginners"}
               </Text>
@@ -248,7 +248,7 @@ export default function RoutineBuilder() {
         {/* 🔔 FOOTER ALERT */}
         <View className="bg-slate-100 dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 rounded-2xl p-4 flex-row items-center">
           <View className="w-10 h-10 rounded-full bg-brand/10 items-center justify-center mr-3">
-            <Ionicons name="notifications" size={18} color="#F97316" />
+            <Ionicons name="notifications" size={18} color="#FF9500" />
           </View>
           <View className="flex-1">
             <Text className="text-xs font-bold text-slate-900 dark:text-white mb-0.5">

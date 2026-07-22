@@ -27,7 +27,7 @@ export function PlanWidget({ activePlans, onContinuePlan }: PlanWidgetProps) {
                     onPress={() => router.push(PLANS_ROUTE)}
                 >
                     <Text className="text-[11px] text-brand mr-1">{t("see_all") || "See All"}</Text>
-                    <Ionicons name="arrow-forward" size={12} color="#F97316" />
+                    <Ionicons name="arrow-forward" size={12} color="#FF9500" />
                 </Pressable>
             </View>
 

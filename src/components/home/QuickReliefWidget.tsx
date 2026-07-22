@@ -41,7 +41,7 @@ const RELIEF_MAPPING: ReliefMap[] = [
   { id: "cant_sleep", label: "cant_sleep", icon: "moon-waning-crescent", color: "#3B82F6", mudraId: "mudra-adi" },
   { id: "overthinking_calm", label: "overthinking_calm", icon: "brain", color: "#A855F7", mudraId: "mudra-prana" },
   { id: "low_energy_boost", label: "low_energy_boost", icon: "lightning-bolt-outline", color: "#84CC16", mudraId: "mudra-surya" },
-  { id: "digestive_ease", label: "digestive_ease", icon: "stomach", color: "#F97316", mudraId: "mudra-apana" },
+  { id: "digestive_ease", label: "digestive_ease", icon: "stomach", color: "#FF9500", mudraId: "mudra-apana" },
 ];
 
 export function QuickReliefWidget({ routines, onStartPractice, isCreating }: QuickReliefWidgetProps) {
@@ -128,7 +128,7 @@ export function QuickReliefWidget({ routines, onStartPractice, isCreating }: Qui
       {/* --- DYNAMIC CONTENT LIST --- */}
       {loading ? (
         <View className="h-[95px] justify-center items-center">
-          <ActivityIndicator size="small" color="#F97316" />
+          <ActivityIndicator size="small" color="#FF9500" />
         </View>
       ) : (
         <ScrollView

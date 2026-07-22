@@ -67,11 +67,11 @@ export function HomeHeader() {
   return (
     <View className="mt-4 flex-row items-center justify-between">
       <View className="flex-row items-center gap-3">
-        <View className="w-10 h-10 rounded-full border border-brand/40 bg-brand/5 items-center justify-center">
-          <MaterialCommunityIcons name="flower-outline" size={20} color="#F97316" />
+        <View className="w-11 h-11 rounded-full border border-surface-light bg-surface items-center justify-center">
+          <MaterialCommunityIcons name="flower-outline" size={21} color="#FF9500" />
         </View>
         <View>
-          <Text className="text-lg font-bold text-ink dark:text-white">
+          <Text className="text-lg font-semibold text-ink dark:text-white">
             {t(greetingKey)}, {isLoggedIn ? (userName || t("yogi")) : t("guest")} 👋
           </Text>
           <Text className="text-[11px] text-muted mt-0.5">{t("wellness_moment")}</Text>
@@ -79,14 +79,14 @@ export function HomeHeader() {
       </View>
 
       <Pressable
-        className="relative p-2 bg-surface dark:bg-[#1A1A1A] border border-surface-light dark:border-gray-800 rounded-full active:opacity-70"
+        className="relative p-2.5 bg-surface border border-surface-light rounded-full active:opacity-70"
         onPress={() => router.push("/screens/notifications")}
       >
-        <Ionicons name="notifications-outline" size={20} color="gray" />
+        <Ionicons name="notifications-outline" size={20} color="#8E8E93" />
 
         {/* 🔴 Dynamic Unread Dot */}
         {hasUnread && (
-          <View className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-surface dark:border-[#1A1A1A]" />
+          <View className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-surface" />
         )}
       </Pressable>
     </View>

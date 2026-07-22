@@ -40,7 +40,7 @@ export function Button({
     "rounded-2xl px-5 py-4 active:opacity-80";
   const styles = {
     primary: "bg-brand",
-    secondary: "bg-surface border border-brand",
+    secondary: "bg-surface border border-surface-light",
     ghost: "bg-transparent",
   }[variant];
   const textStyles = {
@@ -56,7 +56,7 @@ export function Button({
       className={`${base} ${styles} ${disabled ? "opacity-50" : ""}`}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "primary" ? "#fff" : "#C8102E"} />
+        <ActivityIndicator color={variant === "primary" ? "#fff" : "#FF9500"} />
       ) : (
         <Text className={`text-base text-center font-semibold ${textStyles}`}>{label}</Text>
       )}
@@ -76,11 +76,11 @@ export function Chip({
   return (
     <Pressable
       onPress={onPress}
-      className={`mr-2 mb-2 rounded-full px-3 py-1.5 ${active ? "bg-brand" : "bg-surface border border-brand-light/40"
+      className={`mr-3 mb-3 rounded-full px-5 py-3 ${active ? "bg-brand" : "bg-surface border border-surface-light"
         }`}
     >
       <Text
-        className={`text-xs font-medium ${active ? "text-white" : "text-brand"}`}
+        className={`text-base font-semibold ${active ? "text-white" : "text-brand"}`}
       >
         {label}
       </Text>
@@ -91,7 +91,7 @@ export function Chip({
 export function LoadingScreen({ message }: { message?: string }) {
   return (
     <View className="flex-1 items-center justify-center bg-sand">
-      <ActivityIndicator size="large" color="#C8102E" />
+      <ActivityIndicator size="large" color="#FF9500" />
       {message ? (
         <Text className="mt-3 text-sm text-muted">{message}</Text>
       ) : null}
@@ -120,7 +120,7 @@ export function EmptyState({
 
 export function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+    <Text className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
       {children}
     </Text>
   );

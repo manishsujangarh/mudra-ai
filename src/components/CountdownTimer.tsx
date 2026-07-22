@@ -4,6 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Pressable, Text, View, useColorScheme } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Svg, { Circle } from "react-native-svg"; // 👈 SVG इम्पोर्ट किया
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  DEFAULT_PRACTICE_MUSIC,
+  isPracticeMusicId,
+  PRACTICE_MUSIC_OPTIONS,
+  PRACTICE_MUSIC_STORAGE_KEY,
+  PracticeMusicId,
+} from "@/audio/music";
 
 interface Props {
   /** Total duration in minutes. */
@@ -24,15 +32,29 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
   
   const [remaining, setRemaining] = useState(total);
   const [running, setRunning] = useState(false);
+  const [musicId, setMusicId] = useState<PracticeMusicId>(DEFAULT_PRACTICE_MUSIC);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const bellTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const firedRef = useRef(false);
+  const selectedMusic = PRACTICE_MUSIC_OPTIONS.find((option) => option.id === musicId) ?? PRACTICE_MUSIC_OPTIONS[0];
+  const musicEnabled = selectedMusic.id !== "off";
 
-  const meditationPlayer = useAudioPlayer(
-    require("../../assets/audio/meditation.wav")
-  );
+  const meditationPlayer = useAudioPlayer(selectedMusic.source);
   const bellPlayer = useAudioPlayer(require("../../assets/audio/timer-bell.wav"));
+
+  useEffect(() => {
+    const loadMusicPreference = async () => {
+      try {
+        const savedMusicId = await AsyncStorage.getItem(PRACTICE_MUSIC_STORAGE_KEY);
+        setMusicId(isPracticeMusicId(savedMusicId) ? savedMusicId : DEFAULT_PRACTICE_MUSIC);
+      } catch (error) {
+        console.error("Failed to load practice music preference:", error);
+      }
+    };
+
+    loadMusicPreference();
+  }, []);
 
   useEffect(() => {
     meditationPlayer.loop = true;
@@ -84,12 +106,12 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
 
   useEffect(() => {
     if (remaining === 0) return;
-    if (running) {
+    if (running && musicEnabled) {
       meditationPlayer.play();
       return;
     }
     meditationPlayer.pause();
-  }, [meditationPlayer, remaining, running]);
+  }, [meditationPlayer, musicEnabled, remaining, running]);
 
   useEffect(() => {
     return () => {
@@ -122,7 +144,7 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
 
   // 🎨 डार्क और लाइट मोड के हिसाब से बैकग्राउंड रिंग का कलर
   const trackColor = colorScheme === 'dark' ? '#1E293B' : '#E2E8F0'; 
-  const brandColor = '#F97316'; // आपका ऑरेंज थीम कलर
+  const brandColor = '#FF9500'; // आपका ऑरेंज थीम कलर
 
   return (
     <View className="items-center w-full">
@@ -193,7 +215,7 @@ export function CountdownTimer({ minutes, onComplete }: Props) {
           onPress={resetTimer}
           className="flex-row items-center justify-center border border-slate-300 dark:border-gray-700 bg-white dark:bg-[#1A1A1A] px-6 py-4 rounded-2xl active:bg-slate-100 dark:active:bg-[#262626]"
         >
-          <MaterialCommunityIcons name="reload" size={18} color="#F97316" className="mr-2" />
+          <MaterialCommunityIcons name="reload" size={18} color="#FF9500" className="mr-2" />
           <Text className="text-base font-bold text-slate-700 dark:text-gray-300">
             {t("reset") || "Reset"}
           </Text>

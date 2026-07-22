@@ -134,11 +134,13 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
       >
         <HomeHeader />
-
-        <MoodSelector
-          selectedMood={selectedMood}
-          onMoodSelect={handleMoodSelect}
+        <QuickReliefWidget
+          routines={routines}
+          onStartPractice={handleStartPractice}
+          isCreating={isCreating}
         />
+
+
 
         <HeroCard
           mudra={currentMudra}
@@ -148,7 +150,6 @@ export default function Home() {
           onSaveMudra={handleSaveMudra}
         />
 
-        <MoodTrackingWidget insights={insights} />
 
         <ProgressWidget
           topStreak={topStreak}
@@ -156,16 +157,20 @@ export default function Home() {
           totalSessions={totalSessions}
           consistencyRate={consistencyRate}
         />
+        <MoodSelector
+          selectedMood={selectedMood}
+          onMoodSelect={handleMoodSelect}
+        />
 
         {/* <PlanWidget
           activePlans={activePlans}
           onContinuePlan={handleContinuePlan}
         /> */}
 
-        <QuickReliefWidget
-          routines={routines}
-          onStartPractice={handleStartPractice}
-          isCreating={isCreating}
+
+        <MoodTrackingWidget
+          insights={insights}
+          onViewHistory={() => router.push("/screens/insights")}
         />
         <View className="mt-8" style={{ marginHorizontal: -20 }}>
           <AdBanner />

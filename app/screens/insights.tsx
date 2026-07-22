@@ -1,13 +1,13 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
-import { useRouter } from "expo-router";
 import { useActiveRoutines } from "@/hooks/useRoutines";
 import { useStats, useMoodInsights, useSessionHistory } from "@/hooks/useSessions";
+import { BackButton } from "@/components/BackButton";
 
 const MOOD_MAP: Record<string, { icon: string; color: string; label: string }> = {
     stressed: { icon: "emoticon-sad", color: "#EF4444", label: "Stressed" },
-    anxious: { icon: "emoticon-neutral", color: "#F97316", label: "Anxious" },
+    anxious: { icon: "emoticon-neutral", color: "#FF9500", label: "Anxious" },
     restless: { icon: "emoticon-dead", color: "#EAB308", label: "Restless" },
     tired: { icon: "sleep", color: "#3B82F6", label: "Tired" },
     distracted: { icon: "emoticon-confused", color: "#9CA3AF", label: "Distracted" },
@@ -29,7 +29,6 @@ const formatSessionDate = (timestamp: number | string) => {
 
 export default function InsightsScreen() {
     const { t } = useTranslation();
-    const router = useRouter();
 
     const { data: routines = [], isLoading: isRoutinesLoading } = useActiveRoutines();
     const { data: totalSessions = 0, isLoading: isStatsLoading } = useStats();
@@ -49,19 +48,14 @@ export default function InsightsScreen() {
             {/* 🔝 Header */}
             <View className="flex-row items-center justify-between mb-6">
                 <View className="flex-row items-center">
-                    <Pressable
-                        onPress={() => router.back()}
-                        className="p-2 mr-3 bg-surface rounded-full border border-surface-light active:opacity-75"
-                    >
-                        <Ionicons name="arrow-back" size={20} color="#1E293B" />
-                    </Pressable>
+                    <BackButton size={20} className="mr-3" />
                     <Text className="text-xl font-black text-ink">{t("my_progress") || "My Progress"}</Text>
                 </View>
             </View>
 
             {isLoading ? (
                 <View className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color="#F97316" />
+                    <ActivityIndicator size="large" color="#FF9500" />
                     <Text className="text-muted mt-3 font-semibold">{t("loading_insights")}</Text>
                 </View>
             ) : (
@@ -71,8 +65,8 @@ export default function InsightsScreen() {
 
                     <View className="flex-row flex-wrap justify-between mb-6">
                         <View className="bg-surface p-4 rounded-3xl border border-surface-light w-[48%] mb-3">
-                            <View className="w-10 h-10 bg-orange-500/10 rounded-2xl items-center justify-center mb-3">
-                                <MaterialCommunityIcons name="fire" size={22} color="#F97316" />
+                            <View className="w-10 h-10 bg-brand/10 rounded-2xl items-center justify-center mb-3">
+                                <MaterialCommunityIcons name="fire" size={22} color="#FF9500" />
                             </View>
                             <Text className="text-2xl font-black text-ink">{topStreak}</Text>
                             <Text className="text-[10px] text-muted uppercase font-bold mt-1">{t("day_streak")}</Text>

@@ -1,25 +1,23 @@
 import { useEffect, useState } from "react";
 import { DeviceEventEmitter, Platform, View } from "react-native";
-
-import { configuredBannerUnitId } from "@/ads/units";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
-type AdsModule = typeof import("react-native-google-mobile-ads");
+import { configuredBannerUnitId, configuredBannerUnitIdIOS } from "@/ads/units";
+
+// Resolve unit ID with fallbacks
+const unitId =
+  Platform.OS === "ios"
+    ? configuredBannerUnitIdIOS ?? TestIds.BANNER
+    : configuredBannerUnitId ?? TestIds.BANNER;
 
 export function AdBanner() {
   const [isPremium, setIsPremium] = useState<boolean | null>(null);
-  const [ads, setAds] = useState<AdsModule | null>(null);
   const [hidden, setHidden] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS === "web") return;
-
-    try {
-      setAds(require("react-native-google-mobile-ads") as AdsModule);
-    } catch {
-      setAds(null);
-    }
-  }, []);
 
   useEffect(() => {
     const checkPremiumStatus = async () => {
@@ -37,15 +35,16 @@ export function AdBanner() {
     return () => subscription.remove();
   }, []);
 
-  if (isPremium === true || isPremium === null || !ads || hidden) return null;
-
-  const unitId = configuredBannerUnitId ?? ads.TestIds.BANNER;
+  // Hide on Web, Premium users, or when premium status is still loading
+  if (Platform.OS === "web" || isPremium === true || isPremium === null || hidden) {
+    return null;
+  }
 
   return (
     <View className="items-center border-t border-sand-deep/60 bg-surface py-1">
-      <ads.BannerAd
+      <BannerAd
         unitId={unitId}
-        size={ads.BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         requestOptions={{ requestNonPersonalizedAdsOnly: true }}
         onAdFailedToLoad={() => setHidden(true)}
       />

@@ -203,7 +203,7 @@ export default function PremiumScreen() {
 
     const renderFeatureItem = (text: string) => (
         <View className="flex-row items-center my-2">
-            <Icon name="check-circle" size={20} color="#f97316" className="mr-3" />
+            <Icon name="check-circle" size={20} color="#FF9500" className="mr-3" />
             <Text className="font-medium flex-1 text-base text-black dark:text-white">
                 {text}
             </Text>
@@ -221,7 +221,7 @@ export default function PremiumScreen() {
                 {/* Header Section */}
                 <View className="items-center mb-8">
                     <Text className="font-black p-2 text-3xl text-black dark:text-white" numberOfLines={1}>
-                        {t("remove")} <Text className="text-orange-500">{t("ads")}</Text>
+                        {t("remove")} <Text className="text-brand">{t("ads")}</Text>
                     </Text>
                     <Text className="mt-2 text-base text-gray-500 dark:text-gray-400 text-center">
                         {t("ads_fre")}
@@ -237,10 +237,10 @@ export default function PremiumScreen() {
                 </View>
 
                 {/* Single Plan Card */}
-                <View className="border-2 border-orange-500 rounded-2xl p-5 mb-6 bg-orange-50/50 dark:bg-orange-500/10">
+                <View className="border-2 border-brand rounded-2xl p-5 mb-6 bg-brand/5 dark:bg-brand/10">
                     <View className="flex-row justify-between items-center">
                         <Text className="font-extrabold text-xl text-black dark:text-white">{product?.title || t('life_time')}</Text>
-                        <View className="bg-orange-500 px-3 py-1 rounded-full">
+                        <View className="bg-brand px-3 py-1 rounded-full">
                             <Text className="text-white text-xs font-bold" numberOfLines={1}>{t("best_value")}</Text>
                         </View>
                     </View>
@@ -248,7 +248,7 @@ export default function PremiumScreen() {
 
                     <View className="mt-4">
                         {isLoadingPrices ? (
-                            <ActivityIndicator size="small" color="#f97316" />
+                            <ActivityIndicator size="small" color="#FF9500" />
                         ) : (
                             <Text className="font-black text-3xl text-black dark:text-white">
                                 {product?.displayPrice || '₹999.00'}
@@ -259,7 +259,7 @@ export default function PremiumScreen() {
 
                 {/* Action Buttons */}
                 <TouchableOpacity
-                    className="w-full h-14 rounded-full items-center justify-center mt-3 bg-orange-500"
+                    className="w-full h-14 rounded-full items-center justify-center mt-3 bg-brand"
                     onPress={handlePurchase}
                     disabled={isPurchasing}
                 >
@@ -272,7 +272,7 @@ export default function PremiumScreen() {
 
                 {canSimulateIap && (
                     <TouchableOpacity
-                        className="border-[1.5px] border-orange-500 w-full h-14 rounded-full items-center justify-center mt-4"
+                        className="border-[1.5px] border-brand w-full h-14 rounded-full items-center justify-center mt-4"
                         onPress={handlePurchase}
                         disabled={isPurchasing}
                     >
@@ -288,11 +288,11 @@ export default function PremiumScreen() {
                 <View className="mt-8 items-center px-3">
                     <Text className="text-center leading-5 text-sm text-gray-500 dark:text-gray-400">
                         {t("agree")}{' '}
-                        <Text className="font-bold text-orange-500" onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")}>
+                        <Text className="font-bold text-brand" onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")}>
                             {t("terms_full")}
                         </Text>
                         {' '}{t("and")}{' '}
-                        <Text className="font-bold text-orange-500" onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")}>
+                        <Text className="font-bold text-brand" onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")}>
                             {t("privacy_full")}
                         </Text>.
                     </Text>
@@ -305,7 +305,7 @@ export default function PremiumScreen() {
                 <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
                     <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
                         <TouchableOpacity onPress={() => setLegalModalVisible(false)} className="p-1">
-                            <MaterialIcons name="close" size={28} color="#f97316" />
+                            <MaterialIcons name="close" size={28} color="#FF9500" />
                         </TouchableOpacity>
                         <Text className="text-lg font-bold text-black dark:text-white">{legalTitle}</Text>
                         <View className="w-7" />
@@ -314,7 +314,7 @@ export default function PremiumScreen() {
                     <View className="flex-1 bg-white dark:bg-zinc-950">
                         {isLegalLoading && (
                             <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-zinc-950">
-                                <ActivityIndicator size="large" color="#f97316" />
+                                <ActivityIndicator size="large" color="#FF9500" />
                             </View>
                         )}
                         <WebView

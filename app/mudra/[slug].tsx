@@ -11,6 +11,7 @@ import { useMudraBySlug } from "@/hooks/useMudras";
 import { useAppStore } from "@/store/useAppStore";
 import { getMudraImage } from "@/utils/images";
 import { AdBanner } from "@/ads/AdBanner";
+import { BackButton } from "@/components/BackButton";
 
 export default function MudraDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -54,10 +55,8 @@ export default function MudraDetail() {
 
       <View className="flex-row items-center justify-between px-5 pt-4 pb-2">
         <View className="flex-row items-center">
-          <Pressable onPress={() => router.back()} className="p-2 -ml-2 active:opacity-70">
-            <Ionicons name="arrow-back" size={24} color={Platform.OS === 'ios' ? '#000' : 'gray'} className="dark:color-white" />
-          </Pressable>
-          <Text className="text-lg font-bold text-slate-900 dark:text-white ml-2">
+          <BackButton size={24} className="mr-2" />
+          <Text className="text-lg font-bold text-slate-900 dark:text-white">
             {t(mudra.name)}
           </Text>
         </View>
@@ -73,7 +72,7 @@ export default function MudraDetail() {
               {t(mudra.name)}
             </Text>
 
-            <View className="self-start px-2 py-1 bg-orange-500/10 border border-orange-500/20 rounded-md mb-3">
+            <View className="self-start px-2 py-1 bg-brand/10 border border-brand/20 rounded-md mb-3">
               <Text className="text-[10px] font-bold text-brand uppercase tracking-widest">
                 {t(mudra.category)}
               </Text>
@@ -84,12 +83,12 @@ export default function MudraDetail() {
             </Text>
 
             <View className="flex-row items-center">
-              <MaterialCommunityIcons name="clock-outline" size={14} color="#F97316" />
+              <MaterialCommunityIcons name="clock-outline" size={14} color="#FF9500" />
               <Text className="text-xs font-medium text-slate-600 dark:text-gray-300 ml-1 mr-4">
                 {mudra.duration} {t("min")}
               </Text>
 
-              <MaterialCommunityIcons name="chart-bar" size={14} color="#F97316" />
+              <MaterialCommunityIcons name="chart-bar" size={14} color="#FF9500" />
               <Text className="text-xs font-medium text-slate-600 dark:text-gray-300 ml-1">
                 {t("beginner_friendly") || "Beginner Friendly"}
               </Text>
@@ -112,7 +111,7 @@ export default function MudraDetail() {
           <View className="px-5 mb-4">
             <View className="bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 rounded-3xl p-5">
               <View className="flex-row items-center mb-5">
-                <MaterialCommunityIcons name="leaf" size={18} color="#F97316" />
+                <MaterialCommunityIcons name="leaf" size={18} color="#FF9500" />
                 <Text className="text-base font-bold text-slate-900 dark:text-white ml-2">
                   {t("benefits")}
                 </Text>
@@ -120,7 +119,7 @@ export default function MudraDetail() {
 
               {mudra.benefits.map((b, i) => (
                 <View key={i} className="mb-3 flex-row items-start pr-2">
-                  <Ionicons name="checkmark-circle-outline" size={18} color="#F97316" className="mt-0.5 mr-3" />
+                  <Ionicons name="checkmark-circle-outline" size={18} color="#FF9500" className="mt-0.5 mr-3" />
                   <Text className="flex-1 text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
                     {t(b)}
                   </Text>
@@ -135,7 +134,7 @@ export default function MudraDetail() {
           <View className="px-5 mb-6">
             <View className="bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 rounded-3xl p-5">
               <View className="flex-row items-center mb-5">
-                <MaterialCommunityIcons name="flower-tulip" size={18} color="#F97316" />
+                <MaterialCommunityIcons name="flower-tulip" size={18} color="#FF9500" />
                 <Text className="text-base font-bold text-slate-900 dark:text-white ml-2">
                   {t("how_practice")}
                 </Text>

@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from 'expo-notifications';
 
 import { Screen } from "@/components/ui";
+import { BackButton } from "@/components/BackButton";
 import { useTranslation } from "react-i18next";
 
 const formatTimeAgo = (timestamp: number) => {
@@ -145,9 +146,7 @@ export default function NotificationsScreen() {
         {/* --- HEADER --- */}
         <View className="flex-row items-center justify-between px-5 py-4 border-b border-surface-light dark:border-gray-800">
           <View className="flex-row items-center">
-            <TouchableOpacity onPress={() => router.back()} className="mr-4 p-2 -ml-2 rounded-full bg-surface-light dark:bg-gray-800">
-              <Ionicons name="arrow-back" size={20} color="gray" />
-            </TouchableOpacity>
+            <BackButton size={20} className="mr-4" />
             <Text className="text-xl font-bold text-ink dark:text-white">{t("noti")}</Text>
           </View>
 
@@ -155,7 +154,7 @@ export default function NotificationsScreen() {
           {notifications.length > 0 && (
             <View className="flex-row items-center gap-4">
               <TouchableOpacity onPress={handleMarkAllRead} className="p-1" hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Ionicons name="checkmark-done" size={22} color="#F97316" />
+                <Ionicons name="checkmark-done" size={22} color="#FF9500" />
               </TouchableOpacity>
               <TouchableOpacity onPress={handleClearAll} className="p-1" hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                 <Ionicons name="trash-outline" size={20} color="#EF4444" />
@@ -173,7 +172,7 @@ export default function NotificationsScreen() {
                 onPress={() => handleNotificationPress(notif)}
                 activeOpacity={0.7}
                 className={`p-4 rounded-3xl flex-row items-start border ${notif.unread
-                  ? 'bg-brand/5 border-brand/20 dark:bg-orange-500/10 dark:border-orange-500/30'
+                  ? 'bg-brand/5 border-brand/20 dark:bg-brand/10 dark:border-brand/30'
                   : 'bg-surface border-surface-light dark:bg-[#1A1A1A] dark:border-gray-800'
                   }`}
               >
@@ -183,7 +182,7 @@ export default function NotificationsScreen() {
                   <Ionicons
                     name={notif.unread ? "notifications" : "notifications-outline"}
                     size={18}
-                    color={notif.unread ? "#F97316" : "gray"}
+                    color={notif.unread ? "#FF9500" : "gray"}
                   />
                 </View>
 

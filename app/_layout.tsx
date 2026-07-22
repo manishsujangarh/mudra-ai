@@ -2,13 +2,12 @@ import "../global.css";
 import '../src/i18n';
 import { Ionicons } from "@expo/vector-icons";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, router as appRouter, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { DeviceEventEmitter, Pressable, View } from "react-native";
-import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { MobileAdsInitializer } from "@/ads/MobileAdsInitializer";
 import { LoadingScreen } from "@/components/ui";
@@ -107,9 +106,8 @@ export default function RootLayout() {
   const { ready, error } = useBootstrap();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
-  const headerBackground = isDark ? "#121413" : "#F5F2F1";
-  const headerTint = isDark ? "#F6F1EC" : "#111111";
-  const router = useRouter();
+  const headerBackground = isDark ? "#000000" : "#F2F2F7";
+  const headerTint = isDark ? "#F2F2F7" : "#1C1C1E";
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
@@ -132,18 +130,16 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (lastNotificationResponse) {
+    if (lastNotificationResponse && ready) {
       const data = lastNotificationResponse.notification.request.content.data;
 
       if (data?.type === "practice" && data?.routineId) {
-        if (ready) {
-          router.push(`/practice/${data.routineId}`);
-        }
+        appRouter.push(`/practice/${data.routineId}`);
       } else {
-        router.replace("/(tabs)");
+        appRouter.replace("/(tabs)");
       }
     }
-  }, [lastNotificationResponse, ready, router]);
+  }, [lastNotificationResponse, ready]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -200,12 +196,12 @@ export default function RootLayout() {
 }
 
 function SettingsHeaderRight() {
-  const router = useRouter();
+
 
   return (
     <View className="flex-row items-center">
       <Pressable
-        onPress={() => router.push("/settings" as any)}
+        onPress={() => appRouter.push("/settings" as any)}
         className="p-2 mr-2"
       >
         <Ionicons name="settings-outline" size={24} color="#777777" />
