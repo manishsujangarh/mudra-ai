@@ -41,3 +41,22 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
+
+# =========================================
+# Expo Local Modules (Mudra Camera) Ignores
+# =========================================
+
+# Android build and cache files
+modules/*/android/build/
+modules/*/android/.gradle/
+modules/*/android/.cxx/
+modules/*/android/*.iml
+modules/*/android/local.properties
+
+# iOS build and cache files (Agar future mein iOS add karein)
+modules/*/ios/build/
+modules/*/ios/Pods/
+modules/*/ios/*.xcworkspace/xcuserdata/
+
+# Caches
+modules/*/.expo/

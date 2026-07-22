@@ -172,14 +172,22 @@ export default function MudraDetail() {
 
       </ScrollView>
 
-      {/* 🔘 Bottom Action Bar */}
       <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#1A1A1A] border-t border-slate-200 dark:border-gray-800 p-5 pb-8">
-        <Pressable
-          onPress={buildRoutine}
-          className="bg-brand rounded-2xl flex-row items-center justify-center py-4 mb-3 active:opacity-80"
+
+        <Pressable onPress={() => router.push(`/verify-mudra/${mudra.id}`)}
+          className="bg-brand/10 rounded-2xl flex-row items-center justify-center py-4 mb-3 active:opacity-80 shadow-sm"
         >
-          <MaterialCommunityIcons name="calendar-plus" size={18} color="white" className="mr-2" />
-          <Text className="text-white font-bold text-sm" numberOfLines={1}>{t("add_daily") || "Add to Daily Routine"}</Text>
+          <Ionicons className="mr-2 dark:text-white text-black" color="white" name="scan-outline" size={18} />
+          <Text className="text-black dark:text-white font-bold text-sm" numberOfLines={1}>
+            {t("Test Posture with AI")}
+          </Text>
+        </Pressable>
+
+        <Pressable className="bg-brand/10 border border-brand/20 rounded-2xl flex-row items-center justify-center py-4 active:opacity-80" onPress={buildRoutine}>
+          <MaterialCommunityIcons className="mr-2" color="#F97316" name="calendar-plus" size={18} />
+          <Text className="text-brand font-bold text-sm" numberOfLines={1}>
+            {t("add_daily") || "Add to Daily Routine"}
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>
