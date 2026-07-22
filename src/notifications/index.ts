@@ -37,7 +37,7 @@ export async function requestNotificationPermissions(): Promise<boolean> {
     await Notifications.setNotificationChannelAsync("reminders", {
       name: "Practice Reminders",
       importance: Notifications.AndroidImportance.DEFAULT,
-      lightColor: "#C8102E",
+      lightColor: "#FF9500",
     });
   }
 

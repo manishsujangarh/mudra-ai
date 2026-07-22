@@ -51,7 +51,7 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-8823796701594878~9835292879",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+          "iosAppId": "ca-app-pub-8823796701594878~3593350942"
         }
       ],
       "expo-image",
@@ -66,8 +66,10 @@
         "origin": false
       },
       "openAiApiKey": "",
-      "adMobBannerUnitId": "",
-      "adMobInterstitialUnitId": "",
+      "adMobBannerUnitId": "ca-app-pub-8823796701594878/9031324540",
+      "adMobInterstitialUnitId": "ca-app-pub-8823796701594878/7561809711",
+      "adMobBannerUnitIdIOS": "ca-app-pub-8823796701594878/3701876163",
+      "adMobInterstitialUnitIdIOS": "ca-app-pub-8823796701594878/3701876163",
       "eas": {
         "projectId": "67808059-d729-41c6-968d-0f0c26532e31"
       }

@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { Alert } from "react-native";
 import { TimePicker } from "@/components/TimePicker";
 import { Button, Chip, Screen, SectionTitle } from "@/components/ui";
@@ -24,6 +24,7 @@ const GOALS: { key: WellnessGoal; label: string; emoji: string }[] = [
 export default function Onboarding() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
   const update = useUpdatePreferences();
   const [goal, setGoal] = useState<WellnessGoal | null>(null);
   const [time, setTime] = useState<string | null>(null);
@@ -36,6 +37,7 @@ export default function Onboarding() {
     ? t("update_reminder_sub")
     : t("welcome_sub");
   const buttonLabel = isEditMode ? t("save_changes") : t("my_practice");
+  const headerTopOffset = isEditMode ? 24 : Math.min(44, Math.max(30, height * 0.045));
 
   useEffect(() => {
     const loadSavedTime = async () => {
@@ -98,7 +100,7 @@ export default function Onboarding() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
-        <Text className="mt-6 text-3xl font-bold text-ink">
+        <Text className="text-3xl font-bold text-ink" style={{ marginTop: headerTopOffset }}>
           {titleText}
         </Text>
         <Text className="mt-2 text-base text-muted">

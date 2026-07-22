@@ -70,7 +70,7 @@ export default function SignupScreen() {
 
     const getToastColor = () => {
         if (toastConfig.type === 'danger') return 'bg-red-500 border-red-700';
-        if (toastConfig.type === 'warning') return 'bg-orange-500 border-orange-700';
+        if (toastConfig.type === 'warning') return 'bg-brand border-orange-700';
         return 'bg-green-500 border-green-700';
     };
 
@@ -202,7 +202,7 @@ export default function SignupScreen() {
                 <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
                     <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
                         <TouchableOpacity onPress={() => setLegalModalVisible(false)} className="p-1">
-                            <MaterialIcons name="close" size={28} color="#f97316" />
+                            <MaterialIcons name="close" size={28} color="#FF9500" />
                         </TouchableOpacity>
                         <Text className="text-lg font-bold text-black dark:text-white">{legalTitle}</Text>
                         <View className="w-7" />
@@ -211,7 +211,7 @@ export default function SignupScreen() {
                     <View className="flex-1 bg-white dark:bg-zinc-950">
                         {isLegalLoading && (
                             <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-zinc-950">
-                                <ActivityIndicator size="large" color="#f97316" />
+                                <ActivityIndicator size="large" color="#FF9500" />
                             </View>
                         )}
                         <WebView

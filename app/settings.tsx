@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Modal, Swi
 import { Screen } from "@/components/ui";
 import { Button, SectionTitle } from "@/components/ui";
 import { useRouter, useFocusEffect } from "expo-router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import * as Updates from "expo-updates";
@@ -17,6 +17,14 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { MaterialIcons, Feather, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { LANGUAGES } from "../src/i18n";
+import { useAudioPlayer } from "expo-audio";
+import {
+    DEFAULT_PRACTICE_MUSIC,
+    isPracticeMusicId,
+    PRACTICE_MUSIC_OPTIONS,
+    PRACTICE_MUSIC_STORAGE_KEY,
+    PracticeMusicId,
+} from "@/audio/music";
 
 export default function Settings() {
     const router = useRouter();
@@ -33,15 +41,21 @@ export default function Settings() {
     // --- PREFERENCES STATES ---
     const { colorScheme, setColorScheme } = useColorScheme();
     const isDark = colorScheme === "dark";
+    const headerIconColor = isDark ? "#F6F1EC" : "#0F172A";
     const [isKeepAwake, setIsKeepAwake] = useState(true);
 
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
+    const [musicModalVisible, setMusicModalVisible] = useState(false);
+    const [practiceMusic, setPracticeMusic] = useState<PracticeMusicId>(DEFAULT_PRACTICE_MUSIC);
+    const [previewMusicId, setPreviewMusicId] = useState<PracticeMusicId | null>(null);
 
     // --- LEGAL WEBVIEW STATES ---
     const [legalModalVisible, setLegalModalVisible] = useState(false);
     const [legalUrl, setLegalUrl] = useState("");
     const [legalTitle, setLegalTitle] = useState("");
     const [isLegalLoading, setIsLegalLoading] = useState(true);
+    const previewMusic = PRACTICE_MUSIC_OPTIONS.find((option) => option.id === previewMusicId) ?? PRACTICE_MUSIC_OPTIONS[0];
+    const previewPlayer = useAudioPlayer(previewMusic.source);
 
     // Check Auth, Premium & Preferences Status
     useFocusEffect(
@@ -82,6 +96,9 @@ export default function Settings() {
                     // Keep Awake Check
                     const keepAwakeStatus = await AsyncStorage.getItem("keep_screen_awake");
                     setIsKeepAwake(keepAwakeStatus !== "false"); // Default true
+
+                    const savedPracticeMusic = await AsyncStorage.getItem(PRACTICE_MUSIC_STORAGE_KEY);
+                    setPracticeMusic(isPracticeMusicId(savedPracticeMusic) ? savedPracticeMusic : DEFAULT_PRACTICE_MUSIC);
                 } catch (e) {
                     console.error("Status check error:", e);
                 }
@@ -106,6 +123,52 @@ export default function Settings() {
         i18n.changeLanguage(langCode);
         setLanguageModalVisible(false);
     };
+
+    const changePracticeMusic = async (musicId: PracticeMusicId) => {
+        setPracticeMusic(musicId);
+        await AsyncStorage.setItem(PRACTICE_MUSIC_STORAGE_KEY, musicId);
+    };
+
+    const toggleMusicPreview = (musicId: PracticeMusicId) => {
+        if (musicId === "off") {
+            setPreviewMusicId(null);
+            previewPlayer.pause();
+            void previewPlayer.seekTo(0);
+            return;
+        }
+
+        setPreviewMusicId((current) => current === musicId ? null : musicId);
+    };
+
+    useEffect(() => {
+        previewPlayer.loop = false;
+        previewPlayer.volume = 0.35;
+    }, [previewPlayer]);
+
+    useEffect(() => {
+        if (!previewMusicId || previewMusicId === "off") {
+            previewPlayer.pause();
+            void previewPlayer.seekTo(0);
+            return;
+        }
+
+        let cancelled = false;
+        const timeout = setTimeout(() => {
+            previewPlayer.pause();
+            void previewPlayer.seekTo(0);
+            setPreviewMusicId(null);
+        }, 6000);
+
+        void previewPlayer.seekTo(0).then(() => {
+            if (!cancelled) previewPlayer.play();
+        });
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timeout);
+            previewPlayer.pause();
+        };
+    }, [previewMusicId, previewPlayer]);
 
     // --- LEGAL WEBVIEW LOGIC ---
     const openLegalWebView = (url: string, title: string) => {
@@ -225,59 +288,71 @@ export default function Settings() {
         );
     };
 
+    const handleBackPress = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace("/(tabs)");
+        }
+    };
+
     return (
-        <Screen className="bg-slate-50 dark:bg-[#0A0A0A]">
+        <Screen className="bg-sand">
             <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'top']}>
 
                 {/* Custom Styled Header */}
                 <View className="flex-row items-center px-5 pt-2 pb-4">
-                    <TouchableOpacity onPress={() => router.back()} className="p-1 -ml-1">
-                        <MaterialIcons name="arrow-back" size={26} color="#F6F1EC" className="text-slate-900 dark:text-white" />
+                    <TouchableOpacity
+                        onPress={handleBackPress}
+                        className="p-2 -ml-2 rounded-full active:opacity-70"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                        <MaterialIcons name="arrow-back" size={26} color={headerIconColor} />
                     </TouchableOpacity>
-                    <Text className="text-2xl font-black text-slate-900 dark:text-white ml-4">{t("settings")}</Text>
+                    <Text className="text-2xl font-semibold text-ink ml-3">{t("settings")}</Text>
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
 
                     {/* --- 1. PREFERENCES CARD --- */}
-                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                    <View className="mb-4 rounded-[28px] bg-surface border border-surface-light p-5">
                         <View className="flex-row items-start mb-5">
-                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
-                                <Feather name="settings" size={18} color="#f97316" />
+                            <View className="p-2 bg-brand/10 rounded-xl mr-3">
+                                <Feather name="settings" size={18} color="#FF9500" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-base font-bold text-slate-900 dark:text-white">{t("preferences")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("preferences_sub")}</Text>
+                                <Text className="text-base font-bold text-ink">{t("preferences")}</Text>
+                                <Text className="text-xs text-muted mt-0.5">{t("preferences_sub")}</Text>
                             </View>
                         </View>
 
                         {/* Dark Mode Row */}
                         <View className="flex-row items-center justify-between mb-4 pl-11">
                             <View className="flex-1 pr-4">
-                                <Text className="text-sm font-bold text-slate-900 dark:text-white">{t("dark_mode")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("dark_mode_sub") || "Change the app's appearance."}</Text>
+                                <Text className="text-sm font-bold text-ink">{t("dark_mode")}</Text>
+                                <Text className="text-xs text-muted mt-0.5">{t("dark_mode_sub") || "Change the app's appearance."}</Text>
                             </View>
                             <Switch
                                 value={isDark}
                                 onValueChange={toggleTheme}
-                                trackColor={{ false: "#D8D1C8", true: "#f97316" }}
+                                trackColor={{ false: "#D1D1D6", true: "#FF9500" }}
                                 thumbColor={isDark ? "#FFFFFF" : "#FFFFFF"}
-                                ios_backgroundColor="#D8D1C8"
+                                ios_backgroundColor="#D1D1D6"
                             />
                         </View>
 
                         {/* Keep Awake Row */}
                         <View className="flex-row items-center justify-between mb-4 pl-11">
                             <View className="flex-1 pr-4">
-                                <Text className="text-sm font-bold text-slate-900 dark:text-white">{t("keep_awake")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("keep_awake_sub") || "Prevent screen from sleeping while practicing."}</Text>
+                                <Text className="text-sm font-bold text-ink">{t("keep_awake")}</Text>
+                                <Text className="text-xs text-muted mt-0.5">{t("keep_awake_sub") || "Prevent screen from sleeping while practicing."}</Text>
                             </View>
                             <Switch
                                 value={isKeepAwake}
                                 onValueChange={toggleKeepAwake}
-                                trackColor={{ false: "#D8D1C8", true: "#f97316" }}
+                                trackColor={{ false: "#D1D1D6", true: "#FF9500" }}
                                 thumbColor={isKeepAwake ? "#FFFFFF" : "#FFFFFF"}
-                                ios_backgroundColor="#D8D1C8"
+                                ios_backgroundColor="#D1D1D6"
                             />
                         </View>
 
@@ -287,27 +362,55 @@ export default function Settings() {
                             onPress={() => setLanguageModalVisible(true)}
                         >
                             <View className="flex-1 pr-4">
-                                <Text className="text-sm font-bold text-slate-900 dark:text-white">{t("language")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("language_sub") || "Change app language"}</Text>
+                                <Text className="text-sm font-bold text-ink">{t("language")}</Text>
+                                <Text className="text-xs text-muted mt-0.5">{t("language_sub") || "Change app language"}</Text>
                             </View>
                             <View className="flex-row items-center">
-                                <Text className="text-sm text-orange-500 font-bold mr-1">
+                                <Text className="text-sm text-brand font-bold mr-1">
                                     {LANGUAGES.find(l => l.code === i18n.language)?.label || 'English'}
                                 </Text>
-                                <MaterialIcons name="chevron-right" size={20} color="#f97316" />
+                                <MaterialIcons name="chevron-right" size={20} color="#FF9500" />
                             </View>
                         </TouchableOpacity>
                     </View>
 
-                    {/* --- 2. REMINDERS CARD --- */}
-                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                    {/* --- MUSIC CARD --- */}
+                    <View className="mb-4 rounded-[28px] bg-surface border border-surface-light p-5">
                         <View className="flex-row items-start mb-5">
-                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
-                                <Feather name="bell" size={18} color="#f97316" />
+                            <View className="p-2 bg-brand/10 rounded-xl mr-3">
+                                <Feather name="music" size={18} color="#FF9500" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-base font-bold text-slate-900 dark:text-white">{t("reminders")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{t("reminders_sub") || "Update your preferred daily practice time."}</Text>
+                                <Text className="text-base font-bold text-ink">{t("practice_music") || "Practice Music"}</Text>
+                                <Text className="text-xs text-muted mt-0.5">{t("practice_music_sub") || "Choose background music that plays during your practice sessions."}</Text>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity
+                            className="flex-row items-center justify-between pl-11"
+                            onPress={() => setMusicModalVisible(true)}
+                        >
+                            <View className="flex-1 pr-4">
+                                <Text className="text-sm font-bold text-ink">
+                                    {PRACTICE_MUSIC_OPTIONS.find((o) => o.id === practiceMusic)?.label || "Meditation"}
+                                </Text>
+                                <Text className="text-xs text-muted mt-0.5">
+                                    {PRACTICE_MUSIC_OPTIONS.find((o) => o.id === practiceMusic)?.description || ""}
+                                </Text>
+                            </View>
+                            <MaterialIcons name="chevron-right" size={20} color="#FF9500" />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* --- 2. REMINDERS CARD --- */}
+                    <View className="mb-4 rounded-[28px] bg-surface border border-surface-light p-5">
+                        <View className="flex-row items-start mb-5">
+                            <View className="p-2 bg-brand/10 rounded-xl mr-3">
+                                <Feather name="bell" size={18} color="#FF9500" />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-base font-bold text-ink">{t("reminders")}</Text>
+                                <Text className="text-xs text-muted mt-0.5">{t("reminders_sub") || "Update your preferred daily practice time."}</Text>
                             </View>
                         </View>
 
@@ -318,25 +421,25 @@ export default function Settings() {
                                     params: { mode: "edit_notification" }
                                 });
                             }}
-                            className="flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent ml-11"
+                            className="flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent ml-11"
                         >
-                            <MaterialIcons name="calendar-today" size={16} color="#f97316" style={{ marginRight: 8 }} />
-                            <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("reminders_btn") || "Edit Reminder Time"}</Text>
+                            <MaterialIcons name="calendar-today" size={16} color="#FF9500" style={{ marginRight: 8 }} />
+                            <Text className="text-brand font-bold text-sm" numberOfLines={1}>{t("reminders_btn") || "Edit Reminder Time"}</Text>
                         </TouchableOpacity>
                     </View>
 
                     {/* --- 3. ADS FREE VERSION CARD --- */}
-                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                    <View className="mb-4 rounded-[28px] bg-surface border border-surface-light p-5">
                         <View className="flex-row items-start mb-5">
-                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
-                                <FontAwesome5 name="gem" size={16} color="#f97316" />
+                            <View className="p-2 bg-brand/10 rounded-xl mr-3">
+                                <FontAwesome5 name="gem" size={16} color="#FF9500" />
                             </View>
                             <View className="flex-1">
                                 <View className="flex-row items-center justify-between">
-                                    <Text className="text-base font-bold text-slate-900 dark:text-white">{t("ads_free") || "Ads Free Version"}</Text>
-                                    {isPremium && <Text className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">{t("purchased")}</Text>}
+                                    <Text className="text-base font-bold text-ink">{t("ads_free") || "Ads Free Version"}</Text>
+                                    {isPremium && <Text className="text-xs font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-full">{t("purchased")}</Text>}
                                 </View>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                <Text className="text-xs text-muted mt-0.5">
                                     {isPremium ? t("purchased_sub") : (t("ads_free_sub") || "Remove banner and popup ads forever with a simple one-time purchase.")}
                                 </Text>
                             </View>
@@ -345,26 +448,26 @@ export default function Settings() {
                         {!isPremium && (
                             <TouchableOpacity
                                 onPress={handleRemoveAdsPress}
-                                className="flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent ml-11"
+                                className="flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent ml-11"
                             >
-                                <MaterialIcons name="ad-units" size={16} color="#f97316" style={{ marginRight: 8 }} />
-                                <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("remove_ads") || "Remove Ads"}</Text>
+                                <MaterialIcons name="ad-units" size={16} color="#FF9500" style={{ marginRight: 8 }} />
+                                <Text className="text-brand font-bold text-sm" numberOfLines={1}>{t("remove_ads") || "Remove Ads"}</Text>
                             </TouchableOpacity>
                         )}
                     </View>
 
                     {/* --- 4. ACCOUNT CARD --- */}
-                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                    <View className="mb-4 rounded-[28px] bg-surface border border-surface-light p-5">
                         <View className="flex-row items-start mb-5">
-                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
-                                <Feather name="user" size={18} color="#f97316" />
+                            <View className="p-2 bg-brand/10 rounded-xl mr-3">
+                                <Feather name="user" size={18} color="#FF9500" />
                             </View>
                             <View className="flex-1">
                                 <View className="flex-row items-center justify-between">
-                                    <Text className="text-base font-bold text-slate-900 dark:text-white">{t("account")}</Text>
+                                    <Text className="text-base font-bold text-ink">{t("account")}</Text>
                                     <Text className="text-xs font-bold text-slate-400 dark:text-gray-400">{isLoggedIn ? t("logedin") : (t("guest") || "Guest")}</Text>
                                 </View>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                <Text className="text-xs text-muted mt-0.5">
                                     {isLoggedIn
                                         ? `${t("namaste")}, ${userName || t("yogi")}. ${t("yogi_sub")}`
                                         : (t("guest_sub") || "Create an account to save your custom routines, track your progress, and back up your data.")
@@ -378,10 +481,10 @@ export default function Settings() {
                                 <TouchableOpacity
                                     onPress={handleLogoutPress}
                                     disabled={isLoggingOut}
-                                    className="flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                    className="flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent"
                                 >
-                                    <MaterialIcons name="logout" size={16} color="#f97316" style={{ marginRight: 8 }} />
-                                    <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>
+                                    <MaterialIcons name="logout" size={16} color="#FF9500" style={{ marginRight: 8 }} />
+                                    <Text className="text-brand font-bold text-sm" numberOfLines={1}>
                                         {isLoggingOut ? t("logouting") : t("logout")}
                                     </Text>
                                 </TouchableOpacity>
@@ -389,17 +492,17 @@ export default function Settings() {
                                 <View className="flex-row gap-3">
                                     <TouchableOpacity
                                         onPress={() => router.push("/(auth)/login")}
-                                        className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                        className="flex-1 flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent"
                                     >
-                                        <MaterialIcons name="login" size={16} color="#f97316" style={{ marginRight: 6 }} />
-                                        <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("login")}</Text>
+                                        <MaterialIcons name="login" size={16} color="#FF9500" style={{ marginRight: 6 }} />
+                                        <Text className="text-brand font-bold text-sm" numberOfLines={1}>{t("login")}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         onPress={() => router.push("/(auth)/signup")}
-                                        className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                        className="flex-1 flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent"
                                     >
-                                        <Feather name="user-plus" size={15} color="#f97316" style={{ marginRight: 6 }} />
-                                        <Text className="text-orange-500 font-bold text-sm" numberOfLines={1}>{t("sign_up")}</Text>
+                                        <Feather name="user-plus" size={15} color="#FF9500" style={{ marginRight: 6 }} />
+                                        <Text className="text-brand font-bold text-sm" numberOfLines={1}>{t("sign_up")}</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -407,14 +510,14 @@ export default function Settings() {
                     </View>
 
                     {/* --- 5. LEGAL CARD --- */}
-                    <View className="mb-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-gray-800 p-5">
+                    <View className="mb-4 rounded-[28px] bg-surface border border-surface-light p-5">
                         <View className="flex-row items-start mb-5">
-                            <View className="p-2 bg-orange-500/10 rounded-xl mr-3">
-                                <Feather name="shield" size={18} color="#f97316" />
+                            <View className="p-2 bg-brand/10 rounded-xl mr-3">
+                                <Feather name="shield" size={18} color="#FF9500" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-base font-bold text-slate-900 dark:text-white">{t("legal")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                <Text className="text-base font-bold text-ink">{t("legal")}</Text>
+                                <Text className="text-xs text-muted mt-0.5">
                                     {t("legal_sub") || "Read our terms of service and privacy policy to understand how we protect your data."}
                                 </Text>
                             </View>
@@ -423,17 +526,17 @@ export default function Settings() {
                         <View className="flex-row gap-3 ml-11">
                             <TouchableOpacity
                                 onPress={() => openLegalWebView("https://7pranayama.com/terms", "Terms of Service")}
-                                className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                className="flex-1 flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent"
                             >
-                                <MaterialIcons name="description" size={16} color="#f97316" style={{ marginRight: 6 }} />
-                                <Text className="text-orange-500 font-bold text-sm">{t("terms")}</Text>
+                                <MaterialIcons name="description" size={16} color="#FF9500" style={{ marginRight: 6 }} />
+                                <Text className="text-brand font-bold text-sm">{t("terms")}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => openLegalWebView("https://7pranayama.com/privacy", "Privacy Policy")}
-                                className="flex-1 flex-row items-center justify-center border border-orange-500/40 rounded-2xl py-3.5 bg-transparent"
+                                className="flex-1 flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent"
                             >
-                                <Feather name="lock" size={15} color="#f97316" style={{ marginRight: 6 }} />
-                                <Text className="text-orange-500 font-bold text-sm">{t("privacy")}</Text>
+                                <Feather name="lock" size={15} color="#FF9500" style={{ marginRight: 6 }} />
+                                <Text className="text-brand font-bold text-sm">{t("privacy")}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -446,7 +549,7 @@ export default function Settings() {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-base font-bold text-red-500">{t("danger_zone")}</Text>
-                                <Text className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                                <Text className="text-xs text-muted mt-0.5">
                                     {t("danger_zone_sub") || "Permanently delete your account and wipe all associated data. This action cannot be recovered."}
                                 </Text>
                             </View>
@@ -483,41 +586,153 @@ export default function Settings() {
                     >
                         <TouchableOpacity
                             activeOpacity={1}
-                            className="bg-white dark:bg-[#1A1A1A] rounded-t-3xl px-5"
-                            style={{ paddingBottom: insets.bottom }}
+                            className="bg-surface rounded-t-[28px] px-5"
+                            style={{ paddingBottom: insets.bottom, maxHeight: "80%" }}
                         >
-                            <View className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full self-center mb-6 mt-3" />
+                            <View className="w-12 h-1.5 bg-surface-light rounded-full self-center mb-6 mt-3" />
 
                             <View className="flex-row items-center justify-between mb-5">
-                                <Text className="text-xl font-bold text-slate-900 dark:text-white">{t("select_language")}</Text>
+                                <Text className="text-xl font-bold text-ink">{t("select_language")}</Text>
                                 <TouchableOpacity
                                     onPress={() => setLanguageModalVisible(false)}
-                                    className="p-2 bg-slate-100 dark:bg-gray-800 rounded-full"
+                                    className="p-2 bg-sand rounded-full"
                                 >
-                                    <MaterialIcons name="close" size={20} color="#f97316" />
+                                    <MaterialIcons name="close" size={20} color="#FF9500" />
                                 </TouchableOpacity>
                             </View>
 
-                            {LANGUAGES.map((lang) => {
-                                const isSelected = i18n.language === lang.code;
-                                return (
-                                    <TouchableOpacity
-                                        key={lang.code}
-                                        onPress={() => changeLanguage(lang.code)}
-                                        className={`p-4 rounded-2xl mb-3 flex-row justify-between items-center border ${isSelected ? 'bg-brand/10 border-brand' : 'bg-sand border-transparent'
-                                            }`}
-                                    >
-                                        <Text className={`text-base ${isSelected ? 'font-bold text-orange-500' : 'text-slate-900 dark:text-white font-medium'}`}>
-                                            {lang.label}
-                                        </Text>
-                                        {isSelected && (
-                                            <View className="bg-orange-500 rounded-full p-1">
-                                                <MaterialIcons name="check" size={14} color="#FFF" />
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                keyboardShouldPersistTaps="handled"
+                                contentContainerStyle={{ paddingBottom: 16 }}
+                            >
+                                {LANGUAGES.map((lang) => {
+                                    const isSelected = i18n.language === lang.code;
+                                    return (
+                                        <TouchableOpacity
+                                            key={lang.code}
+                                            onPress={() => changeLanguage(lang.code)}
+                                            className={`p-4 rounded-2xl mb-3 flex-row justify-between items-center border ${isSelected ? 'bg-brand/10 border-brand' : 'bg-sand border-transparent'
+                                                }`}
+                                        >
+                                            <Text className={`text-base ${isSelected ? 'font-bold text-brand' : 'text-ink font-medium'}`}>
+                                                {lang.label}
+                                            </Text>
+                                            {isSelected && (
+                                                <View className="bg-brand rounded-full p-1">
+                                                    <MaterialIcons name="check" size={14} color="#FFF" />
+                                                </View>
+                                            )}
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </ScrollView>
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </Modal>
+
+                {/* --- MUSIC SELECTION MODAL --- */}
+                <Modal
+                    visible={musicModalVisible}
+                    animationType="slide"
+                    transparent={true}
+                    onRequestClose={() => {
+                        setMusicModalVisible(false);
+                        setPreviewMusicId(null);
+                        previewPlayer.pause();
+                        void previewPlayer.seekTo(0);
+                    }}
+                >
+                    <TouchableOpacity
+                        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+                        activeOpacity={1}
+                        onPress={() => {
+                            setMusicModalVisible(false);
+                            setPreviewMusicId(null);
+                            previewPlayer.pause();
+                            void previewPlayer.seekTo(0);
+                        }}
+                    >
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            className="bg-surface rounded-t-[28px] px-5"
+                            style={{ paddingBottom: insets.bottom, maxHeight: "80%" }}
+                        >
+                            <View className="w-12 h-1.5 bg-surface-light rounded-full self-center mb-6 mt-3" />
+
+                            <View className="flex-row items-center justify-between mb-5">
+                                <Text className="text-xl font-bold text-ink">{t("select_music") || "Select Practice Music"}</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setMusicModalVisible(false);
+                                        setPreviewMusicId(null);
+                                        previewPlayer.pause();
+                                        void previewPlayer.seekTo(0);
+                                    }}
+                                    className="p-2 bg-sand rounded-full"
+                                >
+                                    <MaterialIcons name="close" size={20} color="#FF9500" />
+                                </TouchableOpacity>
+                            </View>
+
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                keyboardShouldPersistTaps="handled"
+                                contentContainerStyle={{ paddingBottom: 16 }}
+                            >
+                                {PRACTICE_MUSIC_OPTIONS.map((option) => {
+                                    const isSelected = practiceMusic === option.id;
+                                    const isPreviewing = previewMusicId === option.id;
+                                    const isOff = option.id === "off";
+
+                                    return (
+                                        <TouchableOpacity
+                                            key={option.id}
+                                            onPress={() => {
+                                                changePracticeMusic(option.id);
+                                                setMusicModalVisible(false);
+                                                setPreviewMusicId(null);
+                                                previewPlayer.pause();
+                                                void previewPlayer.seekTo(0);
+                                            }}
+                                            className={`p-4 rounded-2xl mb-3 border ${isSelected ? 'bg-brand/10 border-brand' : 'bg-sand border-transparent'}`}
+                                        >
+                                            <View className="flex-row justify-between items-center">
+                                                <View className="flex-1 pr-3">
+                                                    <Text className={`text-base ${isSelected ? 'font-bold text-brand' : 'text-ink font-medium'}`}>
+                                                        {option.id === "off" ? (t("no_music") || "No Music") : option.label}
+                                                    </Text>
+                                                    <Text className="text-xs text-muted mt-0.5">
+                                                        {option.id === "off" ? (t("no_music_desc") || "Practice with timer bell only") : option.description}
+                                                    </Text>
+                                                </View>
+
+                                                <View className="flex-row items-center gap-2">
+                                                    {!isOff && (
+                                                        <TouchableOpacity
+                                                            onPress={(e) => {
+                                                                e.stopPropagation?.();
+                                                                toggleMusicPreview(option.id);
+                                                            }}
+                                                            className={`px-3 py-1.5 rounded-full border ${isPreviewing ? 'bg-brand border-brand' : 'bg-transparent border-brand/40'}`}
+                                                        >
+                                                            <Text className={`text-xs font-bold ${isPreviewing ? 'text-white' : 'text-brand'}`}>
+                                                                {isPreviewing ? (t("stop_preview") || "Stop") : (t("preview") || "Preview")}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    )}
+
+                                                    {isSelected && (
+                                                        <View className="bg-brand rounded-full p-1">
+                                                            <MaterialIcons name="check" size={14} color="#FFF" />
+                                                        </View>
+                                                    )}
+                                                </View>
                                             </View>
-                                        )}
-                                    </TouchableOpacity>
-                                );
-                            })}
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </ScrollView>
                         </TouchableOpacity>
                     </TouchableOpacity>
                 </Modal>
@@ -527,15 +742,15 @@ export default function Settings() {
                     <SafeAreaView className="flex-1 bg-white dark:bg-[#0A0A0A]" edges={['top', 'bottom']}>
                         <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
                             <TouchableOpacity onPress={() => setLegalModalVisible(false)} className="p-1">
-                                <MaterialIcons name="close" size={26} color="#f97316" />
+                                <MaterialIcons name="close" size={26} color="#FF9500" />
                             </TouchableOpacity>
-                            <Text className="text-lg font-bold text-slate-900 dark:text-white">{legalTitle}</Text>
+                            <Text className="text-lg font-bold text-ink">{legalTitle}</Text>
                             <View className="w-7" />
                         </View>
                         <View className="flex-1 bg-white dark:bg-[#0A0A0A]">
                             {isLegalLoading && (
                                 <View className="absolute inset-0 items-center justify-center z-10 bg-white dark:bg-[#0A0A0A]">
-                                    <ActivityIndicator size="large" color="#f97316" />
+                                    <ActivityIndicator size="large" color="#FF9500" />
                                 </View>
                             )}
                             <WebView source={{ uri: legalUrl }} onLoadEnd={() => setIsLegalLoading(false)} injectedJavaScript={hideHeaderScript} javaScriptEnabled={true} showsVerticalScrollIndicator={false} className="flex-1" />

@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
-import { useRouter } from "expo-router";
 import { useAppStore, PlanData } from "@/store/useAppStore";
+import { BackButton } from "@/components/BackButton";
 
 const AVAILABLE_PLANS: PlanData[] = [
     {
@@ -13,7 +13,7 @@ const AVAILABLE_PLANS: PlanData[] = [
         currentDay: 1,
         icon: "moon-waning-crescent",
         color: "#6366F1",
-        mudrasPerDay: ["1", "2", "3", "4", "5", "6", "7"] 
+        mudrasPerDay: ["1", "2", "3", "4", "5", "6", "7"]
     },
     {
         id: "anxiety_14_days",
@@ -37,7 +37,6 @@ const AVAILABLE_PLANS: PlanData[] = [
 
 export default function PlansScreen() {
     const { t } = useTranslation();
-    const router = useRouter();
 
     const activePlans = useAppStore((s) => s.activePlans) || [];
     const togglePlanActivation = useAppStore((s) => s.togglePlanActivation);
@@ -48,12 +47,7 @@ export default function PlansScreen() {
             {/* 🔝 Header Row */}
             <View className="flex-row items-center justify-between mb-5">
                 <View className="flex-row items-center">
-                    <Pressable
-                        onPress={() => router.back()}
-                        className="p-2 mr-3 bg-surface rounded-full border border-surface-light active:opacity-75"
-                    >
-                        <Ionicons name="arrow-back" size={20} color="#1E293B" />
-                    </Pressable>
+                    <BackButton size={20} className="mr-3" />
                     <Text className="text-xl font-black text-ink">{t("explore_plans") || "Wellness Challenges"}</Text>
                 </View>
             </View>
@@ -71,9 +65,8 @@ export default function PlansScreen() {
                         <View
                             key={plan.id}
                             // 🔥 FIX: Removed 'transition-all' and 'scale-[1.01]' to prevent Reanimated crashes
-                            className={`bg-surface p-5 relative rounded-3xl mb-4 border ${
-                                isCurrentActive ? "border-brand bg-brand/5" : "border-surface-light"
-                            }`}
+                            className={`bg-surface p-5 relative rounded-3xl mb-4 border ${isCurrentActive ? "border-brand bg-brand/5" : "border-surface-light"
+                                }`}
                         >
                             {/* Active Badge */}
                             {isCurrentActive && (

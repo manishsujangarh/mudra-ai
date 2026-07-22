@@ -4,16 +4,18 @@
 
 @layer base {
   :root {
-    --color-sand: 245 242 241;
+    --color-sand: 242 242 247;
     --color-surface: 255 255 255;
-    --color-ink: 17 17 17;
-    --color-muted: 107 123 119;
+    --color-surface-light: 229 229 234;
+    --color-ink: 28 28 30;
+    --color-muted: 142 142 147;
   }
 
   .dark:root {
-    --color-sand: 18 20 19;
-    --color-surface: 32 35 34;
-    --color-ink: 246 241 236;
-    --color-muted: 177 188 184;
+    --color-sand: 0 0 0;
+    --color-surface: 28 28 30;
+    --color-surface-light: 58 58 60;
+    --color-ink: 242 242 247;
+    --color-muted: 174 174 178;
   }
 }

@@ -10,30 +10,33 @@ module.exports = {
     extend: {
       colors: {
         sand: "rgb(var(--color-sand) / <alpha-value>)",
-        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        surface: {
+          DEFAULT: "rgb(var(--color-surface) / <alpha-value>)",
+          light: "rgb(var(--color-surface-light) / <alpha-value>)",
+        },
         ink: "rgb(var(--color-ink) / <alpha-value>)",
         muted: "rgb(var(--color-muted) / <alpha-value>)",
         brand: {
-          DEFAULT: "#e06040", // Main Pinterest red
-          light: "#e06040",
-          dark: "#e06040",
+          DEFAULT: "#FF9500",
+          light: "#FFB340",
+          dark: "#FF9F0A",
         },
 
         background: {
-          DEFAULT: "#e06040", // Soft warm white
-          secondary: "#EFE8E5",
+          DEFAULT: "#F2F2F7",
+          secondary: "#FFFFFF",
         },
 
         text: {
-          primary: "#111111", // Main black heading
-          secondary: "#444444",
-          muted: "#777777",
+          primary: "#1C1C1E",
+          secondary: "#3A3A3C",
+          muted: "#8E8E93",
         },
 
         accent: {
-          red: "#D40000",
-          gold: "#E7D6B5", // Mandala pattern color
-          cream: "#FFF8F2",
+          red: "#FF3B30",
+          gold: "#FFCC00",
+          cream: "#F9F9FB",
         },
       },
 
@@ -42,7 +45,7 @@ module.exports = {
       },
 
       boxShadow: {
-        card: "0 4px 12px rgba(0,0,0,0.08)",
+        card: "0 8px 24px rgba(0,0,0,0.08)",
       },
 
       borderRadius: {

@@ -43,7 +43,7 @@ export function HeroCard({
     const displayTag = mudra.tag || "best_for_sleep";
 
     return (
-        <View className="mt-6 overflow-hidden rounded-3xl border border-surface-light bg-surface relative min-h-[220px]">
+        <View className="mt-6 overflow-hidden rounded-[28px] border border-surface-light bg-surface relative min-h-[220px]">
 
             <View className="absolute -top-10 right-[-40px] w-[220px] h-full opacity-80 z-0">
                 <Image
@@ -56,21 +56,21 @@ export function HeroCard({
             <View className="p-5 relative z-10 w-[65%]">
 
                 <View className="flex-row items-center mb-3">
-                    <MaterialCommunityIcons name="star-four-points" size={12} color="#F97316" className="mr-1.5" />
+                    <MaterialCommunityIcons name="star-four-points" size={12} color="#FF9500" className="mr-1.5" />
                     <Text className="text-[10px] font-medium text-brand uppercase tracking-wider">
                         {t("todays_recommendation")}
                     </Text>
                 </View>
 
-                <Text className="text-3xl font-bold text-ink mb-3" numberOfLines={1}>
+                <Text className="text-3xl font-semibold text-ink mb-3" numberOfLines={1}>
                     {t(displayNameKey)}
                 </Text>
 
-                <View className="flex-row items-center bg-surface-light self-start px-3 py-1.5 rounded-full mb-3 border border-surface-light">
+                <View className="flex-row items-center bg-sand self-start px-3 py-1.5 rounded-full mb-3 border border-surface-light">
                     <Ionicons
                         name={displayTag === 'best_for_sleep' ? "moon" : "leaf"}
                         size={12}
-                        color="#F97316"
+                        color="#FF9500"
                         className="mr-1.5"
                     />
                     <Text className="text-[10px] font-medium text-ink">{t(displayTag)}</Text>
@@ -105,7 +105,7 @@ export function HeroCard({
                 <Pressable
                     disabled={isLoading}
                     onPress={() => onStartPractice(mudra.id, displayNameKey, displayDuration)}
-                    className="bg-brand flex-1 py-3.5 rounded-2xl flex-row items-center justify-center active:opacity-80"
+                    className="bg-brand flex-1 py-3.5 rounded-full flex-row items-center justify-center active:opacity-80"
                 >
                     {isLoading ? (
                         <ActivityIndicator size="small" color="#FFF" />
@@ -120,7 +120,7 @@ export function HeroCard({
                 <Pressable
                     disabled={isLoading}
                     onPress={() => onStartPractice(mudra.id, displayNameKey, 5)}
-                    className="bg-surface-light border border-surface-light px-4 py-3.5 rounded-2xl justify-center items-center active:opacity-70"
+                    className="bg-sand border border-surface-light px-4 py-3.5 rounded-full justify-center items-center active:opacity-70"
                 >
                     <Text className="text-ink font-medium text-xs" numberOfLines={1}>
                         {t("start")} 5 {t("min")}
@@ -135,7 +135,7 @@ export function HeroCard({
                     <Ionicons
                         name={isSaved ? "bookmark" : "bookmark-outline"}
                         size={16}
-                        color={isSaved ? "#F97316" : "gray"}
+                        color={isSaved ? "#FF9500" : "gray"}
                         className="mr-1"
                     />
                     <Text className="text-ink font-medium text-xs">Save</Text>

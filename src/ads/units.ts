@@ -15,3 +15,13 @@ export const configuredBannerUnitId =
 export const configuredInterstitialUnitId =
   normalizeUnitId(process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_UNIT_ID) ??
   normalizeUnitId(extra.adMobInterstitialUnitId);
+
+export const configuredBannerUnitIdIOS =
+  normalizeUnitId(process.env.EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_IOS) ??
+  normalizeUnitId(extra.adMobBannerUnitIdIOS);
+
+export const configuredInterstitialUnitIdIOS =
+  normalizeUnitId(process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_UNIT_ID_ios) ??
+  normalizeUnitId(extra.adMobInterstitialUnitIdIOS);
+
+

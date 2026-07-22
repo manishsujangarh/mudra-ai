@@ -159,7 +159,7 @@ export default function Practice() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
         <View className="items-center mt-6 mb-8">
           <View className="w-32 h-32 rounded-full items-center justify-center border border-brand/40 relative">
-            <View className="absolute w-36 h-36 rounded-full bg-orange-500/10 blur-2xl" />
+            <View className="absolute w-36 h-36 rounded-full bg-brand/10 blur-2xl" />
             <Image
               source={imageSource ?? undefined}
               contentFit="cover"
@@ -219,7 +219,7 @@ export default function Practice() {
             </View>
             {mudra.benefits.map((b, i) => (
               <View key={i} className="mb-2.5 flex-row items-start">
-                <Ionicons name="checkmark-circle-outline" size={18} color="#F97316" className="mt-0.5 mr-3" />
+                <Ionicons name="checkmark-circle-outline" size={18} color="#FF9500" className="mt-0.5 mr-3" />
                 <Text className="flex-1 text-sm leading-6 text-slate-600 dark:text-gray-300">{t(b)}</Text>
               </View>
             ))}
