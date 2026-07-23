@@ -662,7 +662,6 @@
     "round": "Round",
     "start_breathing": "Start Breathing",
     "stop": "Stop",
-    "well_done": "Well Done! 🎉",
     "completed_breathing_rounds": "You completed",
     "meditation_complete": "Meditation Complete 🧘",
     "meditation_complete_sub": "Your meditation session has finished.",
@@ -684,9 +683,6 @@
     "schedule_saved": "Schedule Saved ✅",
     "schedule_saved_msg": "Your daily reminders have been updated.",
     "save_schedule": "Save Schedule",
-    "duration": "Duration",
     "breathe_reminder_title": "Time to Breathe 🌬️",
-    "breathe_reminder_body": "Take a moment for your breathing practice.",
-    "resume": "Resume",
-    "pause": "Pause"
+    "breathe_reminder_body": "Take a moment for your breathing practice."
 }
