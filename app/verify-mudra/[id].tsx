@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform, PermissionsAndroid } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Platform, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 🔥 Sirf Login check ke liye
 import { MudraCameraView } from '../../modules/mudra-camera';
 import mudrasData from '../../src/data/seed-mudras.json';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,16 +15,15 @@ export default function MudraVerificationScreen() {
 
     const activeMudra = mudrasData.find(m => m.id === id) || mudrasData[0];
 
-    const [hasPermission, setHasPermission] = useState(false);
+    // --- STATES ---
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // Null = Loading state
     const [cameraType, setCameraType] = useState<'front' | 'back'>('front');
     const [aiStatus, setAiStatus] = useState("Loading...");
-
     const [isActive, setIsActive] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             setIsActive(true);
-
             return () => {
                 setIsActive(false);
             };
@@ -31,42 +31,48 @@ export default function MudraVerificationScreen() {
     );
 
     useEffect(() => {
-        requestCameraPermission();
+        const checkAuth = async () => {
+            try {
+                const loggedStatus = await AsyncStorage.getItem("isLogged");
+                setIsLoggedIn(loggedStatus === "true");
+            } catch (error) {
+                console.error("Auth check failed", error);
+                setIsLoggedIn(false);
+            }
+        };
+
+        checkAuth();
     }, []);
 
-    const requestCameraPermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.CAMERA,
-                    {
-                        title: t("Camera Permission Required"),
-                        message: t("We need camera access to analyze your Mudra posture."),
-                        buttonPositive: t("OK"),
-                        buttonNegative: t("Cancel")
-                    }
-                );
-                setHasPermission(granted === PermissionsAndroid.RESULTS.GRANTED);
-            } catch (err) {
-                console.warn(err);
-            }
-        } else {
-            setHasPermission(true);
-        }
-    };
 
-    if (!hasPermission) {
+    if (isLoggedIn === null) {
+        return (
+            <SafeAreaView className="flex-1 bg-surface justify-center items-center">
+                <ActivityIndicator size="large" color="#FF9500" />
+                <Text className="text-ink mt-4 font-semibold">{t("loading") || "Loading..."}</Text>
+            </SafeAreaView>
+        );
+    }
+
+    if (!isLoggedIn) {
         return (
             <SafeAreaView className="flex-1 bg-surface justify-center items-center px-5">
-                <Ionicons name="camera-outline" size={64} color="gray" style={{ marginBottom: 16 }} />
-                <Text className="text-ink text-lg text-center mb-6 font-bold">
-                    {t("Camera permission is required to analyze your Mudra.")}
+                <Ionicons name="lock-closed-outline" size={64} color="gray" style={{ marginBottom: 16 }} />
+                <Text className="text-ink text-xl text-center mb-2 font-bold">
+                    {t("login_required") || "Login Required"}
+                </Text>
+                <Text className="text-muted text-center mb-8 px-4">
+                    {t("login_required_sub") || "Please login to use the Mudra AI posture analysis feature."}
                 </Text>
                 <Pressable
-                    className="bg-brand px-6 py-3 rounded-full active:opacity-80 shadow-md"
-                    onPress={requestCameraPermission}
+                    className="bg-brand w-full py-4 rounded-2xl active:opacity-80 shadow-md mb-4 items-center"
+                    onPress={() => router.push('/(auth)/login')}
                 >
-                    <Text className="text-white font-bold">{t("Grant Permission")}</Text>
+                    <Text className="text-white font-bold text-base">{t("login") || "Go to Login"}</Text>
+                </Pressable>
+
+                <Pressable onPress={() => router.back()} className="p-4 active:opacity-70">
+                    <Text className="text-ink font-semibold">{t("go_back") || "Go Back"}</Text>
                 </Pressable>
             </SafeAreaView>
         );
