@@ -1,6 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Modal, Switch, DeviceEventEmitter, Alert } from "react-native";
 import { Screen } from "@/components/ui";
-import { Button, SectionTitle } from "@/components/ui";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useState, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,6 +9,7 @@ import { apiFetch } from "@/lib/api";
 import { AdBanner } from "@/ads/AdBanner";
 import * as SQLite from "expo-sqlite";
 import { useColorScheme } from "nativewind";
+import { closeDatabase } from '../src/db/client';
 
 // Legal WebView 
 import { WebView } from "react-native-webview";
@@ -248,7 +248,12 @@ export default function Settings() {
                 try { await apiFetch('/delete-account', { method: 'POST' }); } catch (e) { console.log("Delete API fail", e) }
             }
 
-            try { await SQLite.deleteDatabaseAsync("mudra-ai.db"); } catch (dbError) { console.log("Error deleting DB:", dbError); }
+            try {
+              await closeDatabase();
+                await SQLite.deleteDatabaseAsync("mudra-ai.db");
+            } catch (dbError) {
+                console.log("Error deleting DB:", dbError);
+            }
 
             await AsyncStorage.clear();
             await SecureStore.deleteItemAsync("auth_token");
