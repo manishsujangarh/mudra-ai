@@ -1,8 +1,8 @@
 import React from "react";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, View, Pressable, Platform } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, Text, View, Pressable } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -17,6 +17,7 @@ export default function MudraDetail() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const { t } = useTranslation();
   const router = useRouter();
+  const insects= useSafeAreaInsets();
 
   const { data: mudra, isLoading } = useMudraBySlug(slug);
   const setPendingRecommendation = useAppStore((s) => s.setPendingRecommendation);
@@ -42,7 +43,6 @@ export default function MudraDetail() {
   };
 
   const startPracticeNow = () => {
-    // यहाँ आप सीधे प्रैक्टिस स्क्रीन पर भेजने का लॉजिक लगा सकते हैं
     buildRoutine();
   };
 
@@ -172,10 +172,10 @@ export default function MudraDetail() {
 
       </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#1A1A1A] border-t border-slate-200 dark:border-gray-800 p-5 pb-8">
+      <View style={{ bottom: insects.bottom }} className="absolute left-0 right-0 bg-white dark:bg-[#1A1A1A] border-t border-slate-200 dark:border-gray-800 p-5 pb-8">
 
         <Pressable onPress={() => router.push(`/verify-mudra/${mudra.id}`)}
-          className="bg-brand/10 rounded-2xl flex-row items-center justify-center py-4 mb-3 active:opacity-80 shadow-sm"
+          className="bg-brand/10 rounded-2xl flex-row items-center justify-center pt-4 mb-3 active:opacity-80 shadow-sm"
         >
           <Ionicons className="mr-2 dark:text-white text-black" color="white" name="scan-outline" size={18} />
           <Text className="text-black dark:text-white font-bold text-sm" numberOfLines={1}>
