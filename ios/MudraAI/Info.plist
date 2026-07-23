@@ -28,7 +28,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>mudraai</string>
-				<string>com.mudraai.app</string>
+				<string>com.ai.mudra</string>
 			</array>
 		</dict>
 		<dict>
@@ -41,7 +41,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-8823796701594878~3593350942</string>
 	<key>GADDelayAppMeasurementInit</key>
 	<false/>
 	<key>LSMinimumSystemVersion</key>
@@ -61,6 +61,8 @@
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>

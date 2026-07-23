@@ -187,6 +187,13 @@ export default function RootLayout() {
                   title: t("build_routine"),
                 }}
               />
+              <Stack.Screen
+                name="screens/BreathingMeditation"
+                options={{
+                  headerShown: false,
+                  presentation: "modal",
+                }}
+              />
             </Stack>
           )}
         </QueryClientProvider>
