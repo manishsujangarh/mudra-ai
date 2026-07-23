@@ -684,5 +684,13 @@
     "stop_preview": "停止",
     "tap_start_breathing": "点击“开始”以开始呼吸",
     "tap_to_begin": "点击开始",
-    "upgrade_now": "立即升级"
+    "upgrade_now": "立即升级",
+    "select_country": "选择国家/地区",
+    "search_number": "搜索国家或代码...",
+    "go_back": "返回",
+    "login_required_sub_camera": "请登录以使用 Mudra AI 姿势分析功能。",
+    "posture_analyzed_success": "您的手印姿势已成功分析。",
+    "pefect_match": "完美匹配！",
+    "reminder_time": "每日练习时间",
+    "tap_to_change_time": "点击修改您的通知计划"
 }

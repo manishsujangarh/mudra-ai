@@ -684,5 +684,13 @@
     "stop_preview": "Parar",
     "tap_start_breathing": "Toque em Iniciar para começar a respirar",
     "tap_to_begin": "Toque para começar",
-    "upgrade_now": "Atualize agora"
+    "upgrade_now": "Atualize agora",
+    "select_country": "Selecionar país",
+    "search_number": "Pesquisar país ou código...",
+    "go_back": "Voltar",
+    "login_required_sub_camera": "Faça login para usar o recurso de análise de postura Mudra AI.",
+    "posture_analyzed_success": "Sua postura de mudra foi analisada com sucesso.",
+    "pefect_match": "Combinação perfeita!",
+    "reminder_time": "Horário de prática diária",
+    "tap_to_change_time": "Toque para modificar seu agendamento de notificações"
 }

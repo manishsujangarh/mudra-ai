@@ -38,7 +38,7 @@ export default function InsightsScreen() {
 
     const topStreak = routines.reduce((max, r) => Math.max(max, r.streak || 0), 0);
     const totalMinutes = recentSessions.reduce((acc: number, session: any) => acc + (session.duration || 10), 0);
-    const consistencyRate = insights?.successRate ? Math.round(insights.successRate * 100) : 0;
+    const consistencyRate = insights?.successRate ? Math.round(insights.successRate) : 0;
 
     const isLoading = isRoutinesLoading || isStatsLoading || isInsightsLoading || isHistoryLoading;
 

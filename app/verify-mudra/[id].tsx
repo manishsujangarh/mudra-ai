@@ -1,11 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform, PermissionsAndroid } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Platform, ActivityIndicator, Image, Alert, PermissionsAndroid } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MudraCameraView } from '../../modules/mudra-camera';
 import mudrasData from '../../src/data/seed-mudras.json';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { useSaveAIPractice } from '../../src/hooks/useAIPractice';
+import { getMudraImage } from '@/utils/images';
+import * as SecureStore from 'expo-secure-store';
+import { BackButton } from "@/components/BackButton";
+import { useSessionCompletionInterstitial } from "@/ads/useSessionCompletionInterstitial";
 
 export default function MudraVerificationScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -14,25 +20,12 @@ export default function MudraVerificationScreen() {
 
     const activeMudra = mudrasData.find(m => m.id === id) || mudrasData[0];
 
-    const [hasPermission, setHasPermission] = useState(false);
+    // --- STATES ---
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
     const [cameraType, setCameraType] = useState<'front' | 'back'>('front');
     const [aiStatus, setAiStatus] = useState("Loading...");
-
     const [isActive, setIsActive] = useState(false);
-
-    useFocusEffect(
-        useCallback(() => {
-            setIsActive(true);
-
-            return () => {
-                setIsActive(false);
-            };
-        }, [])
-    );
-
-    useEffect(() => {
-        requestCameraPermission();
-    }, []);
+    const [hasPermission, setHasPermission] = useState(false);
 
     const requestCameraPermission = async () => {
         if (Platform.OS === 'android') {
@@ -40,10 +33,10 @@ export default function MudraVerificationScreen() {
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.CAMERA,
                     {
-                        title: t("Camera Permission Required"),
-                        message: t("We need camera access to analyze your Mudra posture."),
-                        buttonPositive: t("OK"),
-                        buttonNegative: t("Cancel")
+                        title: t("Camera Permission Required") || "Camera Permission",
+                        message: t("We need camera access to analyze your Mudra posture.") || "We need camera access to analyze your Mudra posture.",
+                        buttonPositive: t("OK") || "OK",
+                        buttonNegative: t("Cancel") || "Cancel"
                     }
                 );
                 setHasPermission(granted === PermissionsAndroid.RESULTS.GRANTED);
@@ -55,18 +48,124 @@ export default function MudraVerificationScreen() {
         }
     };
 
+    useEffect(() => {
+        requestCameraPermission();
+    }, []);
+
+    const saveAIPractice = useSaveAIPractice();
+    const [isSavedToDB, setIsSavedToDB] = useState(false);
+
+    const sessionCompletionAd = useSessionCompletionInterstitial();
+
+    useFocusEffect(
+        useCallback(() => {
+            setIsActive(true);
+            return () => {
+                setIsActive(false);
+            };
+        }, [])
+    );
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const loggedStatus = await AsyncStorage.getItem("isLogged");
+                setIsLoggedIn(loggedStatus === "true");
+            } catch (error) {
+                console.error("Auth check failed", error);
+                setIsLoggedIn(false);
+            }
+        };
+
+        checkAuth();
+    }, []);
+
+    useEffect(() => {
+        const saveToDB = async () => {
+            if (aiStatus.includes("Perfect") && !isSavedToDB && isLoggedIn) {
+
+                setIsSavedToDB(true);
+
+                try {
+                    const userDataString = await SecureStore.getItemAsync('user_data');
+                    let currentUserId = "unknown_user";
+
+                    if (userDataString) {
+                        const userData = JSON.parse(userDataString);
+                        currentUserId = userData.id?.toString() || "unknown_user";
+                    }
+
+                    await saveAIPractice.mutateAsync({
+                        mudraId: activeMudra.id,
+                        userId: currentUserId
+                    });
+
+                    console.log(`✅ Mudra ${t(activeMudra.name)} successfully saved to DB for User ID: ${currentUserId}`);
+
+                    sessionCompletionAd.showAfterCompletion(() => {
+                        Alert.alert(
+                            `${t("pefect_match") || "Perfect Match!"} 🎉`,
+                            t("posture_analyzed_success") || "Your mudra posture was analyzed successfully.",
+                            [{ text: t("done") || "Done", onPress: () => router.back() }]
+                        );
+                    });
+
+                } catch (err) {
+                    console.error("❌ Failed to save AI Practice to DB", err);
+                }
+            }
+        };
+
+        saveToDB();
+    }, [aiStatus, isSavedToDB, isLoggedIn, activeMudra.id, saveAIPractice, sessionCompletionAd, router, t]);
+
+    const imageSource = getMudraImage(activeMudra.image_url);
+
+    if (isLoggedIn === null) {
+        return (
+            <SafeAreaView className="flex-1 bg-surface justify-center items-center">
+                <ActivityIndicator size="large" color="#FF9500" />
+                <Text className="text-ink mt-4 font-semibold">{t("loading") || "Loading..."}</Text>
+            </SafeAreaView>
+        );
+    }
+
+    if (!isLoggedIn) {
+        return (
+            <SafeAreaView className="flex-1 bg-surface justify-center items-center px-5">
+                <Ionicons name="lock-closed-outline" size={64} color="gray" style={{ marginBottom: 16 }} />
+                <Text className="text-ink text-xl text-center mb-2 font-bold">
+                    {t("login_required") || "Login Required"}
+                </Text>
+                <Text className="text-muted text-center mb-8 px-4">
+                    {t("login_required_sub_camera") || "Please login to use the Mudra AI posture analysis feature."}
+                </Text>
+                <Pressable
+                    className="bg-brand w-full py-4 rounded-2xl active:opacity-80 shadow-md mb-4 items-center"
+                    onPress={() => router.push('/(auth)/login')}
+                >
+                    <Text className="text-white font-bold text-base">{t("login") || "Go to Login"}</Text>
+                </Pressable>
+
+                <Pressable onPress={() => router.back()} className="p-4 active:opacity-70">
+                    <Text className="text-ink font-semibold">{t("go_back") || "Go Back"}</Text>
+                </Pressable>
+            </SafeAreaView>
+        );
+    }
+
     if (!hasPermission) {
         return (
             <SafeAreaView className="flex-1 bg-surface justify-center items-center px-5">
                 <Ionicons name="camera-outline" size={64} color="gray" style={{ marginBottom: 16 }} />
                 <Text className="text-ink text-lg text-center mb-6 font-bold">
-                    {t("Camera permission is required to analyze your Mudra.")}
+                    {t("Camera permission is required to analyze your Mudra.") || "Camera permission is required to analyze your Mudra."}
                 </Text>
                 <Pressable
                     className="bg-brand px-6 py-3 rounded-full active:opacity-80 shadow-md"
                     onPress={requestCameraPermission}
                 >
-                    <Text className="text-white font-bold">{t("Grant Permission")}</Text>
+                    <Text className="text-white font-bold">{t("Grant Permission") || "Grant Permission"}</Text>
                 </Pressable>
             </SafeAreaView>
         );
@@ -86,9 +185,7 @@ export default function MudraVerificationScreen() {
 
             <SafeAreaView className="flex-1 justify-between z-10 pointer-events-box-none">
                 <View className="px-4 flex-row justify-between items-center mt-2">
-                    <Pressable onPress={() => router.back()} className="w-10 p-2 -ml-2 active:opacity-70">
-                        <Ionicons name="arrow-back" size={24} color={Platform.OS === 'ios' ? '#000' : 'gray'} className="dark:color-white" />
-                    </Pressable>
+                    <BackButton size={22} className="w-11" />
 
                     <View className="bg-surface px-5 py-2 rounded-full opacity-80 shadow-md items-center justify-center flex-shrink mx-2">
                         <Text className="text-ink text-base font-bold text-center" numberOfLines={1}>
@@ -98,14 +195,28 @@ export default function MudraVerificationScreen() {
 
                     <Pressable
                         onPress={() => setCameraType(prev => prev === 'front' ? 'back' : 'front')}
-                        className="w-10 active:opacity-70 items-center justify-center"
+                        className="w-11 active:opacity-70 items-center justify-center"
                     >
                         <Ionicons name="camera-reverse-outline" size={26} color={Platform.OS === 'ios' ? '#000' : 'gray'} className="dark:color-white" />
                     </Pressable>
                 </View>
 
-                <View className="mx-4">
-                    <View className="bg-surface opacity-80 rounded-2xl p-3 mb-2 shadow-md max-h-48">
+                <View className="items-center mt-2 shadow-lg pointer-events-none">
+                    <View className="w-28 h-28 rounded-full items-center justify-center border-2 border-brand/40 relative">
+                        <View className="absolute w-32 h-32 rounded-full bg-brand/20 blur-xl" />
+                        <Image
+                            source={imageSource ?? undefined}
+                            resizeMode="cover"
+                            style={{ height: 100, width: 100, borderRadius: 50 }}
+                            className="bg-transparent dark:bg-black/40"
+                        />
+                    </View>
+                </View>
+
+                <View className="flex-1 pointer-events-none" />
+
+                <View className="mx-4 justify-end">
+                    <View className="bg-surface opacity-80 rounded-2xl p-3 mb-2 shadow-md max-h-40">
                         <View className="flex-row items-center justify-between mb-2">
                             <Text className="text-sm font-bold text-ink">{t("steps")}</Text>
                         </View>
@@ -122,7 +233,7 @@ export default function MudraVerificationScreen() {
                         </ScrollView>
                     </View>
 
-                    <View className="bg-surface opacity-80 rounded-2xl p-3 shadow-md items-center">
+                    <View className="bg-surface opacity-80 rounded-2xl p-3 shadow-md items-center mb-6">
                         <Text
                             className={`text-lg font-bold text-center ${aiStatus.includes("Perfect") ? "text-green-600" : "text-brand"
                                 }`}

@@ -684,5 +684,13 @@
     "stop_preview": "Stop",
     "tap_start_breathing": "Tik op Start om te beginnen met ademen",
     "tap_to_begin": "Tik om te beginnen",
-    "upgrade_now": "Nu upgraden"
+    "upgrade_now": "Nu upgraden",
+    "select_country": "Selecteer land",
+    "search_number": "Zoek land of code...",
+    "go_back": "Ga terug",
+    "login_required_sub_camera": "Log in om de Mudra AI-houdingsanalysefunctie te gebruiken.",
+    "posture_analyzed_success": "Je mudra-houding is succesvol geanalyseerd.",
+    "pefect_match": "Perfecte match!",
+    "reminder_time": "Dagelijkse oefentijd",
+    "tap_to_change_time": "Tik om je meldingenschema te wijzigen"
 }

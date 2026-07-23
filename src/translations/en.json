@@ -684,5 +684,13 @@
     "schedule_saved_msg": "Your daily reminders have been updated.",
     "save_schedule": "Save Schedule",
     "breathe_reminder_title": "Time to Breathe 🌬️",
-    "breathe_reminder_body": "Take a moment for your breathing practice."
+    "breathe_reminder_body": "Take a moment for your breathing practice.",
+    "select_country": "Select Country",
+    "search_number": "Search country or code...",
+    "go_back": "Go Back",
+    "login_required_sub_camera": "Please login to use the Mudra AI posture analysis feature.",
+    "posture_analyzed_success": "Your mudra posture was analyzed successfully.",
+    "pefect_match": "Perfect Match!",
+    "reminder_time": "Daily Practice Time",
+    "tap_to_change_time": "Tap to modify your notification schedule"
 }

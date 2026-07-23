@@ -71,7 +71,7 @@ export default function Practice() {
       Alert.alert(
         `${t("session_complete")} 🎉`,
         `${t("session_complete_sub")} ${streak} ${streak === 1 ? t("day") : t("days")}.`,
-        [{ text: t("done"), onPress: () => router.back() }]
+        [{ text: t("done"), onPress: () => router.replace("/screens/insights") }]
       );
     });
   };

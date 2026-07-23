@@ -37,7 +37,7 @@ export default function Home() {
 
   const topStreak = routines.reduce((max, r) => Math.max(max, r.streak), 0);
   const totalMinutes = totalSessions * 10;
-  const consistencyRate = insights?.successRate ? Math.round(insights.successRate * 100) : 92;
+  const consistencyRate = insights?.successRate ? Math.round(insights.successRate) : 0;
 
   useFocusEffect(
     useCallback(() => {
