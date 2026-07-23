@@ -89,18 +89,10 @@ android {
     defaultConfig {
         missingDimensionStrategy "platform", "play"
         applicationId 'com.ai.mudra'
-<<<<<<< HEAD
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 16
         versionName "1.1.0"
-=======
-        minSdk = rootProject.ext.minSdkVersion
-        targetSdk = rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
->>>>>>> 5e1dc3a8727ccf57579a0b842b1cae4cb3b88cfc
-
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
     signingConfigs {
@@ -134,12 +126,9 @@ android {
         }
     }
     androidResources {
-<<<<<<< HEAD
+
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
         noCompress 'tflite', 'task', 'lite', 'pb'
-=======
-        ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
->>>>>>> 5e1dc3a8727ccf57579a0b842b1cae4cb3b88cfc
     }
 }
 
