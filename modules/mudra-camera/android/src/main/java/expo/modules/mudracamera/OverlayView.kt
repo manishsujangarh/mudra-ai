@@ -108,7 +108,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                     val TOUCH_TOLERANCE = 0.09
 
                     when (currentMudraId) {
-                        "mudra-gyan" -> {
+                        "mudra-gyan" ,"mudra-buddha"-> {
                             val match = dist(thumbTip, indexTip) < TOUCH_TOLERANCE
                             status.apply { thumbOk = match; indexOk = match; middleOk = isMiddleExt; ringOk = isRingExt; pinkyOk = isPinkyExt }
                         }
@@ -135,7 +135,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                             val matchThumb = dist(thumbTip, landmark[14]) < 0.12
                             status.apply { thumbOk = matchThumb; indexOk = isIndexExt; middleOk = isMiddleExt; ringOk = matchRing; pinkyOk = isPinkyExt }
                         }
-                        "mudra-buddhi", "mudra-varun" -> {
+                        "mudra-varun" -> {
                             val match = dist(thumbTip, pinkyTip) < TOUCH_TOLERANCE
                             status.apply { thumbOk = match; indexOk = isIndexExt; middleOk = isMiddleExt; ringOk = isRingExt; pinkyOk = match }
                         }
