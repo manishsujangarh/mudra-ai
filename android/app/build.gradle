@@ -82,70 +82,64 @@ def enableMinifyInReleaseBuilds = (findProperty('android.enableMinifyInReleaseBu
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
-
-    buildToolsVersion rootProject.ext.buildToolsVersion
-    compileSdk rootProject.ext.compileSdkVersion
-
+    ndkVersion = rootProject.ext.ndkVersion
+    buildToolsVersion = rootProject.ext.buildToolsVersion
+    compileSdk = rootProject.ext.compileSdkVersion
     namespace 'com.ai.mudra'
     defaultConfig {
+        missingDimensionStrategy "platform", "play"
         applicationId 'com.ai.mudra'
+<<<<<<< HEAD
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 16
         versionName "1.1.0"
+=======
+        minSdk = rootProject.ext.minSdkVersion
+        targetSdk = rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+>>>>>>> 5e1dc3a8727ccf57579a0b842b1cae4cb3b88cfc
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
     signingConfigs {
         debug {
-            storeFile file('mudra-ai-release.keystore')
-            storePassword 'rishi123'
-            keyAlias 'mudraai-key'
-            keyPassword 'rishi123'
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig = signingConfigs.debug
         }
-        // release {
-        //     // Caution! In production, you need to generate your own keystore file.
-        //     // see https://reactnative.dev/docs/signed-apk-android.
-        //     signingConfig signingConfigs.debug
-        //     def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
-        //     shrinkResources enableShrinkResources.toBoolean()
-        //     minifyEnabled enableMinifyInReleaseBuilds
-        //     proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-        //     def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
-        //     crunchPngs enablePngCrunchInRelease.toBoolean()
-        // }
-                release {
+        release {
             // Caution! In production, you need to generate your own keystore file.
-            signingConfig signingConfigs.debug
-            
-            // 1. Force Resource Shrinking (Unused images/xml remove karega)
-            shrinkResources true
-            
-            // 2. Force Code Minification (Unused Java/Kotlin C++ code remove karega)
-            minifyEnabled true
-            
-            // 3. Use OPTIMIZED Proguard file instead of normal one
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            
-            // 4. PNG Crunching
-            crunchPngs true
+            // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig = signingConfigs.debug
+            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
+            shrinkResources = enableShrinkResources.toBoolean()
+            minifyEnabled enableMinifyInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
+            crunchPngs = enablePngCrunchInRelease.toBoolean()
         }
     }
     packagingOptions {
         jniLibs {
             def enableLegacyPackaging = findProperty('expo.useLegacyPackaging') ?: 'false'
-            useLegacyPackaging enableLegacyPackaging.toBoolean()
+            useLegacyPackaging = enableLegacyPackaging.toBoolean()
         }
     }
     androidResources {
+<<<<<<< HEAD
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
         noCompress 'tflite', 'task', 'lite', 'pb'
+=======
+        ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+>>>>>>> 5e1dc3a8727ccf57579a0b842b1cae4cb3b88cfc
     }
 }
 
@@ -170,6 +164,7 @@ android {
 }
 
 dependencies {
+    implementation "io.github.hyochan.openiap:openiap-google:2.4.1"
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 

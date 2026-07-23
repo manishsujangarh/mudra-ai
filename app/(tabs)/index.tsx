@@ -11,6 +11,7 @@ import { MoodTrackingWidget } from "@/components/home/MoodTrackingWidget";
 import { ProgressWidget } from "@/components/home/ProgressWidget";
 import { PlanWidget } from "@/components/home/PlanWidget";
 import { QuickReliefWidget } from "@/components/home/QuickReliefWidget";
+import { BreathingMeditationWidget } from "@/components/home/BreathingMeditationWidget";
 import { AdBanner } from "@/ads/AdBanner";
 import { useActiveRoutines, useCreateRoutine } from "@/hooks/useRoutines";
 import { useStats, useMoodInsights } from "@/hooks/useSessions";
@@ -172,6 +173,7 @@ export default function Home() {
           insights={insights}
           onViewHistory={() => router.push("/screens/insights")}
         />
+        <BreathingMeditationWidget />
         <View className="mt-8" style={{ marginHorizontal: -20 }}>
           <AdBanner />
         </View>
