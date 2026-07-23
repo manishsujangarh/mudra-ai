@@ -175,9 +175,9 @@ export default function MudraDetail() {
       <View style={{ bottom: insects.bottom }} className="absolute left-0 right-0 bg-white dark:bg-[#1A1A1A] border-t border-slate-200 dark:border-gray-800 p-5 pb-8">
 
         <Pressable onPress={() => router.push(`/verify-mudra/${mudra.id}`)}
-          className="bg-brand/10 rounded-2xl flex-row items-center justify-center pt-4 mb-3 active:opacity-80 shadow-sm"
+          className="bg-brand/10  border-brand/20  rounded-2xl flex-row items-center justify-center py-4 mb-3 active:opacity-80"
         >
-          <Ionicons className="mr-2 dark:text-white text-black" color="white" name="scan-outline" size={18} />
+          <Ionicons className="mr-2" color="#F97316" name="scan-outline" size={18} />
           <Text className="text-black dark:text-white font-bold text-sm" numberOfLines={1}>
             {t("Test Posture with AI")}
           </Text>
