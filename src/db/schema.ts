@@ -60,6 +60,15 @@ export const CREATE_STATEMENTS = [
     ads_removed INTEGER NOT NULL DEFAULT 0
   );`,
 
+  `CREATE TABLE IF NOT EXISTS ai_history (
+    id TEXT PRIMARY KEY NOT NULL,
+    mudra_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );`,
+
+  `CREATE INDEX IF NOT EXISTS idx_ai_history_mudra ON ai_history(mudra_id);`,
+
   // Ensure the single preferences row always exists.
   `INSERT OR IGNORE INTO user_preferences (id, onboarding_completed) VALUES (1, 0);`,
 

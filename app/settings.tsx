@@ -25,6 +25,7 @@ import {
     PRACTICE_MUSIC_STORAGE_KEY,
     PracticeMusicId,
 } from "@/audio/music";
+import { ReminderModal } from "@/components/settings/ReminderModal";
 
 export default function Settings() {
     const router = useRouter();
@@ -48,6 +49,8 @@ export default function Settings() {
     const [musicModalVisible, setMusicModalVisible] = useState(false);
     const [practiceMusic, setPracticeMusic] = useState<PracticeMusicId>(DEFAULT_PRACTICE_MUSIC);
     const [previewMusicId, setPreviewMusicId] = useState<PracticeMusicId | null>(null);
+
+    const [reminderModalVisible, setReminderModalVisible] = useState(false);
 
     // --- LEGAL WEBVIEW STATES ---
     const [legalModalVisible, setLegalModalVisible] = useState(false);
@@ -415,16 +418,18 @@ export default function Settings() {
                         </View>
 
                         <TouchableOpacity
-                            onPress={() => {
-                                router.push({
-                                    pathname: "/onboarding",
-                                    params: { mode: "edit_notification" }
-                                });
-                            }}
-                            className="flex-row items-center justify-center border border-brand/40 rounded-2xl py-3.5 bg-transparent ml-11"
+                            className="flex-row items-center justify-between pl-11"
+                            onPress={() => setReminderModalVisible(true)}
                         >
-                            <MaterialIcons name="calendar-today" size={16} color="#FF9500" style={{ marginRight: 8 }} />
-                            <Text className="text-brand font-bold text-sm" numberOfLines={1}>{t("reminders_btn") || "Edit Reminder Time"}</Text>
+                            <View className="flex-1 pr-4">
+                                <Text className="text-sm font-bold text-ink">
+                                    {t("reminder_time") || "Daily Practice Time"}
+                                </Text>
+                                <Text className="text-xs text-muted mt-0.5">
+                                    {t("tap_to_change_time") || "Tap to modify your notification schedule"}
+                                </Text>
+                            </View>
+                            <MaterialIcons name="chevron-right" size={20} color="#FF9500" />
                         </TouchableOpacity>
                     </View>
 
@@ -757,6 +762,11 @@ export default function Settings() {
                         </View>
                     </SafeAreaView>
                 </Modal>
+
+                <ReminderModal
+                    visible={reminderModalVisible}
+                    onClose={() => setReminderModalVisible(false)}
+                />
 
                 <AdBanner />
             </SafeAreaView>

@@ -652,5 +652,13 @@
     "mudra-rudra_inst_2": "Turn palms upward and close your eyes.",
     "mudra-rudra_inst_3": "Touch tips of index and ring fingers to thumb tip.",
     "mudra-rudra_inst_4": "Keep middle and little fingers extended straight out.",
-    "mudra-rudra_inst_5": "Perform with both hands simultaneously, breathing naturally."
+    "mudra-rudra_inst_5": "Perform with both hands simultaneously, breathing naturally.",
+    "select_country": "Select Country",
+    "search_number":"Search country or code...",
+    "go_back":"Go Back",
+    "login_required_sub_camera":"Please login to use the Mudra AI posture analysis feature.",
+    "posture_analyzed_success":"Your mudra posture was analyzed successfully.",
+    "pefect_match":"Perfect Match!",
+    "reminder_time":"Daily Practice Time",
+    "tap_to_change_time":"Tap to modify your notification schedule"
 }

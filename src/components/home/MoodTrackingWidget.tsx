@@ -25,7 +25,7 @@ export function MoodTrackingWidget({ insights, onViewHistory }: MoodTrackingWidg
 
     const activeMood = insights?.mostFrequentMood ?? null;
     const totalAnalyzed = insights?.totalAnalyzed ?? 0;
-    const successPercentage = insights?.successRate ? Math.round(insights.successRate * 100) : 0;
+    const successPercentage = insights?.successRate ? Math.round(insights.successRate ) : 0;
 
     const renderMoodFace = (face: typeof STATIC_MOOD_FACES[number], keyPrefix: string) => {
         const isSelected = activeMood === face.id;
