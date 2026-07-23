@@ -53,7 +53,26 @@ class GestureRecognizerHelper(
             DELEGATE_GPU -> baseOptionBuilder.setDelegate(Delegate.GPU)
         }
 
-        baseOptionBuilder.setModelAssetPath("gesture_recognizer.task")
+        try {
+            val assetManager = context.assets
+            val assetFileDescriptor = assetManager.openFd("gesture_recognizer.task")
+            val inputStream = assetFileDescriptor.createInputStream()
+            val bytes = inputStream.readBytes()
+            
+            val byteBuffer = java.nio.ByteBuffer.allocateDirect(bytes.size)
+            byteBuffer.order(java.nio.ByteOrder.nativeOrder())
+            byteBuffer.put(bytes)
+            byteBuffer.position(0)
+            
+            baseOptionBuilder.setModelAssetBuffer(byteBuffer)
+            
+            inputStream.close()
+            assetFileDescriptor.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "Asset load error: ", e)
+            gestureRecognizerListener?.onError("Model file read error: ${e.message}")
+            return
+        }
 
         try {
             val baseOptions = baseOptionBuilder.build()
